@@ -9,18 +9,17 @@ import { ToastContainerComponent } from './shared/components/toast/toast-contain
 interface NavItem {
   yol: string;
   etiket: string;
-  ikon: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { yol: '/dashboard', etiket: 'Dashboard', ikon: '📊' },
-  { yol: '/gonderiler', etiket: 'Gönderiler', ikon: '📦' },
-  { yol: '/kurye-atama', etiket: 'Kurye Atama', ikon: '🛵' },
-  { yol: '/teslimatlar', etiket: 'Teslimatlar', ikon: '✅' },
-  { yol: '/iadeler', etiket: 'İadeler', ikon: '↩️' },
-  { yol: '/bolgeler', etiket: 'Bölgeler', ikon: '🗺️' },
-  { yol: '/raporlar', etiket: 'Raporlar', ikon: '📈' },
-  { yol: '/audit-log', etiket: 'Audit Log', ikon: '🗒️' },
+  { yol: '/dashboard', etiket: 'Dashboard' },
+  { yol: '/gonderiler', etiket: 'Gönderiler' },
+  { yol: '/kurye-atama', etiket: 'Kurye Atama' },
+  { yol: '/teslimatlar', etiket: 'Teslimatlar' },
+  { yol: '/iadeler', etiket: 'İadeler' },
+  { yol: '/bolgeler', etiket: 'Bölgeler' },
+  { yol: '/raporlar', etiket: 'Raporlar' },
+  { yol: '/audit-log', etiket: 'Audit Log' },
 ];
 
 @Component({

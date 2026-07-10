@@ -1,6 +1,6 @@
 <div class="layout">
   <aside class="sidebar">
-    <div class="sidebar__brand">🚚 Kargo Operasyon</div>
+    <div class="sidebar__brand">Kargo Operasyon</div>
     <nav class="sidebar__nav">
       <a
         *ngFor="let item of navItems"
@@ -8,7 +8,7 @@
         routerLinkActive="active"
         class="sidebar__link"
       >
-        <span>{{ item.ikon }}</span> {{ item.etiket }}
+        {{ item.etiket }}
       </a>
     </nav>
   </aside>
