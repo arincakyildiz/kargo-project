@@ -1,0 +1,69 @@
+<div class="shipment-form">
+  <h1>{{ duzenlemeModu() ? 'Gönderiyi Düzenle' : 'Yeni Gönderi' }}</h1>
+
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
+  </div>
+
+  <form class="panel" [formGroup]="form" (ngSubmit)="kaydet()" *ngIf="!yukleniyor()">
+    <div class="form-field">
+      <label for="adresId">Alıcı Adresi</label>
+      <select id="adresId" formControlName="adresId" (change)="adresSecildi($any($event.target).value)">
+        <option value="" disabled>Adres seçin</option>
+        <option *ngFor="let a of adresler()" [value]="a.id">{{ a.aliciAdSoyad }} — {{ a.acikAdres }}</option>
+      </select>
+      <span class="form-field__error" *ngIf="form.controls.adresId.invalid && form.controls.adresId.touched">
+        Adres seçimi zorunludur.
+      </span>
+    </div>
+
+    <div class="form-field">
+      <label for="aliciAdSoyad">Alıcı Ad Soyad</label>
+      <input id="aliciAdSoyad" formControlName="aliciAdSoyad" type="text" />
+      <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.invalid && form.controls.aliciAdSoyad.touched">
+        En az 3 karakter girin.
+      </span>
+    </div>
+
+    <div class="form-field">
+      <label for="aliciTelefon">Alıcı Telefon</label>
+      <input id="aliciTelefon" formControlName="aliciTelefon" type="text" placeholder="05XX XXX XX XX" />
+      <span class="form-field__error" *ngIf="form.controls.aliciTelefon.invalid && form.controls.aliciTelefon.touched">
+        Telefon biçimi geçersiz (örn. 0532 111 22 33).
+      </span>
+    </div>
+
+    <div class="form-field">
+      <label for="bolgeId">Teslimat Bölgesi</label>
+      <select id="bolgeId" formControlName="bolgeId">
+        <option value="" disabled>Bölge seçin</option>
+        <option *ngFor="let b of bolgeler()" [value]="b.id">{{ b.ad }} ({{ b.il }})</option>
+      </select>
+      <span class="form-field__error" *ngIf="form.controls.bolgeId.invalid && form.controls.bolgeId.touched">
+        Bölge seçimi zorunludur.
+      </span>
+    </div>
+
+    <div class="form-field">
+      <label for="agirlikKg">Ağırlık (kg)</label>
+      <input id="agirlikKg" formControlName="agirlikKg" type="number" step="0.1" min="0.1" />
+      <span class="form-field__error" *ngIf="form.controls.agirlikKg.invalid && form.controls.agirlikKg.touched">
+        Ağırlık pozitif bir sayı olmalıdır.
+      </span>
+    </div>
+
+    <div class="form-field">
+      <label for="aciklama">Açıklama (opsiyonel)</label>
+      <textarea id="aciklama" formControlName="aciklama" rows="3"></textarea>
+    </div>
+
+    <p class="form-error" *ngIf="hataMesaji()">{{ hataMesaji() }}</p>
+
+    <div class="form-actions">
+      <a routerLink="/gonderiler" class="btn btn--ghost">Vazgeç</a>
+      <button type="submit" class="btn btn--primary" [disabled]="kaydediliyor()">
+        {{ kaydediliyor() ? 'Kaydediliyor...' : 'Kaydet' }}
+      </button>
+    </div>
+  </form>
+</div>

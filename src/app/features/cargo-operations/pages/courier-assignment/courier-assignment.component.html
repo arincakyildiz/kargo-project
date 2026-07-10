@@ -1,0 +1,102 @@
+<div class="courier-assignment">
+  <div class="toolbar">
+    <h1>Kurye Atama</h1>
+    <button class="btn btn--primary" (click)="yeniKuryeFormAc()" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+      + Yeni Kurye
+    </button>
+  </div>
+
+  <form class="panel" [formGroup]="kuryeForm" (ngSubmit)="kuryeKaydet()" *ngIf="kuryeFormAcik()">
+    <h2>{{ duzenlenenKuryeId() ? 'Kuryeyi Düzenle' : 'Yeni Kurye' }}</h2>
+    <div class="form-field">
+      <label for="adSoyad">Ad Soyad</label>
+      <input id="adSoyad" formControlName="adSoyad" type="text" />
+      <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.invalid && kuryeForm.controls.adSoyad.touched">
+        En az 3 karakter girin.
+      </span>
+    </div>
+    <div class="form-field">
+      <label for="telefon">Telefon</label>
+      <input id="telefon" formControlName="telefon" type="text" placeholder="05XX XXX XX XX" />
+      <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.invalid && kuryeForm.controls.telefon.touched">
+        Telefon biçimi geçersiz.
+      </span>
+    </div>
+    <div class="form-field">
+      <label for="bolgeId">Bölge</label>
+      <select id="bolgeId" formControlName="bolgeId">
+        <option value="" disabled>Bölge seçin</option>
+        <option *ngFor="let b of zoneService.aktifBolgeler()" [value]="b.id">{{ b.ad }} ({{ b.il }})</option>
+      </select>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.bolgeId.invalid && kuryeForm.controls.bolgeId.touched">
+        Bölge seçimi zorunludur.
+      </span>
+    </div>
+    <div class="form-field">
+      <label for="gunlukKapasite">Günlük Kapasite</label>
+      <input id="gunlukKapasite" formControlName="gunlukKapasite" type="number" min="1" />
+      <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.invalid && kuryeForm.controls.gunlukKapasite.touched">
+        Pozitif bir sayı girin.
+      </span>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn--ghost" (click)="kuryeFormunuKapat()">Vazgeç</button>
+      <button type="submit" class="btn btn--primary" [disabled]="kuryeKaydediliyor()">Kaydet</button>
+    </div>
+  </form>
+
+  <section class="panel">
+    <h2>Kurye Kapasite Durumu</h2>
+    <table class="data-table" *ngIf="kuryeKapasiteOzeti().length; else kuryeYok">
+      <thead>
+        <tr><th>Kurye</th><th>Bölge</th><th>Telefon</th><th>Atanan / Kapasite</th><th>Doluluk</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of kuryeKapasiteOzeti()">
+          <td>{{ o.kurye.adSoyad }}</td>
+          <td>{{ zoneService.bolgeAdi(o.kurye.bolgeId) }}</td>
+          <td>{{ o.kurye.telefon }}</td>
+          <td>{{ o.atanan }} / {{ o.kurye.gunlukKapasite }}</td>
+          <td>%{{ o.doluluk }}</td>
+          <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+            <button class="btn btn--ghost btn--sm" (click)="kuryeDuzenleFormuAc(o.kurye)">Düzenle</button>
+            <button class="btn btn--ghost btn--sm" (click)="kuryeAktiflikDegistir(o.kurye)">Pasife Al</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #kuryeYok>
+      <app-empty-state icon="🛵" title="Aktif kurye yok"></app-empty-state>
+    </ng-template>
+  </section>
+
+  <section class="panel" *ngIf="!yukleniyor()">
+    <h2>Atama Bekleyen Gönderiler</h2>
+    <table class="data-table" *ngIf="bekleyenler().length; else bosState">
+      <thead>
+        <tr><th>Takip Kodu</th><th>Alıcı</th><th>Bölge</th><th>Kurye Seç</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of bekleyenler()">
+          <td>{{ s.takipKodu }}</td>
+          <td>{{ s.aliciAdSoyad }}</td>
+          <td>{{ zoneService.bolgeAdi(s.bolgeId) }}</td>
+          <td>
+            <select (change)="secimYap(s.id, $any($event.target).value)">
+              <option value="" disabled selected>Kurye seçin</option>
+              <option *ngFor="let k of uygunKuryeler(s.bolgeId)" [value]="k.id">{{ k.adSoyad }}</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn--primary btn--sm" (click)="ata(s)" [disabled]="islemDevamEdiyor() === s.id">
+              Ata
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #bosState>
+      <app-empty-state icon="✅" title="Bekleyen atama yok" description="Tüm gönderilere kurye atanmış."></app-empty-state>
+    </ng-template>
+  </section>
+</div>

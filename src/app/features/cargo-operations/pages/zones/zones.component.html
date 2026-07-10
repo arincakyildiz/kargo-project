@@ -1,0 +1,69 @@
+<div class="zones">
+  <div class="toolbar">
+    <h1>Bölgeler</h1>
+    <button class="btn btn--primary" (click)="yeniFormAc()" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+      + Yeni Bölge
+    </button>
+  </div>
+
+  <form class="panel" [formGroup]="form" (ngSubmit)="kaydet()" *ngIf="formAcik()">
+    <h2>{{ duzenlenenId() ? 'Bölgeyi Düzenle' : 'Yeni Bölge' }}</h2>
+    <div class="form-field">
+      <label for="ad">Bölge Adı</label>
+      <input id="ad" formControlName="ad" type="text" />
+      <span class="form-field__error" *ngIf="form.controls.ad.invalid && form.controls.ad.touched">Zorunlu alan.</span>
+    </div>
+    <div class="form-field">
+      <label for="il">İl</label>
+      <input id="il" formControlName="il" type="text" />
+      <span class="form-field__error" *ngIf="form.controls.il.invalid && form.controls.il.touched">Zorunlu alan.</span>
+    </div>
+    <div class="form-field">
+      <label for="ilce">İlçe</label>
+      <input id="ilce" formControlName="ilce" type="text" />
+      <span class="form-field__error" *ngIf="form.controls.ilce.invalid && form.controls.ilce.touched">Zorunlu alan.</span>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn--ghost" (click)="formuKapat()">Vazgeç</button>
+      <button type="submit" class="btn btn--primary" [disabled]="kaydediliyor()">Kaydet</button>
+    </div>
+  </form>
+
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
+  </div>
+
+  <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
+    <p>{{ hataMesaji() }}</p>
+    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+  </div>
+
+  <div class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
+    <table class="data-table" *ngIf="zones().length; else bosState">
+      <thead>
+        <tr><th>Ad</th><th>İl</th><th>İlçe</th><th>Durum</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let z of zones()">
+          <td>{{ z.ad }}</td>
+          <td>{{ z.il }}</td>
+          <td>{{ z.ilce }}</td>
+          <td>
+            <span class="status-badge" [class.status-badge--aktif]="z.aktifMi" [class.status-badge--pasif]="!z.aktifMi">
+              {{ z.aktifMi ? 'Aktif' : 'Pasif' }}
+            </span>
+          </td>
+          <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+            <button class="btn btn--ghost btn--sm" (click)="duzenleFormuAc(z)">Düzenle</button>
+            <button class="btn btn--ghost btn--sm" (click)="aktiflikDegistir(z)">
+              {{ z.aktifMi ? 'Pasife Al' : 'Aktifleştir' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #bosState>
+      <app-empty-state icon="🗺️" title="Henüz bölge tanımlı değil"></app-empty-state>
+    </ng-template>
+  </div>
+</div>

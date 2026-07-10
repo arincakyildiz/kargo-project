@@ -1,0 +1,40 @@
+<div class="returns">
+  <h1>İadeler</h1>
+
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
+  </div>
+
+  <div class="panel" *ngIf="!yukleniyor()">
+    <table class="data-table" *ngIf="siraliListe().length; else bosState">
+      <thead>
+        <tr><th>Takip Kodu</th><th>Neden</th><th>Durum</th><th>Oluşturulma</th><th *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of siraliListe()">
+          <td><a [routerLink]="['/gonderiler', r.shipmentId]">{{ takipKodu(r.shipmentId) }}</a></td>
+          <td>{{ r.neden }}</td>
+          <td>{{ statusLabels[r.status] }}</td>
+          <td>{{ r.createdAt | tarih }}</td>
+          <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+            <ng-container *ngIf="r.status === 'beklemede'">
+              <button class="btn btn--success btn--sm" (click)="durumGuncelle(r, 'onaylandi')" [disabled]="islemDevamEdiyor() === r.id">Onayla</button>
+              <button class="btn btn--danger btn--sm" (click)="durumGuncelle(r, 'reddedildi')" [disabled]="islemDevamEdiyor() === r.id">Reddet</button>
+            </ng-container>
+            <button
+              *ngIf="r.status === 'onaylandi'"
+              class="btn btn--primary btn--sm"
+              (click)="durumGuncelle(r, 'tamamlandi')"
+              [disabled]="islemDevamEdiyor() === r.id"
+            >
+              Tamamla
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #bosState>
+      <app-empty-state icon="↩️" title="İade talebi bulunmuyor"></app-empty-state>
+    </ng-template>
+  </div>
+</div>

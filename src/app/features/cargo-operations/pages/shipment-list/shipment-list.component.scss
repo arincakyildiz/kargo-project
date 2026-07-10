@@ -1,0 +1,21 @@
+.shipment-list {
+  padding: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.panel--error {
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

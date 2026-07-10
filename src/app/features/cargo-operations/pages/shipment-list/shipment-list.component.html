@@ -1,0 +1,77 @@
+<div class="shipment-list">
+  <div class="toolbar">
+    <h1>Gönderiler</h1>
+    <a routerLink="/gonderiler/yeni" class="btn btn--primary">+ Yeni Gönderi</a>
+  </div>
+
+  <div class="toolbar">
+    <input
+      type="search"
+      placeholder="Takip kodu veya alıcı ara..."
+      [debounceMs]="350"
+      (appDebounce)="aramaDegisti($event)"
+    />
+    <select (change)="statusFiltresiDegisti($any($event.target).value)">
+      <option value="tumu">Tüm Durumlar</option>
+      <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ s[1] }}</option>
+    </select>
+    <select (change)="siralamaDegisti($any($event.target).value)">
+      <option value="createdAt-desc">En Yeni</option>
+      <option value="createdAt-asc">En Eski</option>
+      <option value="takipKodu-asc">Takip Kodu (A-Z)</option>
+      <option value="agirlikKg-desc">Ağırlık (Azalan)</option>
+    </select>
+  </div>
+
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
+  </div>
+
+  <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
+    <p>{{ hataMesaji() }}</p>
+    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+  </div>
+
+  <ng-container *ngIf="!yukleniyor() && !hataMesaji()">
+    <div class="panel" *ngIf="sayfalanmis().length; else bosState">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Takip Kodu</th>
+            <th>Alıcı</th>
+            <th>Bölge</th>
+            <th>Kurye</th>
+            <th>Durum</th>
+            <th>Oluşturulma</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let g of sayfalanmis()">
+            <td>{{ g.takipKodu }}</td>
+            <td>{{ g.aliciAdSoyad }}</td>
+            <td>{{ zoneService.bolgeAdi(g.bolgeId) }}</td>
+            <td>{{ courierService.kuryeAdi(g.kuryeId) }}</td>
+            <td><span [appStatusBadge]="g.status">{{ g.status | statusLabel }}</span></td>
+            <td>{{ g.createdAt | tarih:false }}</td>
+            <td><a [routerLink]="['/gonderiler', g.id]" class="btn btn--ghost btn--sm">Detay</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination" *ngIf="toplamSayfa() > 1">
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() - 1)" [disabled]="sayfa() === 1">‹ Önceki</button>
+        <span>{{ sayfa() }} / {{ toplamSayfa() }}</span>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() + 1)" [disabled]="sayfa() === toplamSayfa()">Sonraki ›</button>
+      </div>
+    </div>
+
+    <ng-template #bosState>
+      <app-empty-state
+        icon="🔍"
+        title="Sonuç bulunamadı"
+        description="Arama veya filtre kriterlerinizi değiştirmeyi deneyin."
+      ></app-empty-state>
+    </ng-template>
+  </ng-container>
+</div>

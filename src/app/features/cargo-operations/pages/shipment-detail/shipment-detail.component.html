@@ -1,0 +1,122 @@
+<div class="shipment-detail">
+  <a routerLink="/gonderiler" class="back-link">‹ Gönderilere Dön</a>
+
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
+  </div>
+
+  <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
+    <p>{{ hataMesaji() }}</p>
+  </div>
+
+  <ng-container *ngIf="!yukleniyor() && gonderi() as g">
+    <div class="panel header-panel">
+      <div>
+        <h1>{{ g.takipKodu }}</h1>
+        <span [appStatusBadge]="g.status">{{ g.status | statusLabel }}</span>
+      </div>
+      <div class="header-actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <button class="btn btn--ghost" (click)="duzenle()" [disabled]="g.status === 'iptal-edildi'">Düzenle</button>
+        <button
+          class="btn btn--danger"
+          (click)="iptalEt()"
+          [disabled]="islemDevamEdiyor() || !iptalEdilebilir()"
+        >
+          İptal Et
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <section class="panel">
+        <h2>Gönderi Bilgileri</h2>
+        <dl>
+          <dt>Alıcı</dt><dd>{{ g.aliciAdSoyad }}</dd>
+          <dt>Telefon</dt><dd>{{ g.aliciTelefon }}</dd>
+          <dt>Bölge</dt><dd>{{ zoneService.bolgeAdi(g.bolgeId) }}</dd>
+          <dt>Kurye</dt><dd>{{ courierService.kuryeAdi(g.kuryeId) }}</dd>
+          <dt>Ağırlık</dt><dd>{{ g.agirlikKg }} kg</dd>
+          <dt>Açıklama</dt><dd>{{ g.aciklama || '—' }}</dd>
+          <dt>Oluşturulma</dt><dd>{{ g.createdAt | tarih }}</dd>
+          <dt>Son Güncelleme</dt><dd>{{ g.updatedAt | tarih }}</dd>
+        </dl>
+      </section>
+
+      <section class="panel" *ngIf="kuryeAtanabilir()" [appYetki]="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <h2>Kurye Ata</h2>
+        <div class="form-field" *ngIf="uygunKuryeler().length; else uygunKuryeYok">
+          <label for="kurye">Bölgeye uygun aktif kurye</label>
+          <select id="kurye" [ngModel]="secilenKurye()" (ngModelChange)="secilenKurye.set($event)">
+            <option value="" disabled>Kurye seçin</option>
+            <option *ngFor="let k of uygunKuryeler()" [value]="k.id">{{ k.adSoyad }} (kapasite: {{ k.gunlukKapasite }})</option>
+          </select>
+        </div>
+        <ng-template #uygunKuryeYok>
+          <p class="muted">Bu bölgede uygun aktif kurye bulunamadı.</p>
+        </ng-template>
+        <button class="btn btn--primary" (click)="kuryeAta()" [disabled]="islemDevamEdiyor() || !uygunKuryeler().length">
+          Kurye Ata
+        </button>
+      </section>
+
+      <section class="panel" *ngIf="teslimatKanitiGerekli()" [appYetki]="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <h2>Teslimat Kanıtı Ekle</h2>
+        <div class="form-field">
+          <label for="teslimAlan">Teslim Alan Ad Soyad</label>
+          <input id="teslimAlan" type="text" [ngModel]="teslimAlan()" (ngModelChange)="teslimAlan.set($event)" />
+        </div>
+        <label class="checkbox-field">
+          <input type="checkbox" [ngModel]="imzaVar()" (ngModelChange)="imzaVar.set($event)" />
+          İmza alındı
+        </label>
+        <div class="form-field">
+          <label for="teslimatNot">Not (opsiyonel)</label>
+          <textarea id="teslimatNot" rows="2" [ngModel]="teslimatNot()" (ngModelChange)="teslimatNot.set($event)"></textarea>
+        </div>
+        <button class="btn btn--success" (click)="teslimatKanitiKaydet()" [disabled]="islemDevamEdiyor()">
+          Teslimat Kanıtını Kaydet
+        </button>
+      </section>
+
+      <section class="panel" *ngIf="kanit() as k">
+        <h2>Teslimat Kanıtı</h2>
+        <dl>
+          <dt>Teslim Alan</dt><dd>{{ k.teslimAlanAdSoyad }}</dd>
+          <dt>İmza</dt><dd>{{ k.imzaVarMi ? 'Alındı' : 'Alınmadı' }}</dd>
+          <dt>Not</dt><dd>{{ k.not || '—' }}</dd>
+        </dl>
+      </section>
+
+      <section class="panel" *ngIf="sonrakiDurumlar().length || iadeAcilabilir()" [appYetki]="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <h2>Durum İşlemleri</h2>
+        <div class="status-actions">
+          <button
+            *ngFor="let s of sonrakiDurumlar()"
+            class="btn btn--ghost"
+            (click)="durumDegistir(s)"
+            [disabled]="islemDevamEdiyor()"
+          >
+            {{ s | statusLabel }} Olarak İşaretle
+          </button>
+          <button *ngIf="iadeAcilabilir()" class="btn btn--ghost" (click)="iadeTalebiAc()" [disabled]="islemDevamEdiyor()">
+            İade Talebi Aç
+          </button>
+        </div>
+      </section>
+
+      <section class="panel timeline-panel">
+        <h2>Durum Geçmişi</h2>
+        <ol class="timeline" *ngIf="gecmisListesi().length; else timelineBos">
+          <li *ngFor="let h of gecmisListesi()">
+            <span class="timeline__status">{{ h.yeniStatus | statusLabel }}</span>
+            <span class="timeline__meta">{{ h.islemZamani | tarih }} · {{ h.islemYapanRol }}</span>
+            <p class="timeline__aciklama">{{ h.aciklama }}</p>
+          </li>
+        </ol>
+        <ng-template #timelineBos>
+          <p class="muted">Henüz durum geçmişi yok.</p>
+        </ng-template>
+      </section>
+    </div>
+  </ng-container>
+</div>

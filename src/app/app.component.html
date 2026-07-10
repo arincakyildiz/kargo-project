@@ -1,0 +1,34 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar__brand">🚚 Kargo Operasyon</div>
+    <nav class="sidebar__nav">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.yol"
+        routerLinkActive="active"
+        class="sidebar__link"
+      >
+        <span>{{ item.ikon }}</span> {{ item.etiket }}
+      </a>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__user">
+        <label for="rolSelect">Aktif Rol:</label>
+        <select id="rolSelect" [ngModel]="currentUser.rol()" (ngModelChange)="rolDegistir($event)">
+          <option *ngFor="let r of roller" [value]="r">{{ rolEtiketleri[r] }}</option>
+        </select>
+        <span class="topbar__user-name">{{ currentUser.kullanici().adSoyad }}</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<app-toast-container></app-toast-container>
+<app-confirm-dialog></app-confirm-dialog>

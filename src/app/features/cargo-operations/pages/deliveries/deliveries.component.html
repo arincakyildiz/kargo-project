@@ -1,0 +1,37 @@
+<div class="deliveries">
+  <div class="toolbar">
+    <h1>Teslimatlar</h1>
+    <select (change)="statusFiltresiDegisti($any($event.target).value)">
+      <option value="tumu">Tüm Teslimat Durumları</option>
+      <option value="dagitimda">Dağıtımda</option>
+      <option value="teslim-edildi">Teslim Edildi</option>
+      <option value="teslim-edilemedi">Teslim Edilemedi</option>
+    </select>
+  </div>
+
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
+  </div>
+
+  <div class="panel" *ngIf="!yukleniyor()">
+    <table class="data-table" *ngIf="filtrelenmis().length; else bosState">
+      <thead>
+        <tr><th>Takip Kodu</th><th>Alıcı</th><th>Kurye</th><th>Durum</th><th>Kanıt</th><th>Güncelleme</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let g of filtrelenmis()">
+          <td>{{ g.takipKodu }}</td>
+          <td>{{ g.aliciAdSoyad }}</td>
+          <td>{{ courierService.kuryeAdi(g.kuryeId) }}</td>
+          <td><span [appStatusBadge]="g.status">{{ g.status | statusLabel }}</span></td>
+          <td>{{ kanitVarMi(g.id) ? 'Var' : '—' }}</td>
+          <td>{{ g.updatedAt | tarih }}</td>
+          <td><a [routerLink]="['/gonderiler', g.id]" class="btn btn--ghost btn--sm">Detay</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #bosState>
+      <app-empty-state icon="🚚" title="Teslimat kaydı bulunamadı"></app-empty-state>
+    </ng-template>
+  </div>
+</div>

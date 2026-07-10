@@ -1,0 +1,70 @@
+<div class="reports">
+  <h1>Raporlar</h1>
+
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
+  </div>
+
+  <ng-container *ngIf="!yukleniyor()">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-card__label">Toplam Gönderi</span>
+        <span class="kpi-card__value">{{ genelOzet().toplam }}</span>
+      </div>
+      <div class="kpi-card kpi-card--success">
+        <span class="kpi-card__label">Teslim Edildi</span>
+        <span class="kpi-card__value">{{ genelOzet().teslimEdildi }}</span>
+      </div>
+      <div class="kpi-card kpi-card--warning">
+        <span class="kpi-card__label">Geciken</span>
+        <span class="kpi-card__value">{{ genelOzet().geciken }}</span>
+      </div>
+      <div class="kpi-card kpi-card--purple">
+        <span class="kpi-card__label">İade</span>
+        <span class="kpi-card__value">{{ genelOzet().iade }}</span>
+      </div>
+    </div>
+
+    <section class="panel">
+      <h2>Bölge Bazlı Performans</h2>
+      <table class="data-table" *ngIf="bolgeRaporu().length; else bolgeBos">
+        <thead>
+          <tr><th>Bölge</th><th>Toplam Gönderi</th><th>Teslim Edildi</th><th>İade</th><th>Teslim Oranı</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of bolgeRaporu()">
+            <td>{{ r.zone.ad }}</td>
+            <td>{{ r.toplam }}</td>
+            <td>{{ r.teslimEdildi }}</td>
+            <td>{{ r.iade }}</td>
+            <td>%{{ r.teslimOrani }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #bolgeBos>
+        <app-empty-state icon="🗺️" title="Bölge verisi yok"></app-empty-state>
+      </ng-template>
+    </section>
+
+    <section class="panel">
+      <h2>Kurye Bazlı Performans</h2>
+      <table class="data-table" *ngIf="kuryeRaporu().length; else kuryeBos">
+        <thead>
+          <tr><th>Kurye</th><th>Toplam Gönderi</th><th>Teslim Edildi</th><th>Başarısız</th><th>Başarı Oranı</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of kuryeRaporu()">
+            <td>{{ r.kurye.adSoyad }}</td>
+            <td>{{ r.toplam }}</td>
+            <td>{{ r.teslimEdildi }}</td>
+            <td>{{ r.basarisiz }}</td>
+            <td>%{{ r.basariOrani }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #kuryeBos>
+        <app-empty-state icon="🛵" title="Kurye verisi yok"></app-empty-state>
+      </ng-template>
+    </section>
+  </ng-container>
+</div>
