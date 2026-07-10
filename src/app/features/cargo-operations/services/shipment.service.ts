@@ -11,6 +11,7 @@ import { ZoneService } from './zone.service';
 import { StatusHistoryService } from './status-history.service';
 import { DeliveryProofService } from './delivery-proof.service';
 import { ReturnRequestService } from './return-request.service';
+import { AssignmentService } from './assignment.service';
 
 const SHIPMENTS_KEY = 'staj2_shipments';
 
@@ -32,7 +33,8 @@ export class ShipmentService {
     private zoneService: ZoneService,
     private statusHistory: StatusHistoryService,
     private deliveryProofService: DeliveryProofService,
-    private returnRequestService: ReturnRequestService
+    private returnRequestService: ReturnRequestService,
+    private assignmentService: AssignmentService
   ) {}
 
   private persist(list: Shipment[]): void {
@@ -111,7 +113,9 @@ export class ShipmentService {
   }
 
   async iptalEt(id: string, neden: string): Promise<Shipment> {
-    return this.durumDegistir(id, 'iptal-edildi', neden);
+    const guncellenen = await this.durumDegistir(id, 'iptal-edildi', neden);
+    this.assignmentService.iptalEt(id, neden);
+    return guncellenen;
   }
 
   /**
@@ -150,6 +154,7 @@ export class ShipmentService {
 
       this.gecisiDogrula(eskiStatus, 'kurye-atandi');
       this.persist(list);
+      this.assignmentService.olustur(shipmentId, kuryeId);
       this.statusHistory.ekle({
         shipmentId,
         eskiStatus,

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ShipmentService, BusinessRuleError } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
-import { Courier } from '../../models/courier.model';
+import { Courier, CourierCapacity } from '../../models/courier.model';
 import { Shipment } from '../../models/shipment.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuditService } from '../../../../core/services/audit.service';
@@ -18,7 +18,7 @@ import { telefonValidator, pozitifSayiValidator } from '../../../../shared/valid
 @Component({
   selector: 'app-courier-assignment',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective],
   templateUrl: './courier-assignment.component.html',
   styleUrl: './courier-assignment.component.scss',
 })
@@ -39,14 +39,21 @@ export class CourierAssignmentComponent {
     gunlukKapasite: [10, [Validators.required, pozitifSayiValidator()]],
   });
 
-  readonly kuryeKapasiteOzeti = computed(() =>
-    this.courierService.aktifKuryeler().map((k) => {
+  readonly kuryeKapasiteOzeti = computed<Array<{ kurye: Courier; kapasite: CourierCapacity; doluluk: number }>>(() => {
+    const bugun = new Date().toISOString().slice(0, 10);
+    return this.courierService.aktifKuryeler().map((k) => {
       const atanan = this.shipmentService
         .liste()
         .filter((s) => s.kuryeId === k.id && ['kurye-atandi', 'dagitimda'].includes(s.status)).length;
-      return { kurye: k, atanan, doluluk: Math.round((atanan / k.gunlukKapasite) * 100) };
-    })
-  );
+      const kapasite: CourierCapacity = {
+        kuryeId: k.id,
+        tarih: bugun,
+        kapasite: k.gunlukKapasite,
+        atananGonderiSayisi: atanan,
+      };
+      return { kurye: k, kapasite, doluluk: Math.round((atanan / k.gunlukKapasite) * 100) };
+    });
+  });
 
   constructor(
     private fb: FormBuilder,

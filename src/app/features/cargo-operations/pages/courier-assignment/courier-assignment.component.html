@@ -56,7 +56,7 @@
           <td>{{ o.kurye.adSoyad }}</td>
           <td>{{ zoneService.bolgeAdi(o.kurye.bolgeId) }}</td>
           <td>{{ o.kurye.telefon }}</td>
-          <td>{{ o.atanan }} / {{ o.kurye.gunlukKapasite }}</td>
+          <td>{{ o.kapasite.atananGonderiSayisi }} / {{ o.kapasite.kapasite }}</td>
           <td>%{{ o.doluluk }}</td>
           <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
             <button class="btn btn--ghost btn--sm" (click)="kuryeDuzenleFormuAc(o.kurye)">Düzenle</button>

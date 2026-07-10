@@ -1,4 +1,5 @@
 import { Courier } from '../models/courier.model';
+import { Assignment } from '../models/assignment.model';
 import { Shipment, StatusHistoryEntry } from '../models/shipment.model';
 import { CustomerAddress, DeliveryZone } from '../models/zone.model';
 
@@ -100,4 +101,20 @@ export function demoStatusHistory(): StatusHistoryEntry[] {
     }
   }
   return history;
+}
+
+export function demoAssignments(): Assignment[] {
+  return demoShipments()
+    .filter((s) => s.kuryeId)
+    .map((s) => ({
+      id: crypto.randomUUID(),
+      shipmentId: s.id,
+      kuryeId: s.kuryeId!,
+      atamaTarihi: s.updatedAt,
+      // İptal edilen gönderilerin ataması artık aktif değildir.
+      aktifMi: s.status !== 'iptal-edildi',
+      iptalNedeni: s.status === 'iptal-edildi' ? 'Gönderi iptal edildi.' : undefined,
+      createdAt: s.updatedAt,
+      updatedAt: s.updatedAt,
+    }));
 }

@@ -3,12 +3,14 @@ import { ShipmentService, BusinessRuleError } from './shipment.service';
 import { CourierService } from './courier.service';
 import { ZoneService } from './zone.service';
 import { DeliveryProofService } from './delivery-proof.service';
+import { AssignmentService } from './assignment.service';
 
 describe('ShipmentService', () => {
   let shipmentService: ShipmentService;
   let courierService: CourierService;
   let zoneService: ZoneService;
   let proofService: DeliveryProofService;
+  let assignmentService: AssignmentService;
 
   beforeEach(() => {
     localStorage.clear();
@@ -17,6 +19,7 @@ describe('ShipmentService', () => {
     courierService = TestBed.inject(CourierService);
     zoneService = TestBed.inject(ZoneService);
     proofService = TestBed.inject(DeliveryProofService);
+    assignmentService = TestBed.inject(AssignmentService);
   });
 
   it('yeni gönderi "olusturuldu" durumuyla oluşturulur', async () => {
@@ -124,5 +127,24 @@ describe('ShipmentService', () => {
     await expectAsync(
       shipmentService.durumDegistir(gonderi.id, 'kurye-atandi', 'tekrar aktifleştirme denemesi')
     ).toBeRejectedWithError(BusinessRuleError);
+  });
+
+  it('kurye atandığında aktif Assignment kaydı üretilir, iptalde pasifleşir', async () => {
+    const zone = zoneService.aktifBolgeler()[0];
+    const kurye = await courierService.olustur({
+      adSoyad: 'Atama Testi', telefon: '0532 000 00 00', bolgeId: zone.id, gunlukKapasite: 5, aktifMi: true,
+    });
+    const gonderi = await shipmentService.olustur({
+      aliciAdSoyad: 'A', aliciTelefon: '0532 111 22 33', adresId: 'adr-1', bolgeId: zone.id, agirlikKg: 1,
+    });
+
+    await shipmentService.kuryeAta(gonderi.id, kurye.id);
+    const atama = assignmentService.aktifAtama(gonderi.id);
+    expect(atama).toBeDefined();
+    expect(atama?.kuryeId).toBe(kurye.id);
+    expect(atama?.aktifMi).toBeTrue();
+
+    await shipmentService.iptalEt(gonderi.id, 'iptal');
+    expect(assignmentService.aktifAtama(gonderi.id)).toBeUndefined();
   });
 });

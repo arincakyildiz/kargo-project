@@ -55,9 +55,10 @@ src/app/
 └── features/cargo-operations/
     ├── pages/      # dashboard, gonderiler (list/form/detail), kurye-atama,
     │                 teslimatlar, iadeler, bolgeler, raporlar, audit-log
-    ├── services/   # shipment (facade + workflow), courier, zone,
+    ├── services/   # shipment (facade + workflow), courier, zone, assignment,
     │                 status-history, delivery-proof, return-request
-    └── models/     # Shipment, Courier, DeliveryZone, Assignment, ReturnRequest, ...
+    └── models/     # Shipment, Courier, DeliveryZone, Assignment, CourierCapacity,
+                    #   ReturnRequest, DeliveryProof, StatusHistory, OperationMetric, ...
 ```
 
 Veri erişimi component içinde yazılmaz; tüm CRUD ve iş kuralları `features/cargo-operations/services/*` katmanında toplanır. `localStorage`'a tek erişim noktası `core/services/storage.service.ts`'dir.
@@ -78,6 +79,7 @@ olusturuldu → kurye-atandi → dagitimda → teslim-edildi
 - Kurye ataması, kurye bölgesi ile gönderi bölgesi eşleşmiyorsa veya kurye günlük kapasitesini aşıyorsa reddedilir.
 - `teslim-edildi` durumuna geçiş, önceden bir teslimat kanıtı (`DeliveryProof`) kaydı yoksa engellenir.
 - İptal edilen gönderi tekrar aktifleştirilemez.
+- Kurye ataması kalıcı bir `Assignment` kaydı üretir; gönderi iptal edilince atama pasife alınır. Kurye kapasite durumu `CourierCapacity` görünüm modeliyle hesaplanır.
 - Her kritik işlem (oluşturma, atama, durum değişikliği, teslimat kanıtı, iade, iptal) `AuditLogEntry` olarak `audit-log` sayfasında görünür.
 - Durum değiştiren tüm işlemler confirm dialog + zorunlu açıklama alanı ister.
 
