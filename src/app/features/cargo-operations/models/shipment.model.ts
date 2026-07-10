@@ -43,7 +43,6 @@ export interface Shipment extends BaseModel {
   aciklama?: string;
   status: ShipmentStatus;
   kuryeId?: string;
-  silindiMi: boolean;
 }
 
 export interface StatusHistoryEntry {

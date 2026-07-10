@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { DialogService } from './dialog.service';
 
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   template: `
     <div class="overlay" *ngIf="dialog.pending() as istek">
       <div class="dialog">
@@ -14,7 +13,13 @@ import { DialogService } from './dialog.service';
         <p>{{ istek.mesaj }}</p>
         <div class="dialog__aciklama" *ngIf="istek.aciklamaGerekli">
           <label for="aciklama">Açıklama <span class="zorunlu">*</span></label>
-          <textarea id="aciklama" [(ngModel)]="aciklama" rows="3" placeholder="Bu işlem için açıklama girin"></textarea>
+          <textarea
+            id="aciklama"
+            rows="3"
+            placeholder="Bu işlem için açıklama girin"
+            [value]="aciklama()"
+            (input)="aciklama.set($any($event.target).value)"
+          ></textarea>
         </div>
         <div class="dialog__actions">
           <button type="button" class="btn btn--ghost" (click)="iptal()">Vazgeç</button>

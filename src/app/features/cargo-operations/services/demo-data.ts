@@ -69,7 +69,6 @@ export function demoShipments(): Shipment[] {
     agirlikKg,
     aciklama,
     status,
-    silindiMi: false,
     createdAt: iso(gunOffset - 1),
     updatedAt: iso(gunOffset),
   }));

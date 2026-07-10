@@ -22,7 +22,7 @@ export class ShipmentService {
     this.storage.read<Shipment[]>(SHIPMENTS_KEY, demoShipments())
   );
 
-  readonly liste = computed(() => this.shipments().filter((s) => !s.silindiMi));
+  readonly liste = computed(() => this.shipments());
 
   constructor(
     private storage: StorageService,
@@ -64,7 +64,6 @@ export class ShipmentService {
         id: crypto.randomUUID(),
         takipKodu,
         status: 'olusturuldu',
-        silindiMi: false,
         createdAt: now,
         updatedAt: now,
       };
@@ -132,7 +131,7 @@ export class ShipmentService {
     }
 
     const bugunAtanan = this.shipments().filter(
-      (s) => s.kuryeId === kuryeId && !s.silindiMi && ['kurye-atandi', 'dagitimda'].includes(s.status)
+      (s) => s.kuryeId === kuryeId && ['kurye-atandi', 'dagitimda'].includes(s.status)
     ).length;
     if (bugunAtanan >= kurye.gunlukKapasite) {
       throw new BusinessRuleError(`${kurye.adSoyad} günlük kapasitesinin (${kurye.gunlukKapasite}) üzerinde gönderi alamaz.`);
@@ -235,25 +234,5 @@ export class ShipmentService {
   async iadeTalebiOlustur(shipmentId: string, neden: string): Promise<void> {
     await this.durumDegistir(shipmentId, 'iade-talebi', neden);
     await this.returnRequestService.olustur({ shipmentId, neden, status: 'beklemede' });
-  }
-
-  async silIptal(id: string): Promise<void> {
-    return mockRequest(() => {
-      const now = new Date().toISOString();
-      let hedef: Shipment | undefined;
-      const list = this.shipments().map((s) => {
-        if (s.id !== id) return s;
-        hedef = s;
-        return { ...s, silindiMi: true, updatedAt: now };
-      });
-      if (!hedef) throw new MockApiError('Gönderi bulunamadı.');
-      this.persist(list);
-      this.audit.kaydet({
-        islemTipi: 'gonderi-sil',
-        rol: this.currentUser.rol(),
-        aciklama: `Gönderi kaydı silindi: ${hedef.takipKodu}`,
-        hedefId: id,
-      });
-    });
   }
 }

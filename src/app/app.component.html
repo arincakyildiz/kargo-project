@@ -17,7 +17,7 @@
     <header class="topbar">
       <div class="topbar__user">
         <label for="rolSelect">Aktif Rol:</label>
-        <select id="rolSelect" [ngModel]="currentUser.rol()" (ngModelChange)="rolDegistir($event)">
+        <select id="rolSelect" [value]="currentUser.rol()" (change)="rolDegistir($any($event.target).value)">
           <option *ngFor="let r of roller" [value]="r">{{ rolEtiketleri[r] }}</option>
         </select>
         <span class="topbar__user-name">{{ currentUser.kullanici().adSoyad }}</span>

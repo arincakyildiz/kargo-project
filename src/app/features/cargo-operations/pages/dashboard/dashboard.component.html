@@ -1,41 +1,58 @@
 <div class="dashboard">
   <h1>Performans Dashboardu</h1>
 
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <span class="kpi-card__label">Toplam Gönderi</span>
-      <span class="kpi-card__value">{{ metric().toplamGonderi }}</span>
-    </div>
-    <div class="kpi-card kpi-card--success">
-      <span class="kpi-card__label">Teslim Edildi Oranı</span>
-      <span class="kpi-card__value">%{{ metric().teslimEdildiOrani }}</span>
-    </div>
-    <div class="kpi-card kpi-card--warning">
-      <span class="kpi-card__label">Geciken Gönderi</span>
-      <span class="kpi-card__value">{{ metric().geciken }}</span>
-    </div>
-    <div class="kpi-card kpi-card--purple">
-      <span class="kpi-card__label">İade Oranı</span>
-      <span class="kpi-card__value">%{{ metric().iadeOrani }}</span>
-    </div>
+  <div class="panel" *ngIf="yukleniyor()">
+    <p>Yükleniyor...</p>
   </div>
 
-  <section class="panel" *ngIf="shipments().length; else bosState">
-    <h2>Durum Dağılımı</h2>
-    <div class="status-bars">
-      <div class="status-bar" *ngFor="let s of statusListesi()">
-        <span class="status-bar__label">{{ s.status | statusLabel }}</span>
-        <div class="status-bar__track">
-          <div class="status-bar__fill" [style.width.%]="(s.sayi / maxStatusSayi()) * 100"></div>
-        </div>
-        <span class="status-bar__value">{{ s.sayi }}</span>
+  <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
+    <p>{{ hataMesaji() }}</p>
+    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+  </div>
+
+  <ng-container *ngIf="!yukleniyor() && !hataMesaji()">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-card__label">Toplam Gönderi</span>
+        <span class="kpi-card__value">{{ metric().toplamGonderi }}</span>
+      </div>
+      <div class="kpi-card kpi-card--success">
+        <span class="kpi-card__label">Teslim Edildi Oranı</span>
+        <span class="kpi-card__value">%{{ metric().teslimEdildiOrani }}</span>
+      </div>
+      <div class="kpi-card kpi-card--warning">
+        <span class="kpi-card__label">Geciken Gönderi</span>
+        <span class="kpi-card__value">{{ metric().geciken }}</span>
+      </div>
+      <div class="kpi-card kpi-card--purple">
+        <span class="kpi-card__label">İade Oranı</span>
+        <span class="kpi-card__value">%{{ metric().iadeOrani }}</span>
       </div>
     </div>
-  </section>
 
-  <ng-template #bosState>
-    <app-empty-state icon="📦" title="Henüz gönderi kaydı yok" description="İlk gönderiyi oluşturarak başlayın."></app-empty-state>
-  </ng-template>
+    <section class="panel" *ngIf="shipments().length; else bosState">
+      <h2>Durum Dağılımı</h2>
+      <div class="status-bars">
+        <div class="status-bar" *ngFor="let s of statusListesi()">
+          <span class="status-bar__label">{{ s.status | statusLabel }}</span>
+          <div class="status-bar__track">
+            <div class="status-bar__fill" [style.width.%]="(s.sayi / maxStatusSayi()) * 100"></div>
+          </div>
+          <span class="status-bar__value">{{ s.sayi }}</span>
+        </div>
+      </div>
+    </section>
 
-  <a routerLink="/gonderiler/yeni" class="btn btn--primary fab">+ Yeni Gönderi</a>
+    <ng-template #bosState>
+      <app-empty-state icon="📦" title="Henüz gönderi kaydı yok" description="İlk gönderiyi oluşturarak başlayın."></app-empty-state>
+    </ng-template>
+
+    <a
+      routerLink="/gonderiler/yeni"
+      class="btn btn--primary fab"
+      *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
+    >
+      + Yeni Gönderi
+    </a>
+  </ng-container>
 </div>

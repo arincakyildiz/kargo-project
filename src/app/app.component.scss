@@ -45,3 +45,20 @@
 .topbar__user-name { color: var(--color-muted); }
 
 .content { flex: 1; overflow-y: auto; }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; min-height: auto; }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+  .sidebar__brand { padding: 0.75rem 1rem; border-bottom: none; white-space: nowrap; }
+  .sidebar__nav { flex-direction: row; padding: 0.25rem; }
+  .sidebar__link { flex-shrink: 0; padding: 0.5rem 0.75rem; font-size: 0.82rem; }
+
+  .topbar { padding: 0.6rem 1rem; justify-content: space-between; }
+  .topbar__user { flex-wrap: wrap; }
+}

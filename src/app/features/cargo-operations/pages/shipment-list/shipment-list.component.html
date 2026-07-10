@@ -1,7 +1,13 @@
 <div class="shipment-list">
   <div class="toolbar">
     <h1>Gönderiler</h1>
-    <a routerLink="/gonderiler/yeni" class="btn btn--primary">+ Yeni Gönderi</a>
+    <a
+      routerLink="/gonderiler/yeni"
+      class="btn btn--primary"
+      *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
+    >
+      + Yeni Gönderi
+    </a>
   </div>
 
   <div class="toolbar">

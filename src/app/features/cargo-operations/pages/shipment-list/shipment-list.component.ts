@@ -10,6 +10,7 @@ import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { StatusBadgeDirective } from '../../../../shared/directives/status-badge.directive';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 
 const SAYFA_BOYU = 6;
 
@@ -26,6 +27,7 @@ type SiralamaAnahtari = 'createdAt-desc' | 'createdAt-asc' | 'takipKodu-asc' | '
     StatusBadgeDirective,
     DebounceDirective,
     EmptyStateComponent,
+    YetkiDirective,
   ],
   templateUrl: './shipment-list.component.html',
   styleUrl: './shipment-list.component.scss',

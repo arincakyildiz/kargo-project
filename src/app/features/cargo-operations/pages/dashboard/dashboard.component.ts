@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ShipmentService } from '../../services/shipment.service';
 import { SHIPMENT_STATUS_LABELS, ShipmentStatus } from '../../models/shipment.model';
 import { OperationMetric } from '../../models/operation-metric.model';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 
 const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edildi'];
 const GECIKME_GUN = 3;
@@ -13,11 +14,13 @@ const GECIKME_GUN = 3;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusLabelPipe, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, StatusLabelPipe, EmptyStateComponent, YetkiDirective],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
+  readonly yukleniyor = signal(true);
+  readonly hataMesaji = signal<string | null>(null);
   readonly shipments = this.shipmentService.liste;
 
   readonly metric = computed<OperationMetric>(() => {
@@ -55,5 +58,19 @@ export class DashboardComponent {
 
   readonly maxStatusSayi = computed(() => Math.max(1, ...this.statusListesi().map((s) => s.sayi)));
 
-  constructor(private shipmentService: ShipmentService) {}
+  constructor(private shipmentService: ShipmentService) {
+    this.yukle();
+  }
+
+  async yukle(): Promise<void> {
+    this.yukleniyor.set(true);
+    this.hataMesaji.set(null);
+    try {
+      await this.shipmentService.tumunuGetir();
+    } catch {
+      this.hataMesaji.set('Dashboard verileri yüklenirken bir hata oluştu.');
+    } finally {
+      this.yukleniyor.set(false);
+    }
+  }
 }

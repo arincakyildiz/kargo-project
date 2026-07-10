@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ShipmentService, BusinessRuleError } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
@@ -18,7 +17,7 @@ import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 @Component({
   selector: 'app-shipment-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, YetkiDirective],
+  imports: [CommonModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, YetkiDirective],
   templateUrl: './shipment-detail.component.html',
   styleUrl: './shipment-detail.component.scss',
 })
