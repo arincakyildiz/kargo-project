@@ -1,33 +1,33 @@
 - Generating browser application bundles (phase: setup)...
 ✔ Browser application bundle generation complete.
-10 07 2026 15:17:49.811:INFO [karma-server]: Karma v6.4.4 server started at http://localhost:9876/
-10 07 2026 15:17:49.817:INFO [launcher]: Launching browsers ChromeHeadless with concurrency unlimited
-10 07 2026 15:17:49.821:INFO [launcher]: Starting browser ChromeHeadless
-10 07 2026 15:17:54.577:INFO [Chrome Headless 149.0.0.0 (Mac OS 10.15.7)]: Connected on socket trBhXEk0t7uH5GiaAAAB with id 29825934
+12 07 2026 00:04:24.502:INFO [karma-server]: Karma v6.4.4 server started at http://localhost:9876/
+12 07 2026 00:04:24.505:INFO [launcher]: Launching browsers ChromeHeadless with concurrency unlimited
+12 07 2026 00:04:24.508:INFO [launcher]: Starting browser ChromeHeadless
+12 07 2026 00:04:28.081:INFO [Chrome Headless 149.0.0.0 (Mac OS 10.15.7)]: Connected on socket M2knzxLFOiO_4ObQAAAB with id 43274317
 Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 0 of 22 SUCCESS (0 secs / 0 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 1 of 22 SUCCESS (0 secs / 0.012 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 2 of 22 SUCCESS (0 secs / 0.014 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 3 of 22 SUCCESS (0 secs / 0.015 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 4 of 22 SUCCESS (0 secs / 0.015 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 5 of 22 SUCCESS (0 secs / 0.016 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 6 of 22 SUCCESS (0 secs / 0.016 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 7 of 22 SUCCESS (0 secs / 0.016 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 8 of 22 SUCCESS (0 secs / 0.017 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 9 of 22 SUCCESS (0 secs / 0.017 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 10 of 22 SUCCESS (0 secs / 0.04 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 11 of 22 SUCCESS (0 secs / 2.171 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 12 of 22 SUCCESS (0 secs / 2.528 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 13 of 22 SUCCESS (0 secs / 3.94 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 14 of 22 SUCCESS (0 secs / 4.648 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 15 of 22 SUCCESS (0 secs / 5.005 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 16 of 22 SUCCESS (0 secs / 6.418 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 17 of 22 SUCCESS (0 secs / 7.126 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 18 of 22 SUCCESS (0 secs / 7.191 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 19 of 22 SUCCESS (0 secs / 7.205 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 20 of 22 SUCCESS (0 secs / 7.205 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 21 of 22 SUCCESS (0 secs / 7.205 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 22 of 22 SUCCESS (0 secs / 7.205 secs)
-Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 22 of 22 SUCCESS (7.236 secs / 7.205 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 1 of 22 SUCCESS (0 secs / 0.025 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 2 of 22 SUCCESS (0 secs / 0.026 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 3 of 22 SUCCESS (0 secs / 0.026 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 4 of 22 SUCCESS (0 secs / 0.105 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 5 of 22 SUCCESS (0 secs / 0.107 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 6 of 22 SUCCESS (0 secs / 1.528 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 7 of 22 SUCCESS (0 secs / 1.886 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 8 of 22 SUCCESS (0 secs / 2.244 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 9 of 22 SUCCESS (0 secs / 2.952 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 10 of 22 SUCCESS (0 secs / 5.072 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 11 of 22 SUCCESS (0 secs / 5.783 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 12 of 22 SUCCESS (0 secs / 7.197 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 13 of 22 SUCCESS (0 secs / 7.2 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 14 of 22 SUCCESS (0 secs / 7.2 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 15 of 22 SUCCESS (0 secs / 7.201 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 16 of 22 SUCCESS (0 secs / 7.201 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 17 of 22 SUCCESS (0 secs / 7.201 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 18 of 22 SUCCESS (0 secs / 7.201 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 19 of 22 SUCCESS (0 secs / 7.201 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 20 of 22 SUCCESS (0 secs / 7.204 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 21 of 22 SUCCESS (0 secs / 7.206 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 22 of 22 SUCCESS (0 secs / 7.207 secs)
+Chrome Headless 149.0.0.0 (Mac OS 10.15.7): Executed 22 of 22 SUCCESS (7.233 secs / 7.207 secs)
 TOTAL: 22 SUCCESS
 ✔ Browser application bundle generation complete.
 ✔ Browser application bundle generation complete.
