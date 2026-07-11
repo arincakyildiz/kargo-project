@@ -6,6 +6,15 @@
     </button>
   </div>
 
+  <div class="toolbar">
+    <input
+      type="search"
+      placeholder="Bölge, il veya ilçe ara..."
+      [debounceMs]="350"
+      (appDebounce)="aramaDegisti($event)"
+    />
+  </div>
+
   <form class="panel" [formGroup]="form" (ngSubmit)="kaydet()" *ngIf="formAcik()">
     <h2>{{ duzenlenenId() ? 'Bölgeyi Düzenle' : 'Yeni Bölge' }}</h2>
     <div class="form-field">
@@ -39,12 +48,12 @@
   </div>
 
   <div class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
-    <table class="data-table" *ngIf="zones().length; else bosState">
+    <table class="data-table" *ngIf="filtrelenmis().length; else bosState">
       <thead>
         <tr><th>Ad</th><th>İl</th><th>İlçe</th><th>Durum</th><th></th></tr>
       </thead>
       <tbody>
-        <tr *ngFor="let z of zones()">
+        <tr *ngFor="let z of filtrelenmis()">
           <td>{{ z.ad }}</td>
           <td>{{ z.il }}</td>
           <td>{{ z.ilce }}</td>

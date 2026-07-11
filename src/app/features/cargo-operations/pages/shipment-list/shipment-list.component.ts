@@ -12,7 +12,7 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 
-const SAYFA_BOYU = 6;
+const SAYFA_BOYU_SECENEKLERI = [10, 30, 50, 80, 100];
 
 type SiralamaAnahtari = 'createdAt-desc' | 'createdAt-asc' | 'takipKodu-asc' | 'agirlikKg-desc';
 
@@ -41,7 +41,9 @@ export class ShipmentListComponent {
   readonly statusFiltre = signal<ShipmentStatus | 'tumu'>('tumu');
   readonly siralama = signal<SiralamaAnahtari>('createdAt-desc');
   readonly sayfa = signal(1);
+  readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[0]);
 
+  readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
   readonly statusSecenekleri = Object.entries(SHIPMENT_STATUS_LABELS) as [ShipmentStatus, string][];
 
   private readonly siralamaFonksiyonlari: Record<SiralamaAnahtari, (a: Shipment, b: Shipment) => number> = {
@@ -64,11 +66,11 @@ export class ShipmentListComponent {
       .sort(this.siralamaFonksiyonlari[this.siralama()]);
   });
 
-  readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmis().length / SAYFA_BOYU)));
+  readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmis().length / this.sayfaBoyu())));
 
   readonly sayfalanmis = computed(() => {
-    const baslangic = (this.sayfa() - 1) * SAYFA_BOYU;
-    return this.filtrelenmis().slice(baslangic, baslangic + SAYFA_BOYU);
+    const baslangic = (this.sayfa() - 1) * this.sayfaBoyu();
+    return this.filtrelenmis().slice(baslangic, baslangic + this.sayfaBoyu());
   });
 
   constructor(
@@ -104,6 +106,11 @@ export class ShipmentListComponent {
 
   siralamaDegisti(deger: string): void {
     this.siralama.set(deger as SiralamaAnahtari);
+    this.sayfa.set(1);
+  }
+
+  sayfaBoyuDegisti(deger: string): void {
+    this.sayfaBoyu.set(Number(deger));
     this.sayfa.set(1);
   }
 

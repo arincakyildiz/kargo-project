@@ -1,5 +1,11 @@
 <div class="returns">
-  <h1>İadeler</h1>
+  <div class="toolbar">
+    <h1>İadeler</h1>
+    <select (change)="statusFiltresiDegisti($any($event.target).value)">
+      <option value="tumu">Tüm Durumlar</option>
+      <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ s[1] }}</option>
+    </select>
+  </div>
 
   <div class="panel" *ngIf="yukleniyor()">
     <p>Yükleniyor...</p>

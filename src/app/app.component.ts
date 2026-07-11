@@ -5,27 +5,37 @@ import { Rol } from './core/models/base-model';
 import { CurrentUserService } from './core/services/current-user.service';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastContainerComponent } from './shared/components/toast/toast-container.component';
+import { IconComponent, IconName } from './shared/components/icon/icon.component';
 
 interface NavItem {
   yol: string;
   etiket: string;
+  ikon: IconName;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { yol: '/dashboard', etiket: 'Dashboard' },
-  { yol: '/gonderiler', etiket: 'Gönderiler' },
-  { yol: '/kurye-atama', etiket: 'Kurye Atama' },
-  { yol: '/teslimatlar', etiket: 'Teslimatlar' },
-  { yol: '/iadeler', etiket: 'İadeler' },
-  { yol: '/bolgeler', etiket: 'Bölgeler' },
-  { yol: '/raporlar', etiket: 'Raporlar' },
-  { yol: '/audit-log', etiket: 'Audit Log' },
+  { yol: '/dashboard', etiket: 'Dashboard', ikon: 'dashboard' },
+  { yol: '/gonderiler', etiket: 'Gönderiler', ikon: 'paket' },
+  { yol: '/kurye-atama', etiket: 'Kurye Atama', ikon: 'kurye' },
+  { yol: '/teslimatlar', etiket: 'Teslimatlar', ikon: 'teslimat' },
+  { yol: '/iadeler', etiket: 'İadeler', ikon: 'iade' },
+  { yol: '/bolgeler', etiket: 'Bölgeler', ikon: 'bolge' },
+  { yol: '/raporlar', etiket: 'Raporlar', ikon: 'rapor' },
+  { yol: '/audit-log', etiket: 'Audit Log', ikon: 'kayit' },
 ];
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ConfirmDialogComponent, ToastContainerComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    ConfirmDialogComponent,
+    ToastContainerComponent,
+    IconComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

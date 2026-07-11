@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ZoneService } from '../../services/zone.service';
 import { DeliveryZone } from '../../models/zone.model';
@@ -8,12 +8,13 @@ import { AuditService } from '../../../../core/services/audit.service';
 import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { DialogService } from '../../../../shared/components/confirm-dialog/dialog.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 
 @Component({
   selector: 'app-zones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, YetkiDirective],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, DebounceDirective, YetkiDirective],
   templateUrl: './zones.component.html',
   styleUrl: './zones.component.scss',
 })
@@ -24,6 +25,18 @@ export class ZonesComponent {
   readonly formAcik = signal(false);
   readonly duzenlenenId = signal<string | null>(null);
   readonly kaydediliyor = signal(false);
+  readonly arama = signal('');
+
+  readonly filtrelenmis = computed(() => {
+    const aramaMetni = this.arama().trim().toLowerCase();
+    if (!aramaMetni) return this.zones();
+    return this.zones().filter(
+      (z) =>
+        z.ad.toLowerCase().includes(aramaMetni) ||
+        z.il.toLowerCase().includes(aramaMetni) ||
+        z.ilce.toLowerCase().includes(aramaMetni)
+    );
+  });
 
   readonly form = this.fb.nonNullable.group({
     ad: ['', Validators.required],
@@ -52,6 +65,10 @@ export class ZonesComponent {
     } finally {
       this.yukleniyor.set(false);
     }
+  }
+
+  aramaDegisti(deger: string): void {
+    this.arama.set(deger);
   }
 
   yeniFormAc(): void {

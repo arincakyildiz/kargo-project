@@ -2,13 +2,14 @@ import { Injectable, computed, signal } from '@angular/core';
 import { StorageService } from '../../../core/services/storage.service';
 import { mockRequest } from '../../../core/services/mock-api';
 import { ReturnRequest } from '../models/assignment.model';
+import { demoReturnRequests } from './demo-data';
 
 const RETURNS_KEY = 'staj2_return_requests';
 
 @Injectable({ providedIn: 'root' })
 export class ReturnRequestService {
   private readonly returns = signal<ReturnRequest[]>(
-    this.storage.read<ReturnRequest[]>(RETURNS_KEY, [])
+    this.storage.read<ReturnRequest[]>(RETURNS_KEY, demoReturnRequests())
   );
 
   readonly liste = computed(() => this.returns());

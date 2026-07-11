@@ -32,10 +32,21 @@ export class ReturnsComponent {
   readonly returns = signal<ReturnRequest[]>([]);
   readonly gonderiler = signal<Map<string, Shipment>>(new Map());
   readonly islemDevamEdiyor = signal<string | null>(null);
+  readonly statusFiltre = signal<ReturnRequestStatus | 'tumu'>('tumu');
 
   readonly statusLabels = RETURN_STATUS_LABELS;
+  readonly statusSecenekleri = Object.entries(RETURN_STATUS_LABELS) as [ReturnRequestStatus, string][];
 
-  readonly siraliListe = computed(() => [...this.returns()].sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
+  readonly siraliListe = computed(() => {
+    const status = this.statusFiltre();
+    return [...this.returns()]
+      .filter((r) => (status === 'tumu' ? true : r.status === status))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  });
+
+  statusFiltresiDegisti(status: string): void {
+    this.statusFiltre.set(status as ReturnRequestStatus | 'tumu');
+  }
 
   constructor(
     private returnRequestService: ReturnRequestService,

@@ -1,6 +1,15 @@
 <div class="deliveries">
   <div class="toolbar">
     <h1>Teslimatlar</h1>
+  </div>
+
+  <div class="toolbar">
+    <input
+      type="search"
+      placeholder="Takip kodu veya alıcı ara..."
+      [debounceMs]="350"
+      (appDebounce)="aramaDegisti($event)"
+    />
     <select (change)="statusFiltresiDegisti($any($event.target).value)">
       <option value="tumu">Tüm Teslimat Durumları</option>
       <option value="dagitimda">Dağıtımda</option>

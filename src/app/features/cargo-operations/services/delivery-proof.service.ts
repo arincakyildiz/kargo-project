@@ -2,13 +2,14 @@ import { Injectable, signal } from '@angular/core';
 import { StorageService } from '../../../core/services/storage.service';
 import { mockRequest } from '../../../core/services/mock-api';
 import { DeliveryProof } from '../models/assignment.model';
+import { demoDeliveryProofs } from './demo-data';
 
 const PROOFS_KEY = 'staj2_delivery_proofs';
 
 @Injectable({ providedIn: 'root' })
 export class DeliveryProofService {
   private readonly proofs = signal<DeliveryProof[]>(
-    this.storage.read<DeliveryProof[]>(PROOFS_KEY, [])
+    this.storage.read<DeliveryProof[]>(PROOFS_KEY, demoDeliveryProofs())
   );
 
   constructor(private storage: StorageService) {}
