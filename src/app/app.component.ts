@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Rol } from './core/models/base-model';
 import { CurrentUserService } from './core/services/current-user.service';
@@ -47,6 +47,9 @@ export class AppComponent {
     'kurye-sorumlusu': 'Kurye Sorumlusu',
     'musteri-hizmetleri': 'Müşteri Hizmetleri',
   };
+
+  /** Sidebar varsayılan olarak daraltık; imleç sol kenara yaklaşınca genişler. */
+  readonly sidebarGenisletildi = signal(false);
 
   constructor(public currentUser: CurrentUserService) {}
 
