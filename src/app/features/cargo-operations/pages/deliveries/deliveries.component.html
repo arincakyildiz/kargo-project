@@ -16,6 +16,9 @@
       <option value="teslim-edildi">Teslim Edildi</option>
       <option value="teslim-edilemedi">Teslim Edilemedi</option>
     </select>
+    <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
+    </select>
   </div>
 
   <div class="panel" *ngIf="yukleniyor()">
@@ -23,12 +26,12 @@
   </div>
 
   <div class="panel" *ngIf="!yukleniyor()">
-    <table class="data-table" *ngIf="filtrelenmis().length; else bosState">
+    <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
         <tr><th>Takip Kodu</th><th>Alıcı</th><th>Kurye</th><th>Durum</th><th>Kanıt</th><th>Güncelleme</th><th></th></tr>
       </thead>
       <tbody>
-        <tr *ngFor="let g of filtrelenmis()">
+        <tr *ngFor="let g of sayfalanmis()">
           <td>{{ g.takipKodu }}</td>
           <td>{{ g.aliciAdSoyad }}</td>
           <td>{{ courierService.kuryeAdi(g.kuryeId) }}</td>
@@ -39,6 +42,16 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="pagination" *ngIf="sayfalanmis().length">
+      <span class="pagination__info">Toplam {{ filtrelenmis().length }} kayıt</span>
+      <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() - 1)" [disabled]="sayfa() === 1">‹ Önceki</button>
+        <span>{{ sayfa() }} / {{ toplamSayfa() }}</span>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() + 1)" [disabled]="sayfa() === toplamSayfa()">Sonraki ›</button>
+      </div>
+    </div>
+
     <ng-template #bosState>
       <app-empty-state title="Teslimat kaydı bulunamadı"></app-empty-state>
     </ng-template>

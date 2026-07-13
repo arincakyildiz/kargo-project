@@ -28,11 +28,11 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
 
   readonly form = this.fb.nonNullable.group({
     adresId: ['', Validators.required],
-    aliciAdSoyad: ['', [Validators.required, Validators.minLength(3)]],
-    aliciTelefon: ['', [Validators.required, telefonValidator()]],
+    aliciAdSoyad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+    aliciTelefon: ['', [Validators.required, telefonValidator(), Validators.maxLength(15)]],
     bolgeId: ['', Validators.required],
-    agirlikKg: [1, [Validators.required, pozitifSayiValidator()]],
-    aciklama: [''],
+    agirlikKg: [1, [Validators.required, pozitifSayiValidator(), Validators.max(500)]],
+    aciklama: ['', Validators.maxLength(200)],
   });
 
   constructor(

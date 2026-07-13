@@ -1,4 +1,4 @@
-<div class="courier-assignment">
+<div class="courier-assignment" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']; mode: 'blur'">
   <div class="toolbar">
     <h1>Kurye Atama</h1>
     <button class="btn btn--primary" (click)="yeniKuryeFormAc()" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
@@ -10,16 +10,28 @@
     <h2>{{ duzenlenenKuryeId() ? 'Kuryeyi Düzenle' : 'Yeni Kurye' }}</h2>
     <div class="form-field">
       <label for="adSoyad">Ad Soyad</label>
-      <input id="adSoyad" formControlName="adSoyad" type="text" />
-      <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.invalid && kuryeForm.controls.adSoyad.touched">
+      <input id="adSoyad" formControlName="adSoyad" type="text" maxlength="50" />
+      <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.errors?.['required'] && kuryeForm.controls.adSoyad.touched">
+        Ad Soyad zorunludur.
+      </span>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.errors?.['minlength'] && kuryeForm.controls.adSoyad.touched">
         En az 3 karakter girin.
+      </span>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.errors?.['maxlength'] && kuryeForm.controls.adSoyad.touched">
+        En fazla 50 karakter girilebilir.
       </span>
     </div>
     <div class="form-field">
       <label for="telefon">Telefon</label>
-      <input id="telefon" formControlName="telefon" type="text" placeholder="05XX XXX XX XX" />
-      <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.invalid && kuryeForm.controls.telefon.touched">
-        Telefon biçimi geçersiz.
+      <input id="telefon" formControlName="telefon" type="text" placeholder="05XX XXX XX XX" maxlength="15" />
+      <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['required'] && kuryeForm.controls.telefon.touched">
+        Telefon numarası zorunludur.
+      </span>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['telefonGecersiz'] && kuryeForm.controls.telefon.touched">
+        Telefon biçimi geçersiz (örn. 0532 111 22 33).
+      </span>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['maxlength'] && kuryeForm.controls.telefon.touched">
+        En fazla 15 karakter girilebilir.
       </span>
     </div>
     <div class="form-field">
@@ -34,9 +46,15 @@
     </div>
     <div class="form-field">
       <label for="gunlukKapasite">Günlük Kapasite</label>
-      <input id="gunlukKapasite" formControlName="gunlukKapasite" type="number" min="1" />
-      <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.invalid && kuryeForm.controls.gunlukKapasite.touched">
-        Pozitif bir sayı girin.
+      <input id="gunlukKapasite" formControlName="gunlukKapasite" type="number" min="1" max="200" />
+      <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['required'] && kuryeForm.controls.gunlukKapasite.touched">
+        Kapasite zorunludur.
+      </span>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['pozitifGecersiz'] && kuryeForm.controls.gunlukKapasite.touched">
+        Kapasite pozitif bir sayı olmalıdır.
+      </span>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['max'] && kuryeForm.controls.gunlukKapasite.touched">
+        Maksimum kapasite 200 olabilir.
       </span>
     </div>
     <div class="form-actions">
@@ -47,6 +65,20 @@
 
   <section class="panel">
     <h2>Kurye Kapasite Durumu</h2>
+    
+    <div class="toolbar" style="margin-bottom: 1rem; border-bottom: none; padding: 0;">
+      <input
+        type="search"
+        placeholder="Kurye ara..."
+        [debounceMs]="350"
+        (appDebounce)="kuryeAramaDegisti($event)"
+      />
+      <select (change)="kuryeBolgeFiltresiDegisti($any($event.target).value)">
+        <option value="tumu">Tüm Bölgeler</option>
+        <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
+      </select>
+    </div>
+
     <table class="data-table" *ngIf="kuryeKapasiteOzeti().length; else kuryeYok">
       <thead>
         <tr><th>Kurye</th><th>Bölge</th><th>Telefon</th><th>Atanan / Kapasite</th><th>Doluluk</th><th></th></tr>
@@ -66,18 +98,32 @@
       </tbody>
     </table>
     <ng-template #kuryeYok>
-      <app-empty-state title="Aktif kurye yok"></app-empty-state>
+      <app-empty-state title="Sonuç bulunamadı" description="Kriterlere uygun kurye bulunmuyor."></app-empty-state>
     </ng-template>
   </section>
 
   <section class="panel" *ngIf="!yukleniyor()">
     <h2>Atama Bekleyen Gönderiler</h2>
-    <table class="data-table" *ngIf="bekleyenler().length; else bosState">
+
+    <div class="toolbar" style="margin-bottom: 1rem; border-bottom: none; padding: 0;">
+      <input
+        type="search"
+        placeholder="Takip kodu veya alıcı ara..."
+        [debounceMs]="350"
+        (appDebounce)="gonderiAramaDegisti($event)"
+      />
+      <select (change)="gonderiBolgeFiltresiDegisti($any($event.target).value)">
+        <option value="tumu">Tüm Bölgeler</option>
+        <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
+      </select>
+    </div>
+
+    <table class="data-table" *ngIf="filtrelenmisBekleyenler().length; else bosState">
       <thead>
         <tr><th>Takip Kodu</th><th>Alıcı</th><th>Bölge</th><th>Kurye Seç</th><th></th></tr>
       </thead>
       <tbody>
-        <tr *ngFor="let s of bekleyenler()">
+        <tr *ngFor="let s of filtrelenmisBekleyenler()">
           <td>{{ s.takipKodu }}</td>
           <td>{{ s.aliciAdSoyad }}</td>
           <td>{{ zoneService.bolgeAdi(s.bolgeId) }}</td>
@@ -96,7 +142,7 @@
       </tbody>
     </table>
     <ng-template #bosState>
-      <app-empty-state title="Bekleyen atama yok" description="Tüm gönderilere kurye atanmış."></app-empty-state>
+      <app-empty-state title="Sonuç bulunamadı" description="Bekleyen atamalarda kriterlerinize uyan kayıt bulunmuyor."></app-empty-state>
     </ng-template>
   </section>
 </div>

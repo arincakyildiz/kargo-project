@@ -27,8 +27,24 @@
   font-size: 0.95rem;
   letter-spacing: -0.01em;
   white-space: nowrap;
+  transition: padding 0.2s ease;
+}
+.sidebar:not(.sidebar--expanded) .sidebar__brand {
+  padding-left: 12px;
 }
 .sidebar__brand app-icon { color: var(--color-primary); flex-shrink: 0; }
+.sidebar__logo {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+.sidebar__logo:hover {
+  transform: scale(1.05);
+}
 .sidebar__brand span { opacity: 0; max-width: 0; overflow: hidden; transition: opacity 0.15s ease, max-width 0.2s ease; }
 .sidebar--expanded .sidebar__brand span { opacity: 1; max-width: 180px; }
 

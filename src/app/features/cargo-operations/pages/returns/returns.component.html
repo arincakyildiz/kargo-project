@@ -1,9 +1,21 @@
 <div class="returns">
   <div class="toolbar">
     <h1>İadeler</h1>
+  </div>
+
+  <div class="toolbar">
+    <input
+      type="search"
+      placeholder="Takip kodu veya neden ara..."
+      [debounceMs]="350"
+      (appDebounce)="aramaDegisti($event)"
+    />
     <select (change)="statusFiltresiDegisti($any($event.target).value)">
       <option value="tumu">Tüm Durumlar</option>
       <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ s[1] }}</option>
+    </select>
+    <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
     </select>
   </div>
 
@@ -12,12 +24,12 @@
   </div>
 
   <div class="panel" *ngIf="!yukleniyor()">
-    <table class="data-table" *ngIf="siraliListe().length; else bosState">
+    <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
         <tr><th>Takip Kodu</th><th>Neden</th><th>Durum</th><th>Oluşturulma</th><th *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"></th></tr>
       </thead>
       <tbody>
-        <tr *ngFor="let r of siraliListe()">
+        <tr *ngFor="let r of sayfalanmis()">
           <td><a [routerLink]="['/gonderiler', r.shipmentId]">{{ takipKodu(r.shipmentId) }}</a></td>
           <td>{{ r.neden }}</td>
           <td>{{ statusLabels[r.status] }}</td>
@@ -39,6 +51,16 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="pagination" *ngIf="sayfalanmis().length">
+      <span class="pagination__info">Toplam {{ siraliListe().length }} kayıt</span>
+      <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() - 1)" [disabled]="sayfa() === 1">‹ Önceki</button>
+        <span>{{ sayfa() }} / {{ toplamSayfa() }}</span>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() + 1)" [disabled]="sayfa() === toplamSayfa()">Sonraki ›</button>
+      </div>
+    </div>
+
     <ng-template #bosState>
       <app-empty-state title="İade talebi bulunmuyor"></app-empty-state>
     </ng-template>

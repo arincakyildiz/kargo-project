@@ -14,6 +14,9 @@
       <option value="tumu">Tüm İşlem Tipleri</option>
       <option *ngFor="let tip of islemTipleri()" [value]="tip">{{ tip }}</option>
     </select>
+    <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
+    </select>
   </div>
 
   <div class="panel">

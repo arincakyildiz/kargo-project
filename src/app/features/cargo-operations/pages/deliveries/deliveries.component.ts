@@ -13,6 +13,7 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 
 const TESLIMAT_DURUMLARI: ShipmentStatus[] = ['dagitimda', 'teslim-edildi', 'teslim-edilemedi'];
+const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
 @Component({
   selector: 'app-deliveries',
@@ -26,6 +27,9 @@ export class DeliveriesComponent {
   readonly gonderiler = signal<Shipment[]>([]);
   readonly statusFiltre = signal<ShipmentStatus | 'tumu'>('tumu');
   readonly arama = signal('');
+  readonly sayfa = signal(1);
+  readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
+  readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
 
   readonly teslimatlar = computed(() => this.gonderiler().filter((g) => TESLIMAT_DURUMLARI.includes(g.status)));
 
@@ -40,6 +44,13 @@ export class DeliveriesComponent {
           : true
       )
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  });
+
+  readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmis().length / this.sayfaBoyu())));
+
+  readonly sayfalanmis = computed(() => {
+    const baslangic = (this.sayfa() - 1) * this.sayfaBoyu();
+    return this.filtrelenmis().slice(baslangic, baslangic + this.sayfaBoyu());
   });
 
   constructor(
@@ -64,9 +75,21 @@ export class DeliveriesComponent {
 
   statusFiltresiDegisti(status: string): void {
     this.statusFiltre.set(status as ShipmentStatus | 'tumu');
+    this.sayfa.set(1);
   }
 
   aramaDegisti(deger: string): void {
     this.arama.set(deger);
+    this.sayfa.set(1);
+  }
+
+  sayfaBoyuDegisti(deger: string): void {
+    this.sayfaBoyu.set(Number(deger));
+    this.sayfa.set(1);
+  }
+
+  sayfayaGit(yeniSayfa: number): void {
+    if (yeniSayfa < 1 || yeniSayfa > this.toplamSayfa()) return;
+    this.sayfa.set(yeniSayfa);
   }
 }

@@ -6,13 +6,14 @@ import { ZoneService } from '../../services/zone.service';
 import { Shipment, ShipmentStatus } from '../../models/shipment.model';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 
 const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edildi'];
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, EmptyStateComponent, IconComponent],
+  imports: [CommonModule, EmptyStateComponent, IconComponent, YetkiDirective],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss',
 })

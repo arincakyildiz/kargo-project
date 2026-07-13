@@ -12,6 +12,7 @@ import { DialogService } from '../../../../shared/components/confirm-dialog/dial
 import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
 const RETURN_STATUS_LABELS: Record<ReturnRequestStatus, string> = {
   beklemede: 'Beklemede',
@@ -19,11 +20,12 @@ const RETURN_STATUS_LABELS: Record<ReturnRequestStatus, string> = {
   reddedildi: 'Reddedildi',
   tamamlandi: 'Tamamlandı',
 };
+const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
 @Component({
   selector: 'app-returns',
   standalone: true,
-  imports: [CommonModule, RouterLink, TarihPipe, EmptyStateComponent, YetkiDirective],
+  imports: [CommonModule, RouterLink, TarihPipe, EmptyStateComponent, YetkiDirective, DebounceDirective],
   templateUrl: './returns.component.html',
   styleUrl: './returns.component.scss',
 })
@@ -33,19 +35,53 @@ export class ReturnsComponent {
   readonly gonderiler = signal<Map<string, Shipment>>(new Map());
   readonly islemDevamEdiyor = signal<string | null>(null);
   readonly statusFiltre = signal<ReturnRequestStatus | 'tumu'>('tumu');
+  readonly arama = signal('');
+  readonly sayfa = signal(1);
+  readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
+  readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
 
   readonly statusLabels = RETURN_STATUS_LABELS;
   readonly statusSecenekleri = Object.entries(RETURN_STATUS_LABELS) as [ReturnRequestStatus, string][];
 
   readonly siraliListe = computed(() => {
     const status = this.statusFiltre();
+    const aramaMetni = this.arama().trim().toLowerCase();
     return [...this.returns()]
       .filter((r) => (status === 'tumu' ? true : r.status === status))
+      .filter((r) => {
+        if (!aramaMetni) return true;
+        const tk = this.takipKodu(r.shipmentId).toLowerCase();
+        const neden = r.neden.toLowerCase();
+        return tk.includes(aramaMetni) || neden.includes(aramaMetni);
+      })
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  });
+
+  readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.siraliListe().length / this.sayfaBoyu())));
+
+  readonly sayfalanmis = computed(() => {
+    const baslangic = (this.sayfa() - 1) * this.sayfaBoyu();
+    return this.siraliListe().slice(baslangic, baslangic + this.sayfaBoyu());
   });
 
   statusFiltresiDegisti(status: string): void {
     this.statusFiltre.set(status as ReturnRequestStatus | 'tumu');
+    this.sayfa.set(1);
+  }
+
+  aramaDegisti(deger: string): void {
+    this.arama.set(deger);
+    this.sayfa.set(1);
+  }
+
+  sayfaBoyuDegisti(deger: string): void {
+    this.sayfaBoyu.set(Number(deger));
+    this.sayfa.set(1);
+  }
+
+  sayfayaGit(yeniSayfa: number): void {
+    if (yeniSayfa < 1 || yeniSayfa > this.toplamSayfa()) return;
+    this.sayfa.set(yeniSayfa);
   }
 
   constructor(

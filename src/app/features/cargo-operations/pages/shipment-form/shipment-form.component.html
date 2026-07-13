@@ -19,17 +19,29 @@
 
     <div class="form-field">
       <label for="aliciAdSoyad">Alıcı Ad Soyad</label>
-      <input id="aliciAdSoyad" formControlName="aliciAdSoyad" type="text" />
-      <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.invalid && form.controls.aliciAdSoyad.touched">
+      <input id="aliciAdSoyad" formControlName="aliciAdSoyad" type="text" maxlength="50" />
+      <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.errors?.['required'] && form.controls.aliciAdSoyad.touched">
+        Alıcı adı zorunludur.
+      </span>
+      <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.errors?.['minlength'] && form.controls.aliciAdSoyad.touched">
         En az 3 karakter girin.
+      </span>
+      <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.errors?.['maxlength'] && form.controls.aliciAdSoyad.touched">
+        En fazla 50 karakter girilebilir.
       </span>
     </div>
 
     <div class="form-field">
       <label for="aliciTelefon">Alıcı Telefon</label>
-      <input id="aliciTelefon" formControlName="aliciTelefon" type="text" placeholder="05XX XXX XX XX" />
-      <span class="form-field__error" *ngIf="form.controls.aliciTelefon.invalid && form.controls.aliciTelefon.touched">
+      <input id="aliciTelefon" formControlName="aliciTelefon" type="text" placeholder="05XX XXX XX XX" maxlength="15" />
+      <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['required'] && form.controls.aliciTelefon.touched">
+        Telefon numarası zorunludur.
+      </span>
+      <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['telefonGecersiz'] && form.controls.aliciTelefon.touched">
         Telefon biçimi geçersiz (örn. 0532 111 22 33).
+      </span>
+      <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['maxlength'] && form.controls.aliciTelefon.touched">
+        En fazla 15 karakter girilebilir.
       </span>
     </div>
 
@@ -46,15 +58,29 @@
 
     <div class="form-field">
       <label for="agirlikKg">Ağırlık (kg)</label>
-      <input id="agirlikKg" formControlName="agirlikKg" type="number" step="0.1" min="0.1" />
-      <span class="form-field__error" *ngIf="form.controls.agirlikKg.invalid && form.controls.agirlikKg.touched">
+      <input id="agirlikKg" formControlName="agirlikKg" type="number" step="0.1" min="0.1" max="500" />
+      <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['required'] && form.controls.agirlikKg.touched">
+        Ağırlık zorunludur.
+      </span>
+      <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['pozitifGecersiz'] && form.controls.agirlikKg.touched">
         Ağırlık pozitif bir sayı olmalıdır.
+      </span>
+      <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['max'] && form.controls.agirlikKg.touched">
+        Maksimum ağırlık 500 kg olabilir.
       </span>
     </div>
 
     <div class="form-field">
       <label for="aciklama">Açıklama (opsiyonel)</label>
-      <textarea id="aciklama" formControlName="aciklama" rows="3"></textarea>
+      <textarea id="aciklama" formControlName="aciklama" rows="3" maxlength="200"></textarea>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.15rem;">
+        <span class="form-field__error" *ngIf="form.controls.aciklama.errors?.['maxlength']">
+          En fazla 200 karakter girilebilir.
+        </span>
+        <small style="color: var(--color-muted); font-size: 0.75rem; margin-left: auto;">
+          {{ form.controls.aciklama.value.length }} / 200
+        </small>
+      </div>
     </div>
 
     <p class="form-error" *ngIf="hataMesaji()">{{ hataMesaji() }}</p>

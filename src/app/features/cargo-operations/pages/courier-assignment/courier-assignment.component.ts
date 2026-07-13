@@ -14,11 +14,12 @@ import { DialogService } from '../../../../shared/components/confirm-dialog/dial
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { telefonValidator, pozitifSayiValidator } from '../../../../shared/validators/telefon.validator';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
 @Component({
   selector: 'app-courier-assignment',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective, DebounceDirective],
   templateUrl: './courier-assignment.component.html',
   styleUrl: './courier-assignment.component.scss',
 })
@@ -32,26 +33,51 @@ export class CourierAssignmentComponent {
   readonly duzenlenenKuryeId = signal<string | null>(null);
   readonly kuryeKaydediliyor = signal(false);
 
+  readonly kuryeArama = signal('');
+  readonly kuryeBolgeFiltre = signal<string>('tumu');
+  readonly gonderiArama = signal('');
+  readonly gonderiBolgeFiltre = signal<string>('tumu');
+
   readonly kuryeForm = this.fb.nonNullable.group({
-    adSoyad: ['', [Validators.required, Validators.minLength(3)]],
-    telefon: ['', [Validators.required, telefonValidator()]],
+    adSoyad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+    telefon: ['', [Validators.required, telefonValidator(), Validators.maxLength(15)]],
     bolgeId: ['', Validators.required],
-    gunlukKapasite: [10, [Validators.required, pozitifSayiValidator()]],
+    gunlukKapasite: [10, [Validators.required, pozitifSayiValidator(), Validators.max(200)]],
   });
 
   readonly kuryeKapasiteOzeti = computed<Array<{ kurye: Courier; kapasite: CourierCapacity; doluluk: number }>>(() => {
     const bugun = new Date().toISOString().slice(0, 10);
-    return this.courierService.aktifKuryeler().map((k) => {
-      const atanan = this.shipmentService
-        .liste()
-        .filter((s) => s.kuryeId === k.id && ['kurye-atandi', 'dagitimda'].includes(s.status)).length;
-      const kapasite: CourierCapacity = {
-        kuryeId: k.id,
-        tarih: bugun,
-        kapasite: k.gunlukKapasite,
-        atananGonderiSayisi: atanan,
-      };
-      return { kurye: k, kapasite, doluluk: Math.round((atanan / k.gunlukKapasite) * 100) };
+    const aramaMetni = this.kuryeArama().trim().toLowerCase();
+    const bolgeFiltre = this.kuryeBolgeFiltre();
+
+    return this.courierService.aktifKuryeler()
+      .filter((k) => {
+        if (bolgeFiltre !== 'tumu' && k.bolgeId !== bolgeFiltre) return false;
+        if (aramaMetni && !k.adSoyad.toLowerCase().includes(aramaMetni)) return false;
+        return true;
+      })
+      .map((k) => {
+        const atanan = this.shipmentService
+          .liste()
+          .filter((s) => s.kuryeId === k.id && ['kurye-atandi', 'dagitimda'].includes(s.status)).length;
+        const kapasite: CourierCapacity = {
+          kuryeId: k.id,
+          tarih: bugun,
+          kapasite: k.gunlukKapasite,
+          atananGonderiSayisi: atanan,
+        };
+        return { kurye: k, kapasite, doluluk: Math.round((atanan / k.gunlukKapasite) * 100) };
+      });
+  });
+
+  readonly filtrelenmisBekleyenler = computed(() => {
+    const aramaMetni = this.gonderiArama().trim().toLowerCase();
+    const bolgeFiltre = this.gonderiBolgeFiltre();
+
+    return this.bekleyenler().filter((s) => {
+      if (bolgeFiltre !== 'tumu' && s.bolgeId !== bolgeFiltre) return false;
+      if (aramaMetni && !s.takipKodu.toLowerCase().includes(aramaMetni) && !s.aliciAdSoyad.toLowerCase().includes(aramaMetni)) return false;
+      return true;
     });
   });
 
@@ -174,5 +200,21 @@ export class CourierAssignmentComponent {
     } catch {
       this.notification.error('Kurye durumu güncellenemedi.');
     }
+  }
+
+  kuryeAramaDegisti(deger: string): void {
+    this.kuryeArama.set(deger);
+  }
+
+  kuryeBolgeFiltresiDegisti(bolgeId: string): void {
+    this.kuryeBolgeFiltre.set(bolgeId);
+  }
+
+  gonderiAramaDegisti(deger: string): void {
+    this.gonderiArama.set(deger);
+  }
+
+  gonderiBolgeFiltresiDegisti(bolgeId: string): void {
+    this.gonderiBolgeFiltre.set(bolgeId);
   }
 }

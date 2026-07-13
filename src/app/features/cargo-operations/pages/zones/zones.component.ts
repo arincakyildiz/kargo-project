@@ -11,6 +11,8 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 
+const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
+
 @Component({
   selector: 'app-zones',
   standalone: true,
@@ -26,22 +28,40 @@ export class ZonesComponent {
   readonly duzenlenenId = signal<string | null>(null);
   readonly kaydediliyor = signal(false);
   readonly arama = signal('');
+  readonly statusFiltre = signal<string>('tumu'); // 'tumu', 'aktif', 'pasif'
+  readonly sayfa = signal(1);
+  readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
+  readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
 
   readonly filtrelenmis = computed(() => {
     const aramaMetni = this.arama().trim().toLowerCase();
-    if (!aramaMetni) return this.zones();
-    return this.zones().filter(
-      (z) =>
-        z.ad.toLowerCase().includes(aramaMetni) ||
-        z.il.toLowerCase().includes(aramaMetni) ||
-        z.ilce.toLowerCase().includes(aramaMetni)
-    );
+    const status = this.statusFiltre();
+    return this.zones()
+      .filter((z) => {
+        if (status === 'aktif') return z.aktifMi;
+        if (status === 'pasif') return !z.aktifMi;
+        return true;
+      })
+      .filter(
+        (z) =>
+          !aramaMetni ||
+          z.ad.toLowerCase().includes(aramaMetni) ||
+          z.il.toLowerCase().includes(aramaMetni) ||
+          z.ilce.toLowerCase().includes(aramaMetni)
+      );
+  });
+
+  readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmis().length / this.sayfaBoyu())));
+
+  readonly sayfalanmis = computed(() => {
+    const baslangic = (this.sayfa() - 1) * this.sayfaBoyu();
+    return this.filtrelenmis().slice(baslangic, baslangic + this.sayfaBoyu());
   });
 
   readonly form = this.fb.nonNullable.group({
-    ad: ['', Validators.required],
-    il: ['', Validators.required],
-    ilce: ['', Validators.required],
+    ad: ['', [Validators.required, Validators.maxLength(50)]],
+    il: ['', [Validators.required, Validators.maxLength(30)]],
+    ilce: ['', [Validators.required, Validators.maxLength(30)]],
   });
 
   constructor(
@@ -69,6 +89,22 @@ export class ZonesComponent {
 
   aramaDegisti(deger: string): void {
     this.arama.set(deger);
+    this.sayfa.set(1);
+  }
+
+  statusFiltresiDegisti(status: string): void {
+    this.statusFiltre.set(status);
+    this.sayfa.set(1);
+  }
+
+  sayfaBoyuDegisti(deger: string): void {
+    this.sayfaBoyu.set(Number(deger));
+    this.sayfa.set(1);
+  }
+
+  sayfayaGit(yeniSayfa: number): void {
+    if (yeniSayfa < 1 || yeniSayfa > this.toplamSayfa()) return;
+    this.sayfa.set(yeniSayfa);
   }
 
   yeniFormAc(): void {
