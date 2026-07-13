@@ -32,6 +32,8 @@ export const CARGO_OPERATIONS_ROUTES: Routes = [
   {
     path: 'kurye-atama',
     loadComponent: () => import('./pages/courier-assignment/courier-assignment.component').then((m) => m.CourierAssignmentComponent),
+    data: { roller: ['operasyon-uzmani', 'kurye-sorumlusu'] },
+    canActivate: [roleGuard()],
   },
   {
     path: 'teslimatlar',
@@ -44,10 +46,14 @@ export const CARGO_OPERATIONS_ROUTES: Routes = [
   {
     path: 'bolgeler',
     loadComponent: () => import('./pages/zones/zones.component').then((m) => m.ZonesComponent),
+    data: { roller: ['operasyon-uzmani', 'kurye-sorumlusu'] },
+    canActivate: [roleGuard()],
   },
   {
     path: 'raporlar',
     loadComponent: () => import('./pages/reports/reports.component').then((m) => m.ReportsComponent),
+    data: { roller: ['operasyon-uzmani', 'kurye-sorumlusu'] },
+    canActivate: [roleGuard()],
   },
   {
     path: 'audit-log',

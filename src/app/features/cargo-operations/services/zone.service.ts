@@ -22,8 +22,8 @@ export class ZoneService {
 
   constructor(private storage: StorageService) {}
 
-  async tumunuGetir(): Promise<DeliveryZone[]> {
-    return mockRequest(() => this.zones(), { ms: 250 });
+  async tumunuGetir(errorRate = 0): Promise<DeliveryZone[]> {
+    return mockRequest(() => this.zones(), { ms: 250, errorRate });
   }
 
   async adresGetir(adresId: string): Promise<CustomerAddress | undefined> {

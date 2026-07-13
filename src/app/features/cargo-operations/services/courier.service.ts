@@ -17,8 +17,8 @@ export class CourierService {
 
   constructor(private storage: StorageService) {}
 
-  async tumunuGetir(): Promise<Courier[]> {
-    return mockRequest(() => this.couriers(), { ms: 250 });
+  async tumunuGetir(errorRate = 0): Promise<Courier[]> {
+    return mockRequest(() => this.couriers(), { ms: 250, errorRate });
   }
 
   kuryeAdi(kuryeId?: string): string {

@@ -16,6 +16,9 @@ import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { telefonValidator, pozitifSayiValidator } from '../../../../shared/validators/telefon.validator';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
+type KuryeSiralamaAnahtari = 'adSoyad-asc' | 'doluluk-desc';
+type GonderiSiralamaAnahtari = 'takipKodu-asc' | 'createdAt-desc';
+
 @Component({
   selector: 'app-courier-assignment',
   standalone: true,
@@ -35,8 +38,10 @@ export class CourierAssignmentComponent {
 
   readonly kuryeArama = signal('');
   readonly kuryeBolgeFiltre = signal<string>('tumu');
+  readonly kuryeSiralama = signal<KuryeSiralamaAnahtari>('adSoyad-asc');
   readonly gonderiArama = signal('');
   readonly gonderiBolgeFiltre = signal<string>('tumu');
+  readonly gonderiSiralama = signal<GonderiSiralamaAnahtari>('createdAt-desc');
 
   readonly kuryeForm = this.fb.nonNullable.group({
     adSoyad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
@@ -44,6 +49,19 @@ export class CourierAssignmentComponent {
     bolgeId: ['', Validators.required],
     gunlukKapasite: [10, [Validators.required, pozitifSayiValidator(), Validators.max(200)]],
   });
+
+  private readonly kuryeSiralamaFonksiyonlari: Record<
+    KuryeSiralamaAnahtari,
+    (a: { kurye: Courier; doluluk: number }, b: { kurye: Courier; doluluk: number }) => number
+  > = {
+    'adSoyad-asc': (a, b) => a.kurye.adSoyad.localeCompare(b.kurye.adSoyad),
+    'doluluk-desc': (a, b) => b.doluluk - a.doluluk,
+  };
+
+  private readonly gonderiSiralamaFonksiyonlari: Record<GonderiSiralamaAnahtari, (a: Shipment, b: Shipment) => number> = {
+    'takipKodu-asc': (a, b) => a.takipKodu.localeCompare(b.takipKodu),
+    'createdAt-desc': (a, b) => b.createdAt.localeCompare(a.createdAt),
+  };
 
   readonly kuryeKapasiteOzeti = computed<Array<{ kurye: Courier; kapasite: CourierCapacity; doluluk: number }>>(() => {
     const bugun = new Date().toISOString().slice(0, 10);
@@ -67,18 +85,21 @@ export class CourierAssignmentComponent {
           atananGonderiSayisi: atanan,
         };
         return { kurye: k, kapasite, doluluk: Math.round((atanan / k.gunlukKapasite) * 100) };
-      });
+      })
+      .sort(this.kuryeSiralamaFonksiyonlari[this.kuryeSiralama()]);
   });
 
   readonly filtrelenmisBekleyenler = computed(() => {
     const aramaMetni = this.gonderiArama().trim().toLowerCase();
     const bolgeFiltre = this.gonderiBolgeFiltre();
 
-    return this.bekleyenler().filter((s) => {
-      if (bolgeFiltre !== 'tumu' && s.bolgeId !== bolgeFiltre) return false;
-      if (aramaMetni && !s.takipKodu.toLowerCase().includes(aramaMetni) && !s.aliciAdSoyad.toLowerCase().includes(aramaMetni)) return false;
-      return true;
-    });
+    return this.bekleyenler()
+      .filter((s) => {
+        if (bolgeFiltre !== 'tumu' && s.bolgeId !== bolgeFiltre) return false;
+        if (aramaMetni && !s.takipKodu.toLowerCase().includes(aramaMetni) && !s.aliciAdSoyad.toLowerCase().includes(aramaMetni)) return false;
+        return true;
+      })
+      .sort(this.gonderiSiralamaFonksiyonlari[this.gonderiSiralama()]);
   });
 
   constructor(
@@ -116,6 +137,14 @@ export class CourierAssignmentComponent {
       this.notification.error('Lütfen kurye seçin.');
       return;
     }
+    const kurye = this.courierService.aktifKuryeler().find((k) => k.id === kuryeId);
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Kurye Ata',
+      mesaj: `${shipment.takipKodu} gönderisi "${kurye?.adSoyad ?? kuryeId}" kuryesine atanacak. Onaylıyor musunuz?`,
+      onayMetni: 'Ata',
+    });
+    if (!sonuc.onaylandi) return;
+
     this.islemDevamEdiyor.set(shipment.id);
     try {
       await this.shipmentService.kuryeAta(shipment.id, kuryeId);
@@ -210,11 +239,19 @@ export class CourierAssignmentComponent {
     this.kuryeBolgeFiltre.set(bolgeId);
   }
 
+  kuryeSiralamaDegisti(deger: string): void {
+    this.kuryeSiralama.set(deger as KuryeSiralamaAnahtari);
+  }
+
   gonderiAramaDegisti(deger: string): void {
     this.gonderiArama.set(deger);
   }
 
   gonderiBolgeFiltresiDegisti(bolgeId: string): void {
     this.gonderiBolgeFiltre.set(bolgeId);
+  }
+
+  gonderiSiralamaDegisti(deger: string): void {
+    this.gonderiSiralama.set(deger as GonderiSiralamaAnahtari);
   }
 }

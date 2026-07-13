@@ -6,6 +6,9 @@ export function mockDelay<T>(value: T, ms = 350): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
+/** Sayfa yüklemelerinde error-state UI'sini gerçekten tetikleyebilmek için kullanılan olasılık. */
+export const DEMO_ERROR_RATE = 0.08;
+
 export class MockApiError extends Error {}
 
 export async function mockRequest<T>(

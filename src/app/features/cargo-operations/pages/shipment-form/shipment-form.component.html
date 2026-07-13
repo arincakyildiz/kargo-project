@@ -73,11 +73,11 @@
     <div class="form-field">
       <label for="aciklama">Açıklama (opsiyonel)</label>
       <textarea id="aciklama" formControlName="aciklama" rows="3" maxlength="200"></textarea>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.15rem;">
+      <div class="char-counter-row">
         <span class="form-field__error" *ngIf="form.controls.aciklama.errors?.['maxlength']">
           En fazla 200 karakter girilebilir.
         </span>
-        <small style="color: var(--color-muted); font-size: 0.75rem; margin-left: auto;">
+        <small class="char-counter">
           {{ form.controls.aciklama.value.length }} / 200
         </small>
       </div>

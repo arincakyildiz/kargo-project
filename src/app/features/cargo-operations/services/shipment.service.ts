@@ -46,8 +46,8 @@ export class ShipmentService {
     return mockRequest(() => this.liste(), { ms: 350, errorRate });
   }
 
-  async birGetir(id: string): Promise<Shipment | undefined> {
-    return mockRequest(() => this.shipments().find((s) => s.id === id), { ms: 250 });
+  async birGetir(id: string, errorRate = 0): Promise<Shipment | undefined> {
+    return mockRequest(() => this.shipments().find((s) => s.id === id), { ms: 250, errorRate });
   }
 
   async olustur(veri: {

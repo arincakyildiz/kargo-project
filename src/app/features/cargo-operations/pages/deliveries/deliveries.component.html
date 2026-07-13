@@ -16,6 +16,12 @@
       <option value="teslim-edildi">Teslim Edildi</option>
       <option value="teslim-edilemedi">Teslim Edilemedi</option>
     </select>
+    <select (change)="siralamaDegisti($any($event.target).value)">
+      <option value="updatedAt-desc">Son Güncellenen</option>
+      <option value="updatedAt-asc">İlk Güncellenen</option>
+      <option value="takipKodu-asc">Takip Kodu (A-Z)</option>
+      <option value="agirlikKg-desc">Ağırlık (Azalan)</option>
+    </select>
     <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
       <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
     </select>

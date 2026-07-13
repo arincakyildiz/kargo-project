@@ -5,6 +5,7 @@ import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
 import { AuditService } from '../../../../core/services/audit.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import {
   SHIPMENT_STATUS_COLORS,
   SHIPMENT_STATUS_LABELS,
@@ -169,9 +170,9 @@ export class DashboardComponent {
     this.hataMesaji.set(null);
     try {
       await Promise.all([
-        this.shipmentService.tumunuGetir(),
-        this.courierService.tumunuGetir(),
-        this.zoneService.tumunuGetir(),
+        this.shipmentService.tumunuGetir(DEMO_ERROR_RATE),
+        this.courierService.tumunuGetir(DEMO_ERROR_RATE),
+        this.zoneService.tumunuGetir(DEMO_ERROR_RATE),
       ]);
     } catch {
       this.hataMesaji.set('Dashboard verileri yüklenirken bir hata oluştu.');

@@ -8,15 +8,36 @@
     <div class="sidebar__brand">
       <img src="assets/logo.jpg" alt="Logo" class="sidebar__logo" />
       <span>Kargo Operasyon</span>
+      <button
+        type="button"
+        class="hamburger-btn"
+        aria-label="Menüyü aç"
+        [attr.aria-expanded]="mobilMenuAcik()"
+        (click)="mobilMenuDegistir($event)"
+      >
+        <app-icon [name]="mobilMenuAcik() ? 'kapat' : 'menu'" [size]="20"></app-icon>
+      </button>
     </div>
     <nav class="sidebar__nav">
       <a
-        *ngFor="let item of navItems"
+        *ngFor="let item of navItems()"
         [routerLink]="item.yol"
         routerLinkActive="active"
         class="sidebar__link"
       >
         <app-icon [name]="item.ikon" [size]="17"></app-icon>
+        <span>{{ item.etiket }}</span>
+      </a>
+    </nav>
+    <nav class="mobil-menu" *ngIf="mobilMenuAcik()" (click)="$event.stopPropagation()">
+      <a
+        *ngFor="let item of navItems()"
+        [routerLink]="item.yol"
+        routerLinkActive="active"
+        class="mobil-menu__link"
+        (click)="mobilMenuAcik.set(false)"
+      >
+        <app-icon [name]="item.ikon" [size]="18"></app-icon>
         <span>{{ item.etiket }}</span>
       </a>
     </nav>
@@ -37,7 +58,7 @@
         <div class="dropdown-wrap">
           <button type="button" class="icon-btn" aria-label="Bildirimler" (click)="bildirimAc($event)">
             <app-icon name="bildirim" [size]="17"></app-icon>
-            <span class="icon-btn__badge" *ngIf="sonBildirimler().length">{{ sonBildirimler().length }}</span>
+            <span class="icon-btn__badge" *ngIf="okunmamisBildirimSayisi()">{{ okunmamisBildirimSayisi() }}</span>
           </button>
           <div class="dropdown dropdown--notifications" *ngIf="bildirimAcik()" (click)="$event.stopPropagation()">
             <div class="dropdown__header">Son İşlemler</div>
@@ -58,8 +79,8 @@
 
         <div class="topbar__role">
           <label for="rolSelect">Aktif Rol</label>
-          <select id="rolSelect" [value]="currentUser.rol()" (change)="rolDegistir($any($event.target).value)">
-            <option *ngFor="let r of roller" [value]="r">{{ rolEtiketleri[r] }}</option>
+          <select id="rolSelect" (change)="rolDegistir($any($event.target).value)">
+            <option *ngFor="let r of roller" [value]="r" [selected]="r === currentUser.rol()">{{ rolEtiketleri[r] }}</option>
           </select>
         </div>
 

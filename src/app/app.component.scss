@@ -48,6 +48,23 @@
 .sidebar__brand span { opacity: 0; max-width: 0; overflow: hidden; transition: opacity 0.15s ease, max-width 0.2s ease; }
 .sidebar--expanded .sidebar__brand span { opacity: 1; max-width: 180px; }
 
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.hamburger-btn:hover { background: rgba(255, 255, 255, 0.08); }
+
+.mobil-menu { display: none; }
+
 .sidebar__nav { display: flex; flex-direction: column; padding: 0.5rem 0.75rem; gap: 1px; }
 .sidebar__link {
   display: flex;
@@ -220,19 +237,50 @@
   .layout { flex-direction: column; min-height: auto; }
 
   .sidebar {
+    position: relative;
     width: 100%;
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
+    flex-direction: column;
+    align-items: stretch;
+    overflow: visible;
     transition: none;
   }
   .sidebar--expanded { box-shadow: none; }
-  .sidebar__brand { padding: 0.75rem 1rem; white-space: nowrap; }
+  .sidebar__brand { padding: 0.75rem 1rem; white-space: nowrap; justify-content: space-between; }
   .sidebar__brand span, .sidebar--expanded .sidebar__brand span { opacity: 1; max-width: none; }
-  .sidebar__nav { flex-direction: row; padding: 0.25rem; }
-  .sidebar__link { flex-shrink: 0; padding: 0.5rem 0.7rem; font-size: 0.82rem; }
-  .sidebar__link span, .sidebar--expanded .sidebar__link span { opacity: 1; max-width: none; }
-  .sidebar__link.active::before { left: 0.35rem; right: 0.35rem; top: auto; bottom: 0; height: 2px; width: auto; border-radius: 2px 2px 0 0; }
+  .hamburger-btn { display: inline-flex; }
+
+  /* Yatay kaydırmalı liste yerine hamburger menüsü kullanılıyor. */
+  .sidebar__nav { display: none; }
+
+  .mobil-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    right: 0.75rem;
+    width: min(260px, 85vw);
+    background: var(--sidebar-bg-2);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 0.4rem;
+    gap: 1px;
+    z-index: 40;
+    animation: dropdown-in 0.14s ease;
+  }
+  .mobil-menu__link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    color: rgba(226, 232, 240, 0.75);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+  .mobil-menu__link app-icon { opacity: 0.85; flex-shrink: 0; }
+  .mobil-menu__link:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+  .mobil-menu__link.active { background: rgba(37, 99, 235, 0.24); color: #fff; font-weight: 600; }
 
   .topbar { padding: 0.6rem 1rem; justify-content: space-between; position: static; }
   .topbar__actions { flex-wrap: wrap; gap: 0.4rem; }

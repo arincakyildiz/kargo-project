@@ -9,6 +9,7 @@ import { StatusHistoryService } from '../../services/status-history.service';
 import { Shipment, SHIPMENT_STATUS_TRANSITIONS, ShipmentStatus } from '../../models/shipment.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DialogService } from '../../../../shared/components/confirm-dialog/dialog.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { StatusBadgeDirective } from '../../../../shared/directives/status-badge.directive';
@@ -89,7 +90,7 @@ export class ShipmentDetailComponent implements OnInit {
     this.yukleniyor.set(true);
     this.hataMesaji.set(null);
     try {
-      const g = await this.shipmentService.birGetir(this.gonderiId);
+      const g = await this.shipmentService.birGetir(this.gonderiId, DEMO_ERROR_RATE);
       if (!g) {
         this.hataMesaji.set('Gönderi bulunamadı.');
       } else {
@@ -107,6 +108,14 @@ export class ShipmentDetailComponent implements OnInit {
       this.notification.error('Lütfen bir kurye seçin.');
       return;
     }
+    const kurye = this.uygunKuryeler().find((k) => k.id === this.secilenKurye());
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Kurye Ata',
+      mesaj: `Bu gönderi "${kurye?.adSoyad ?? ''}" kuryesine atanacak. Onaylıyor musunuz?`,
+      onayMetni: 'Ata',
+    });
+    if (!sonuc.onaylandi) return;
+
     this.islemDevamEdiyor.set(true);
     try {
       const g = await this.shipmentService.kuryeAta(this.gonderiId, this.secilenKurye());

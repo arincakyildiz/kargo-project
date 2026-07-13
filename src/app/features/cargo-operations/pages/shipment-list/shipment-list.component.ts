@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { Shipment, SHIPMENT_STATUS_LABELS, ShipmentStatus } from '../../models/shipment.model';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
@@ -85,7 +86,7 @@ export class ShipmentListComponent {
     this.yukleniyor.set(true);
     this.hataMesaji.set(null);
     try {
-      const liste = await this.shipmentService.tumunuGetir();
+      const liste = await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE);
       this.gonderiler.set(liste);
     } catch {
       this.hataMesaji.set('Gönderiler yüklenirken bir hata oluştu.');

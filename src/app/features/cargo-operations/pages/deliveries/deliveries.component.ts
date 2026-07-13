@@ -15,6 +15,8 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 const TESLIMAT_DURUMLARI: ShipmentStatus[] = ['dagitimda', 'teslim-edildi', 'teslim-edilemedi'];
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
+type SiralamaAnahtari = 'updatedAt-desc' | 'updatedAt-asc' | 'takipKodu-asc' | 'agirlikKg-desc';
+
 @Component({
   selector: 'app-deliveries',
   standalone: true,
@@ -27,9 +29,17 @@ export class DeliveriesComponent {
   readonly gonderiler = signal<Shipment[]>([]);
   readonly statusFiltre = signal<ShipmentStatus | 'tumu'>('tumu');
   readonly arama = signal('');
+  readonly siralama = signal<SiralamaAnahtari>('updatedAt-desc');
   readonly sayfa = signal(1);
   readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
   readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
+
+  private readonly siralamaFonksiyonlari: Record<SiralamaAnahtari, (a: Shipment, b: Shipment) => number> = {
+    'updatedAt-desc': (a, b) => b.updatedAt.localeCompare(a.updatedAt),
+    'updatedAt-asc': (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+    'takipKodu-asc': (a, b) => a.takipKodu.localeCompare(b.takipKodu),
+    'agirlikKg-desc': (a, b) => b.agirlikKg - a.agirlikKg,
+  };
 
   readonly teslimatlar = computed(() => this.gonderiler().filter((g) => TESLIMAT_DURUMLARI.includes(g.status)));
 
@@ -43,7 +53,7 @@ export class DeliveriesComponent {
           ? g.takipKodu.toLowerCase().includes(aramaMetni) || g.aliciAdSoyad.toLowerCase().includes(aramaMetni)
           : true
       )
-      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      .sort(this.siralamaFonksiyonlari[this.siralama()]);
   });
 
   readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmis().length / this.sayfaBoyu())));
@@ -80,6 +90,11 @@ export class DeliveriesComponent {
 
   aramaDegisti(deger: string): void {
     this.arama.set(deger);
+    this.sayfa.set(1);
+  }
+
+  siralamaDegisti(deger: string): void {
+    this.siralama.set(deger as SiralamaAnahtari);
     this.sayfa.set(1);
   }
 

@@ -14,6 +14,10 @@
       <option value="tumu">Tüm Durumlar</option>
       <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ s[1] }}</option>
     </select>
+    <select (change)="siralamaDegisti($any($event.target).value)">
+      <option value="createdAt-desc">En Yeni</option>
+      <option value="createdAt-asc">En Eski</option>
+    </select>
     <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
       <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
     </select>

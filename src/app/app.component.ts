@@ -14,16 +14,20 @@ interface NavItem {
   yol: string;
   etiket: string;
   ikon: IconName;
+  /** Belirtilmezse tüm roller görür; route guard'daki roller ile birebir eşleşir. */
+  roller?: Rol[];
 }
+
+const OPERASYON_ROLLERI: Rol[] = ['operasyon-uzmani', 'kurye-sorumlusu'];
 
 const NAV_ITEMS: NavItem[] = [
   { yol: '/dashboard', etiket: 'Dashboard', ikon: 'dashboard' },
   { yol: '/gonderiler', etiket: 'Gönderiler', ikon: 'paket' },
-  { yol: '/kurye-atama', etiket: 'Kurye Atama', ikon: 'kurye' },
+  { yol: '/kurye-atama', etiket: 'Kurye Atama', ikon: 'kurye', roller: OPERASYON_ROLLERI },
   { yol: '/teslimatlar', etiket: 'Teslimatlar', ikon: 'teslimat' },
   { yol: '/iadeler', etiket: 'İadeler', ikon: 'iade' },
-  { yol: '/bolgeler', etiket: 'Bölgeler', ikon: 'bolge' },
-  { yol: '/raporlar', etiket: 'Raporlar', ikon: 'rapor' },
+  { yol: '/bolgeler', etiket: 'Bölgeler', ikon: 'bolge', roller: OPERASYON_ROLLERI },
+  { yol: '/raporlar', etiket: 'Raporlar', ikon: 'rapor', roller: OPERASYON_ROLLERI },
   { yol: '/audit-log', etiket: 'Audit Log', ikon: 'kayit' },
 ];
 
@@ -46,7 +50,6 @@ const BILDIRIM_SAYISI = 5;
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  readonly navItems = NAV_ITEMS;
   readonly roller: Rol[] = ['operasyon-uzmani', 'kurye-sorumlusu', 'musteri-hizmetleri'];
   readonly rolEtiketleri: Record<Rol, string> = {
     'operasyon-uzmani': 'Operasyon Uzmanı',
@@ -57,9 +60,15 @@ export class AppComponent {
   /** Sidebar varsayılan olarak daraltık; imleç sol kenara yaklaşınca genişler. */
   readonly sidebarGenisletildi = signal(false);
 
+  readonly navItems = computed(() =>
+    NAV_ITEMS.filter((item) => !item.roller || this.currentUser.yetkiVarMi(item.roller))
+  );
+
   readonly bildirimAcik = signal(false);
   readonly profilAcik = signal(false);
-  readonly sonBildirimler = computed(() => this.audit.log().slice(0, BILDIRIM_SAYISI));
+  readonly mobilMenuAcik = signal(false);
+  readonly sonBildirimler = computed(() => this.audit.okunmamisBildirimler().slice(0, BILDIRIM_SAYISI));
+  readonly okunmamisBildirimSayisi = computed(() => this.audit.okunmamisBildirimler().length);
 
   constructor(
     public currentUser: CurrentUserService,
@@ -74,7 +83,11 @@ export class AppComponent {
   bildirimAc(event: MouseEvent): void {
     event.stopPropagation();
     this.profilAcik.set(false);
-    this.bildirimAcik.update((acik) => !acik);
+    const acilacak = !this.bildirimAcik();
+    this.bildirimAcik.set(acilacak);
+    if (acilacak) {
+      this.audit.bildirimleriOkunduIsaretle(this.sonBildirimler().map((b) => b.id));
+    }
   }
 
   profilAc(event: MouseEvent): void {
@@ -83,9 +96,15 @@ export class AppComponent {
     this.profilAcik.update((acik) => !acik);
   }
 
+  mobilMenuDegistir(event: MouseEvent): void {
+    event.stopPropagation();
+    this.mobilMenuAcik.update((acik) => !acik);
+  }
+
   @HostListener('document:click')
   disariTiklandi(): void {
     this.bildirimAcik.set(false);
     this.profilAcik.set(false);
+    this.mobilMenuAcik.set(false);
   }
 }

@@ -4,8 +4,11 @@ import { AuditService } from '../../../../core/services/audit.service';
 import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { AuditLogEntry } from '../../../../core/models/base-model';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
+
+type SiralamaAnahtari = 'islemZamani-desc' | 'islemZamani-asc' | 'rol-asc';
 
 @Component({
   selector: 'app-audit-log',
@@ -19,9 +22,16 @@ export class AuditLogComponent {
 
   readonly arama = signal('');
   readonly islemTipiFiltre = signal<string>('tumu');
+  readonly siralama = signal<SiralamaAnahtari>('islemZamani-desc');
   readonly sayfa = signal(1);
   readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
   readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
+
+  private readonly siralamaFonksiyonlari: Record<SiralamaAnahtari, (a: AuditLogEntry, b: AuditLogEntry) => number> = {
+    'islemZamani-desc': (a, b) => b.islemZamani.localeCompare(a.islemZamani),
+    'islemZamani-asc': (a, b) => a.islemZamani.localeCompare(b.islemZamani),
+    'rol-asc': (a, b) => a.rol.localeCompare(b.rol),
+  };
 
   readonly islemTipleri = computed(() => {
     const tipler = new Set(this.log().map((e) => e.islemTipi));
@@ -33,7 +43,8 @@ export class AuditLogComponent {
     const tip = this.islemTipiFiltre();
     return this.log()
       .filter((e) => (tip === 'tumu' ? true : e.islemTipi === tip))
-      .filter((e) => (aramaMetni ? e.aciklama.toLowerCase().includes(aramaMetni) : true));
+      .filter((e) => (aramaMetni ? e.aciklama.toLowerCase().includes(aramaMetni) : true))
+      .sort(this.siralamaFonksiyonlari[this.siralama()]);
   });
 
   readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmis().length / this.sayfaBoyu())));
@@ -52,6 +63,11 @@ export class AuditLogComponent {
 
   tipFiltresiDegisti(tip: string): void {
     this.islemTipiFiltre.set(tip);
+    this.sayfa.set(1);
+  }
+
+  siralamaDegisti(deger: string): void {
+    this.siralama.set(deger as SiralamaAnahtari);
     this.sayfa.set(1);
   }
 

@@ -66,7 +66,7 @@
   <section class="panel">
     <h2>Kurye Kapasite Durumu</h2>
     
-    <div class="toolbar" style="margin-bottom: 1rem; border-bottom: none; padding: 0;">
+    <div class="toolbar toolbar--compact">
       <input
         type="search"
         placeholder="Kurye ara..."
@@ -76,6 +76,10 @@
       <select (change)="kuryeBolgeFiltresiDegisti($any($event.target).value)">
         <option value="tumu">Tüm Bölgeler</option>
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
+      </select>
+      <select (change)="kuryeSiralamaDegisti($any($event.target).value)">
+        <option value="adSoyad-asc">Ad (A-Z)</option>
+        <option value="doluluk-desc">Doluluk (Azalan)</option>
       </select>
     </div>
 
@@ -105,7 +109,7 @@
   <section class="panel" *ngIf="!yukleniyor()">
     <h2>Atama Bekleyen Gönderiler</h2>
 
-    <div class="toolbar" style="margin-bottom: 1rem; border-bottom: none; padding: 0;">
+    <div class="toolbar toolbar--compact">
       <input
         type="search"
         placeholder="Takip kodu veya alıcı ara..."
@@ -115,6 +119,10 @@
       <select (change)="gonderiBolgeFiltresiDegisti($any($event.target).value)">
         <option value="tumu">Tüm Bölgeler</option>
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
+      </select>
+      <select (change)="gonderiSiralamaDegisti($any($event.target).value)">
+        <option value="createdAt-desc">En Yeni</option>
+        <option value="takipKodu-asc">Takip Kodu (A-Z)</option>
       </select>
     </div>
 

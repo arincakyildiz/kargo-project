@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ZoneService } from '../../services/zone.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { DeliveryZone } from '../../models/zone.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuditService } from '../../../../core/services/audit.service';
@@ -12,6 +13,8 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
+
+type SiralamaAnahtari = 'ad-asc' | 'il-asc' | 'createdAt-desc';
 
 @Component({
   selector: 'app-zones',
@@ -29,9 +32,16 @@ export class ZonesComponent {
   readonly kaydediliyor = signal(false);
   readonly arama = signal('');
   readonly statusFiltre = signal<string>('tumu'); // 'tumu', 'aktif', 'pasif'
+  readonly siralama = signal<SiralamaAnahtari>('ad-asc');
   readonly sayfa = signal(1);
   readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
   readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
+
+  private readonly siralamaFonksiyonlari: Record<SiralamaAnahtari, (a: DeliveryZone, b: DeliveryZone) => number> = {
+    'ad-asc': (a, b) => a.ad.localeCompare(b.ad),
+    'il-asc': (a, b) => a.il.localeCompare(b.il),
+    'createdAt-desc': (a, b) => b.createdAt.localeCompare(a.createdAt),
+  };
 
   readonly filtrelenmis = computed(() => {
     const aramaMetni = this.arama().trim().toLowerCase();
@@ -48,7 +58,8 @@ export class ZonesComponent {
           z.ad.toLowerCase().includes(aramaMetni) ||
           z.il.toLowerCase().includes(aramaMetni) ||
           z.ilce.toLowerCase().includes(aramaMetni)
-      );
+      )
+      .sort(this.siralamaFonksiyonlari[this.siralama()]);
   });
 
   readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmis().length / this.sayfaBoyu())));
@@ -79,7 +90,7 @@ export class ZonesComponent {
     this.yukleniyor.set(true);
     this.hataMesaji.set(null);
     try {
-      this.zones.set(await this.zoneService.tumunuGetir());
+      this.zones.set(await this.zoneService.tumunuGetir(DEMO_ERROR_RATE));
     } catch {
       this.hataMesaji.set('Bölgeler yüklenirken bir hata oluştu.');
     } finally {
@@ -94,6 +105,11 @@ export class ZonesComponent {
 
   statusFiltresiDegisti(status: string): void {
     this.statusFiltre.set(status);
+    this.sayfa.set(1);
+  }
+
+  siralamaDegisti(deger: string): void {
+    this.siralama.set(deger as SiralamaAnahtari);
     this.sayfa.set(1);
   }
 

@@ -22,6 +22,8 @@ const RETURN_STATUS_LABELS: Record<ReturnRequestStatus, string> = {
 };
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
+type SiralamaAnahtari = 'createdAt-desc' | 'createdAt-asc';
+
 @Component({
   selector: 'app-returns',
   standalone: true,
@@ -36,12 +38,18 @@ export class ReturnsComponent {
   readonly islemDevamEdiyor = signal<string | null>(null);
   readonly statusFiltre = signal<ReturnRequestStatus | 'tumu'>('tumu');
   readonly arama = signal('');
+  readonly siralama = signal<SiralamaAnahtari>('createdAt-desc');
   readonly sayfa = signal(1);
   readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
   readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
 
   readonly statusLabels = RETURN_STATUS_LABELS;
   readonly statusSecenekleri = Object.entries(RETURN_STATUS_LABELS) as [ReturnRequestStatus, string][];
+
+  private readonly siralamaFonksiyonlari: Record<SiralamaAnahtari, (a: ReturnRequest, b: ReturnRequest) => number> = {
+    'createdAt-desc': (a, b) => b.createdAt.localeCompare(a.createdAt),
+    'createdAt-asc': (a, b) => a.createdAt.localeCompare(b.createdAt),
+  };
 
   readonly siraliListe = computed(() => {
     const status = this.statusFiltre();
@@ -54,7 +62,7 @@ export class ReturnsComponent {
         const neden = r.neden.toLowerCase();
         return tk.includes(aramaMetni) || neden.includes(aramaMetni);
       })
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      .sort(this.siralamaFonksiyonlari[this.siralama()]);
   });
 
   readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.siraliListe().length / this.sayfaBoyu())));
@@ -71,6 +79,11 @@ export class ReturnsComponent {
 
   aramaDegisti(deger: string): void {
     this.arama.set(deger);
+    this.sayfa.set(1);
+  }
+
+  siralamaDegisti(deger: string): void {
+    this.siralama.set(deger as SiralamaAnahtari);
     this.sayfa.set(1);
   }
 
