@@ -13,7 +13,12 @@ export type IconName =
   | 'saat'
   | 'arama'
   | 'kalem'
-  | 'kapat';
+  | 'kapat'
+  | 'bildirim'
+  | 'ay'
+  | 'gunes'
+  | 'kullanici'
+  | 'trend-yukari';
 
 /** Uygulama genelinde kullanılan çizgi (stroke) ikon seti. */
 @Component({
@@ -89,6 +94,25 @@ export type IconName =
       <ng-container *ngSwitchCase="'kapat'">
         <path d="M18 6 6 18" />
         <path d="M6 6l12 12" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'bildirim'">
+        <path d="M6 8a6 6 0 0 1 12 0c0 4.5 1.5 6 1.5 6h-15S6 12.5 6 8z" />
+        <path d="M10 21a2 2 0 0 0 4 0" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'ay'">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'gunes'">
+        <circle cx="12" cy="12" r="4.5" />
+        <path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'kullanici'">
+        <circle cx="12" cy="8" r="3.5" />
+        <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'trend-yukari'">
+        <path d="M3 17l6-6 4 4 8-8" />
+        <path d="M15 7h6v6" />
       </ng-container>
     </svg>
   `,

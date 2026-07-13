@@ -1,5 +1,102 @@
 .dashboard {
-  padding: 1.5rem;
-  max-width: 960px;
+  padding: 1.5rem 1.75rem 2.5rem;
+  max-width: 1440px;
   margin: 0 auto;
+}
+
+.dashboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.dashboard__header h1 { margin: 0; }
+
+/* --- KPI trend rozeti --- */
+.kpi-card__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.15rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--color-success);
+}
+.kpi-card__trend--muted { color: var(--color-muted); font-weight: 500; }
+.kpi-card--warning .kpi-card__trend { color: #d97706; }
+
+/* --- Durum Dağılımı: grafik + çubuklar yan yana --- */
+.status-panel__grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+.status-panel__chart { position: relative; display: flex; align-items: center; justify-content: center; }
+.status-panel__chart-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.status-panel__chart-value { font-size: 1.6rem; font-weight: 700; color: #0f172a; letter-spacing: -0.02em; }
+.status-panel__chart-label { font-size: 0.72rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.status-bar { display: grid; grid-template-columns: 10px 130px 1fr 32px; align-items: center; gap: 0.65rem; }
+.status-bar__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* --- Alt özet kart grid'i --- */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  align-items: stretch;
+}
+
+/* --- mini liste (ortak) --- */
+.mini-list { display: flex; flex-direction: column; gap: 0.1rem; }
+.mini-list__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+  border-radius: 6px;
+}
+.mini-list__row:last-child { border-bottom: none; }
+.mini-list__row--link { transition: background-color 0.12s ease; margin: 0 -0.25rem; padding-left: 0.25rem; padding-right: 0.25rem; }
+.mini-list__row--link:hover { background: var(--color-bg); }
+.mini-list__main { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.mini-list__title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.mini-list__sub { font-size: 0.74rem; color: var(--color-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-list__badge { flex-shrink: 0; font-size: 0.68rem; padding: 0.15rem 0.5rem 0.15rem 0.4rem; }
+.mini-list__empty { color: var(--color-muted); font-size: 0.85rem; padding: 1.25rem 0.25rem; text-align: center; }
+
+.mini-list__bar { display: flex; align-items: center; gap: 0.5rem; width: 84px; flex-shrink: 0; }
+.mini-list__bar-track { flex: 1; height: 6px; border-radius: 999px; background: var(--color-bg); overflow: hidden; }
+.mini-list__bar-fill { height: 100%; border-radius: 999px; background: var(--color-primary); transition: width 0.3s ease; }
+.mini-list__bar-value { font-size: 0.76rem; font-weight: 700; color: var(--color-text); width: 16px; text-align: right; }
+
+@media (max-width: 768px) {
+  .dashboard { padding: 1rem 1rem 2rem; }
+  .status-panel__grid { grid-template-columns: 1fr; justify-items: center; }
+  .status-bar { grid-template-columns: 8px 100px 1fr 28px; gap: 0.4rem; }
+  .summary-grid { grid-template-columns: 1fr; }
 }

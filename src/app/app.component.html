@@ -24,12 +24,55 @@
 
   <div class="main">
     <header class="topbar">
-      <div class="topbar__user">
-        <label for="rolSelect">Aktif Rol</label>
-        <select id="rolSelect" [value]="currentUser.rol()" (change)="rolDegistir($any($event.target).value)">
-          <option *ngFor="let r of roller" [value]="r">{{ rolEtiketleri[r] }}</option>
-        </select>
-        <span class="topbar__user-name">{{ currentUser.kullanici().adSoyad }}</span>
+      <div class="topbar__actions">
+        <button
+          type="button"
+          class="icon-btn"
+          [attr.aria-label]="theme.tema() === 'dark' ? 'Aydınlık moda geç' : 'Karanlık moda geç'"
+          (click)="theme.degistir()"
+        >
+          <app-icon [name]="theme.tema() === 'dark' ? 'gunes' : 'ay'" [size]="17"></app-icon>
+        </button>
+
+        <div class="dropdown-wrap">
+          <button type="button" class="icon-btn" aria-label="Bildirimler" (click)="bildirimAc($event)">
+            <app-icon name="bildirim" [size]="17"></app-icon>
+            <span class="icon-btn__badge" *ngIf="sonBildirimler().length">{{ sonBildirimler().length }}</span>
+          </button>
+          <div class="dropdown dropdown--notifications" *ngIf="bildirimAcik()" (click)="$event.stopPropagation()">
+            <div class="dropdown__header">Son İşlemler</div>
+            <div class="dropdown__empty" *ngIf="!sonBildirimler().length">Henüz işlem yok.</div>
+            <a
+              *ngFor="let b of sonBildirimler()"
+              routerLink="/audit-log"
+              class="dropdown__item"
+              (click)="bildirimAcik.set(false)"
+            >
+              <span class="dropdown__item-title">{{ b.aciklama }}</span>
+              <span class="dropdown__item-meta">{{ b.islemZamani | tarih }}</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="topbar__divider"></div>
+
+        <div class="topbar__role">
+          <label for="rolSelect">Aktif Rol</label>
+          <select id="rolSelect" [value]="currentUser.rol()" (change)="rolDegistir($any($event.target).value)">
+            <option *ngFor="let r of roller" [value]="r">{{ rolEtiketleri[r] }}</option>
+          </select>
+        </div>
+
+        <div class="dropdown-wrap">
+          <button type="button" class="avatar-btn" (click)="profilAc($event)">
+            <span class="avatar-btn__circle"><app-icon name="kullanici" [size]="16"></app-icon></span>
+            <span class="avatar-btn__name">{{ currentUser.kullanici().adSoyad }}</span>
+          </button>
+          <div class="dropdown dropdown--profile" *ngIf="profilAcik()" (click)="$event.stopPropagation()">
+            <div class="dropdown__profile-name">{{ currentUser.kullanici().adSoyad }}</div>
+            <div class="dropdown__profile-role">{{ rolEtiketleri[currentUser.rol()] }}</div>
+          </div>
+        </div>
       </div>
     </header>
 
