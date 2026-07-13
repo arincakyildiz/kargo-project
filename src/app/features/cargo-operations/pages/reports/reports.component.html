@@ -8,20 +8,32 @@
   <ng-container *ngIf="!yukleniyor()">
     <div class="kpi-grid">
       <div class="kpi-card">
-        <span class="kpi-card__label">Toplam Gönderi</span>
-        <span class="kpi-card__value">{{ genelOzet().toplam }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Toplam Gönderi</span>
+          <span class="kpi-card__value">{{ genelOzet().toplam }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="paket" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--success">
-        <span class="kpi-card__label">Teslim Edildi</span>
-        <span class="kpi-card__value">{{ genelOzet().teslimEdildi }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Teslim Edildi</span>
+          <span class="kpi-card__value">{{ genelOzet().teslimEdildi }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="teslimat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--warning">
-        <span class="kpi-card__label">Geciken</span>
-        <span class="kpi-card__value">{{ genelOzet().geciken }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Geciken</span>
+          <span class="kpi-card__value">{{ genelOzet().geciken }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="saat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--purple">
-        <span class="kpi-card__label">İade</span>
-        <span class="kpi-card__value">{{ genelOzet().iade }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">İade</span>
+          <span class="kpi-card__value">{{ genelOzet().iade }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="iade" [size]="18"></app-icon></span>
       </div>
     </div>
 

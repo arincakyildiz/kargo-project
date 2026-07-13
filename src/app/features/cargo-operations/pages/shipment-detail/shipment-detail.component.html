@@ -42,51 +42,55 @@
         </dl>
       </section>
 
-      <section class="panel" *ngIf="kuryeAtanabilir()" [appYetki]="['operasyon-uzmani', 'kurye-sorumlusu']">
-        <h2>Kurye Ata</h2>
-        <div class="form-field" *ngIf="uygunKuryeler().length; else uygunKuryeYok">
-          <label for="kurye">Bölgeye uygun aktif kurye</label>
-          <select id="kurye" [value]="secilenKurye()" (change)="secilenKurye.set($any($event.target).value)">
-            <option value="" disabled>Kurye seçin</option>
-            <option *ngFor="let k of uygunKuryeler()" [value]="k.id">{{ k.adSoyad }} (kapasite: {{ k.gunlukKapasite }})</option>
-          </select>
-        </div>
-        <ng-template #uygunKuryeYok>
-          <p class="muted">Bu bölgede uygun aktif kurye bulunamadı.</p>
-        </ng-template>
-        <button class="btn btn--primary" (click)="kuryeAta()" [disabled]="islemDevamEdiyor() || !uygunKuryeler().length">
-          Kurye Ata
-        </button>
-      </section>
+      <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <section class="panel" *ngIf="kuryeAtanabilir()">
+          <h2>Kurye Ata</h2>
+          <div class="form-field" *ngIf="uygunKuryeler().length; else uygunKuryeYok">
+            <label for="kurye">Bölgeye uygun aktif kurye</label>
+            <select id="kurye" [value]="secilenKurye()" (change)="secilenKurye.set($any($event.target).value)">
+              <option value="" disabled>Kurye seçin</option>
+              <option *ngFor="let k of uygunKuryeler()" [value]="k.id">{{ k.adSoyad }} (kapasite: {{ k.gunlukKapasite }})</option>
+            </select>
+          </div>
+          <ng-template #uygunKuryeYok>
+            <p class="muted">Bu bölgede uygun aktif kurye bulunamadı.</p>
+          </ng-template>
+          <button class="btn btn--primary" (click)="kuryeAta()" [disabled]="islemDevamEdiyor() || !uygunKuryeler().length">
+            Kurye Ata
+          </button>
+        </section>
+      </ng-container>
 
-      <section class="panel" *ngIf="teslimatKanitiGerekli()" [appYetki]="['operasyon-uzmani', 'kurye-sorumlusu']">
-        <h2>Teslimat Kanıtı Ekle</h2>
-        <div class="form-field">
-          <label for="teslimAlan">Teslim Alan Ad Soyad</label>
-          <input
-            id="teslimAlan"
-            type="text"
-            [value]="teslimAlan()"
-            (input)="teslimAlan.set($any($event.target).value)"
-          />
-        </div>
-        <label class="checkbox-field">
-          <input type="checkbox" [checked]="imzaVar()" (change)="imzaVar.set($any($event.target).checked)" />
-          İmza alındı
-        </label>
-        <div class="form-field">
-          <label for="teslimatNot">Not (opsiyonel)</label>
-          <textarea
-            id="teslimatNot"
-            rows="2"
-            [value]="teslimatNot()"
-            (input)="teslimatNot.set($any($event.target).value)"
-          ></textarea>
-        </div>
-        <button class="btn btn--success" (click)="teslimatKanitiKaydet()" [disabled]="islemDevamEdiyor()">
-          Teslimat Kanıtını Kaydet
-        </button>
-      </section>
+      <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <section class="panel" *ngIf="teslimatKanitiGerekli()">
+          <h2>Teslimat Kanıtı Ekle</h2>
+          <div class="form-field">
+            <label for="teslimAlan">Teslim Alan Ad Soyad</label>
+            <input
+              id="teslimAlan"
+              type="text"
+              [value]="teslimAlan()"
+              (input)="teslimAlan.set($any($event.target).value)"
+            />
+          </div>
+          <label class="checkbox-field">
+            <input type="checkbox" [checked]="imzaVar()" (change)="imzaVar.set($any($event.target).checked)" />
+            İmza alındı
+          </label>
+          <div class="form-field">
+            <label for="teslimatNot">Not (opsiyonel)</label>
+            <textarea
+              id="teslimatNot"
+              rows="2"
+              [value]="teslimatNot()"
+              (input)="teslimatNot.set($any($event.target).value)"
+            ></textarea>
+          </div>
+          <button class="btn btn--success" (click)="teslimatKanitiKaydet()" [disabled]="islemDevamEdiyor()">
+            Teslimat Kanıtını Kaydet
+          </button>
+        </section>
+      </ng-container>
 
       <section class="panel" *ngIf="kanit() as k">
         <h2>Teslimat Kanıtı</h2>
@@ -97,22 +101,24 @@
         </dl>
       </section>
 
-      <section class="panel" *ngIf="sonrakiDurumlar().length || iadeAcilabilir()" [appYetki]="['operasyon-uzmani', 'kurye-sorumlusu']">
-        <h2>Durum İşlemleri</h2>
-        <div class="status-actions">
-          <button
-            *ngFor="let s of sonrakiDurumlar()"
-            class="btn btn--ghost"
-            (click)="durumDegistir(s)"
-            [disabled]="islemDevamEdiyor()"
-          >
-            {{ s | statusLabel }} Olarak İşaretle
-          </button>
-          <button *ngIf="iadeAcilabilir()" class="btn btn--ghost" (click)="iadeTalebiAc()" [disabled]="islemDevamEdiyor()">
-            İade Talebi Aç
-          </button>
-        </div>
-      </section>
+      <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <section class="panel" *ngIf="sonrakiDurumlar().length || iadeAcilabilir()">
+          <h2>Durum İşlemleri</h2>
+          <div class="status-actions">
+            <button
+              *ngFor="let s of sonrakiDurumlar()"
+              class="btn btn--ghost"
+              (click)="durumDegistir(s)"
+              [disabled]="islemDevamEdiyor()"
+            >
+              {{ s | statusLabel }} Olarak İşaretle
+            </button>
+            <button *ngIf="iadeAcilabilir()" class="btn btn--ghost" (click)="iadeTalebiAc()" [disabled]="islemDevamEdiyor()">
+              İade Talebi Aç
+            </button>
+          </div>
+        </section>
+      </ng-container>
 
       <section class="panel timeline-panel">
         <h2>Durum Geçmişi</h2>

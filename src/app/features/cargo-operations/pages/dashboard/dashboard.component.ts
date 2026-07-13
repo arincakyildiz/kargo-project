@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ShipmentService } from '../../services/shipment.service';
-import { SHIPMENT_STATUS_LABELS, ShipmentStatus } from '../../models/shipment.model';
+import { SHIPMENT_STATUS_COLORS, SHIPMENT_STATUS_LABELS, ShipmentStatus } from '../../models/shipment.model';
 import { OperationMetric } from '../../models/operation-metric.model';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edildi'];
 const GECIKME_GUN = 3;
@@ -14,7 +15,7 @@ const GECIKME_GUN = 3;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusLabelPipe, EmptyStateComponent, YetkiDirective],
+  imports: [CommonModule, RouterLink, StatusLabelPipe, EmptyStateComponent, YetkiDirective, IconComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -53,6 +54,7 @@ export class DashboardComponent {
     (Object.keys(SHIPMENT_STATUS_LABELS) as ShipmentStatus[]).map((status) => ({
       status,
       sayi: this.metric().statusDagilimi[status] ?? 0,
+      renk: SHIPMENT_STATUS_COLORS[status],
     }))
   );
 

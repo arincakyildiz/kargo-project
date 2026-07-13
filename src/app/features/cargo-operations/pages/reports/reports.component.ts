@@ -5,13 +5,14 @@ import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
 import { Shipment, ShipmentStatus } from '../../models/shipment.model';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edildi'];
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, EmptyStateComponent],
+  imports: [CommonModule, EmptyStateComponent, IconComponent],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss',
 })

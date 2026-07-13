@@ -55,7 +55,7 @@ export function demoShipments(): Shipment[] {
     ['gnd-1', 'TK-100234', 'adr-1', 'zon-1', 'kur-1', 2.4, 'teslim-edildi', -6, 'Kırılabilir ürün'],
     ['gnd-2', 'TK-100235', 'adr-2', 'zon-2', 'kur-2', 1.1, 'dagitimda', -1, undefined],
     ['gnd-3', 'TK-100236', 'adr-3', 'zon-3', 'kur-3', 5.0, 'kurye-atandi', -1, undefined],
-    ['gnd-4', 'TK-100237', 'adr-4', 'zon-4', 'kur-4', 0.8, 'olusturuldu', 0, undefined],
+    ['gnd-4', 'TK-100237', 'adr-4', 'zon-4', undefined, 0.8, 'olusturuldu', 0, undefined],
     ['gnd-5', 'TK-100238', 'adr-5', 'zon-1', 'kur-1', 3.2, 'teslim-edilemedi', -3, 'Alıcı adreste bulunamadı'],
     ['gnd-6', 'TK-100239', 'adr-6', 'zon-2', 'kur-2', 1.6, 'iade-talebi', -4, 'Yanlış ürün gönderildi'],
     ['gnd-7', 'TK-100240', 'adr-1', 'zon-1', 'kur-1', 4.5, 'iade-edildi', -8, undefined],

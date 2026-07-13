@@ -6,7 +6,7 @@ import { StorageService } from './storage.service';
  * localStorage kayıtları temizlenir ve servisler güncel demo veriyle
  * yeniden seed edilir. Kullanıcının rol tercihi korunur.
  */
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 const SEED_VERSION_KEY = 'staj2_seed_version';
 
 const DEMO_KEYS = [

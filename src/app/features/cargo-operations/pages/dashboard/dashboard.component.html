@@ -13,20 +13,32 @@
   <ng-container *ngIf="!yukleniyor() && !hataMesaji()">
     <div class="kpi-grid">
       <div class="kpi-card">
-        <span class="kpi-card__label">Toplam Gönderi</span>
-        <span class="kpi-card__value">{{ metric().toplamGonderi }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Toplam Gönderi</span>
+          <span class="kpi-card__value">{{ metric().toplamGonderi }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="paket" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--success">
-        <span class="kpi-card__label">Teslim Edildi Oranı</span>
-        <span class="kpi-card__value">%{{ metric().teslimEdildiOrani }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Teslim Edildi Oranı</span>
+          <span class="kpi-card__value">%{{ metric().teslimEdildiOrani }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="teslimat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--warning">
-        <span class="kpi-card__label">Geciken Gönderi</span>
-        <span class="kpi-card__value">{{ metric().geciken }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Geciken Gönderi</span>
+          <span class="kpi-card__value">{{ metric().geciken }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="saat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--purple">
-        <span class="kpi-card__label">İade Oranı</span>
-        <span class="kpi-card__value">%{{ metric().iadeOrani }}</span>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">İade Oranı</span>
+          <span class="kpi-card__value">%{{ metric().iadeOrani }}</span>
+        </div>
+        <span class="kpi-card__icon"><app-icon name="iade" [size]="18"></app-icon></span>
       </div>
     </div>
 
@@ -36,7 +48,11 @@
         <div class="status-bar" *ngFor="let s of statusListesi()">
           <span class="status-bar__label">{{ s.status | statusLabel }}</span>
           <div class="status-bar__track">
-            <div class="status-bar__fill" [style.width.%]="(s.sayi / maxStatusSayi()) * 100"></div>
+            <div
+              class="status-bar__fill"
+              [style.width.%]="(s.sayi / maxStatusSayi()) * 100"
+              [style.background]="s.renk"
+            ></div>
           </div>
           <span class="status-bar__value">{{ s.sayi }}</span>
         </div>

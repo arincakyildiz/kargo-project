@@ -21,6 +21,18 @@ export const SHIPMENT_STATUS_LABELS: Record<ShipmentStatus, string> = {
   'iptal-edildi': 'İptal Edildi',
 };
 
+/** Durum rozetleri ve grafiklerde kullanılan tek renk kaynağı. */
+export const SHIPMENT_STATUS_COLORS: Record<ShipmentStatus, string> = {
+  olusturuldu: '#3b82f6',
+  'kurye-atandi': '#6366f1',
+  dagitimda: '#f59e0b',
+  'teslim-edildi': '#22c55e',
+  'teslim-edilemedi': '#dc2626',
+  'iade-talebi': '#ef4444',
+  'iade-edildi': '#f43f5e',
+  'iptal-edildi': '#64748b',
+};
+
 /** Tanımlı workflow: anahtar durumdan yalnızca listedeki durumlara geçilebilir. */
 export const SHIPMENT_STATUS_TRANSITIONS: Record<ShipmentStatus, ShipmentStatus[]> = {
   olusturuldu: ['kurye-atandi', 'iptal-edildi'],

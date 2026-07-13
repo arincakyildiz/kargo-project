@@ -9,7 +9,11 @@ export type IconName =
   | 'iade'
   | 'bolge'
   | 'rapor'
-  | 'kayit';
+  | 'kayit'
+  | 'saat'
+  | 'arama'
+  | 'kalem'
+  | 'kapat';
 
 /** Uygulama genelinde kullanılan çizgi (stroke) ikon seti. */
 @Component({
@@ -69,6 +73,22 @@ export type IconName =
         <path d="M14 2v6h6" />
         <path d="M8 13h8" />
         <path d="M8 17h5" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'saat'">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.5 2" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'arama'">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'kalem'">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'kapat'">
+        <path d="M18 6 6 18" />
+        <path d="M6 6l12 12" />
       </ng-container>
     </svg>
   `,
