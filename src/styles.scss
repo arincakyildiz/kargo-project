@@ -95,9 +95,23 @@ a { color: var(--color-primary); }
 .btn--ghost:hover:not(:disabled) { border-color: #cbd2e0; background: #fbfcfe; }
 .btn--danger { background: var(--color-danger); color: #fff; }
 .btn--danger:hover:not(:disabled) { background: #dc2626; }
+.btn--danger-text { color: var(--color-danger); }
+.btn--danger-text:hover:not(:disabled) { border-color: var(--color-danger); background: rgba(239, 68, 68, 0.08); }
 .btn--success { background: var(--color-success); color: #fff; }
 .btn--success:hover:not(:disabled) { background: #16a34a; }
 .btn--sm { padding: 0.35rem 0.65rem; font-size: 0.8rem; }
+
+.link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.link-btn:hover { text-decoration: underline; }
 
 .panel {
   background: var(--color-card);
@@ -213,6 +227,13 @@ table.data-table tbody tr { transition: background-color 0.12s ease; }
 table.data-table tbody tr:hover { background: #f1f5f9; }
 table.data-table tbody tr:last-child td { border-bottom: none; }
 
+.cell-truncate {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .form-field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
 .form-field label { font-size: 0.85rem; font-weight: 600; color: var(--color-text); }
 .form-field input, .form-field select, .form-field textarea {
@@ -245,7 +266,9 @@ table.data-table tbody tr:last-child td { border-bottom: none; }
   padding: 0.55rem 0.9rem;
   border: 1px solid var(--color-border);
   border-radius: 999px;
+  flex: 1 1 240px;
   min-width: 240px;
+  max-width: 420px;
   background: var(--color-card);
   color: var(--color-text);
   font: inherit;
@@ -274,7 +297,7 @@ table.data-table tbody tr:last-child td { border-bottom: none; }
 @media (max-width: 768px) {
   .panel { padding: 1rem; }
   .toolbar { flex-direction: column; align-items: stretch; }
-  .toolbar input[type="search"] { min-width: 0; width: 100%; }
+  .toolbar input[type="search"] { flex: none; min-width: 0; width: 100%; max-width: none; }
   .status-bar { grid-template-columns: 100px 1fr 32px; gap: 0.5rem; }
   .fab { bottom: 1rem; right: 1rem; padding: 0.5rem 0.9rem; }
 }

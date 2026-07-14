@@ -8,10 +8,21 @@ const HISTORY_KEY = 'staj2_status_history';
 @Injectable({ providedIn: 'root' })
 export class StatusHistoryService {
   private readonly entries = signal<StatusHistoryEntry[]>(
-    this.storage.read<StatusHistoryEntry[]>(HISTORY_KEY, demoStatusHistory())
+    this.storage.read<StatusHistoryEntry[]>(HISTORY_KEY, [])
   );
 
   constructor(private storage: StorageService) {}
+
+  ornekVeriYukle(): void {
+    const veri = demoStatusHistory();
+    this.entries.set(veri);
+    this.storage.write(HISTORY_KEY, veri);
+  }
+
+  verileriSil(): void {
+    this.entries.set([]);
+    this.storage.write(HISTORY_KEY, []);
+  }
 
   gonderiGecmisi(shipmentId: string) {
     return computed(() =>

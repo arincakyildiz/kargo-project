@@ -17,7 +17,7 @@ npm install
 ng serve
 ```
 
-`http://localhost:4200` adresinden açılır. İlk açılışta demo veri (gönderiler, kuryeler, bölgeler, adresler) otomatik olarak `localStorage`'a yazılır.
+`http://localhost:4200` adresinden açılır. Sistem **boş** başlar; kendi verilerinizi (bölge, kurye, gönderi) sıfırdan girebilirsiniz. Sistemin nasıl işlediğini görmek isterseniz, veri olmadığı sürece Dashboard'da çıkan **"Örnek Veri Yükle"** butonuyla tutarlı bir örnek veri setini (gönderiler, kuryeler, bölgeler, adresler, iadeler) tek tıkla yükleyebilirsiniz.
 
 ## Test
 

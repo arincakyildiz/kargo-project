@@ -9,7 +9,7 @@ const COURIERS_KEY = 'staj2_couriers';
 @Injectable({ providedIn: 'root' })
 export class CourierService {
   private readonly couriers = signal<Courier[]>(
-    this.storage.read<Courier[]>(COURIERS_KEY, demoCouriers())
+    this.storage.read<Courier[]>(COURIERS_KEY, [])
   );
 
   readonly liste = computed(() => this.couriers());
@@ -33,6 +33,14 @@ export class CourierService {
   private persist(list: Courier[]): void {
     this.couriers.set(list);
     this.storage.write(COURIERS_KEY, list);
+  }
+
+  ornekVeriYukle(): void {
+    this.persist(demoCouriers());
+  }
+
+  verileriSil(): void {
+    this.persist([]);
   }
 
   async olustur(veri: Omit<Courier, 'id' | 'createdAt' | 'updatedAt'>): Promise<Courier> {

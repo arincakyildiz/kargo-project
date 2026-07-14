@@ -20,6 +20,8 @@ describe('ShipmentService', () => {
     zoneService = TestBed.inject(ZoneService);
     proofService = TestBed.inject(DeliveryProofService);
     assignmentService = TestBed.inject(AssignmentService);
+    // Uygulama artık boş başlıyor; testler bölge/adres verisine ihtiyaç duyduğu için örnek veriyi elle yükler.
+    zoneService.ornekVeriYukle();
   });
 
   it('yeni gönderi "olusturuldu" durumuyla oluşturulur', async () => {

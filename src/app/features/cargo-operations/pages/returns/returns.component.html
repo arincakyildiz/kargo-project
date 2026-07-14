@@ -35,7 +35,7 @@
       <tbody>
         <tr *ngFor="let r of sayfalanmis()">
           <td><a [routerLink]="['/gonderiler', r.shipmentId]">{{ takipKodu(r.shipmentId) }}</a></td>
-          <td>{{ r.neden }}</td>
+          <td class="cell-truncate" [title]="r.neden">{{ r.neden }}</td>
           <td>{{ statusLabels[r.status] }}</td>
           <td>{{ r.createdAt | tarih }}</td>
           <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">

@@ -5,6 +5,8 @@ import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
 import { AuditService } from '../../../../core/services/audit.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { DialogService } from '../../../../shared/components/confirm-dialog/dialog.service';
 import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import {
   SHIPMENT_STATUS_COLORS,
@@ -160,9 +162,36 @@ export class DashboardComponent {
     private shipmentService: ShipmentService,
     public courierService: CourierService,
     public zoneService: ZoneService,
-    private audit: AuditService
+    private audit: AuditService,
+    private notification: NotificationService,
+    private dialog: DialogService
   ) {
     this.yukle();
+  }
+
+  async ornekVeriYukle(): Promise<void> {
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Örnek Veri Yükle',
+      mesaj: 'Sistem; örnek gönderi, kurye, bölge ve iade kayıtlarıyla doldurulacak. Devam edilsin mi?',
+      onayMetni: 'Yükle',
+    });
+    if (!sonuc.onaylandi) return;
+
+    this.shipmentService.ornekVeriYukle();
+    this.notification.success('Örnek veri yüklendi.');
+  }
+
+  async verileriSil(): Promise<void> {
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Tüm Verileri Sil',
+      mesaj: 'Bu işlem geri alınamaz. Tüm gönderiler, kuryeler, bölgeler, adresler ve audit log kalıcı olarak silinecek.',
+      aciklamaGerekli: true,
+      onayMetni: 'Sil',
+    });
+    if (!sonuc.onaylandi) return;
+
+    this.shipmentService.verileriSil();
+    this.notification.success('Tüm veriler silindi.');
   }
 
   async yukle(): Promise<void> {

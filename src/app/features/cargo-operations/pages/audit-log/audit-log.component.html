@@ -34,7 +34,7 @@
           <td>{{ e.islemZamani | tarih }}</td>
           <td>{{ e.rol }}</td>
           <td>{{ e.islemTipi }}</td>
-          <td>{{ e.aciklama }}</td>
+          <td class="cell-truncate" [title]="e.aciklama">{{ e.aciklama }}</td>
           <td>
             <ng-container *ngIf="e.eskiDeger || e.yeniDeger">{{ e.eskiDeger || '—' }} → {{ e.yeniDeger || '—' }}</ng-container>
           </td>

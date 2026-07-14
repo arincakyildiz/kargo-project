@@ -29,7 +29,7 @@
 
 dl { display: grid; grid-template-columns: 140px 1fr; row-gap: 0.5rem; margin: 0; }
 dt { color: var(--color-muted); font-size: 0.85rem; }
-dd { margin: 0; font-weight: 500; }
+dd { margin: 0; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
 
 .checkbox-field { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; }
 
@@ -44,3 +44,5 @@ dd { margin: 0; font-weight: 500; }
 .timeline__aciklama { margin: 0.2rem 0 0; font-size: 0.88rem; color: var(--color-text); }
 
 .muted { color: var(--color-muted); font-size: 0.85rem; }
+
+.char-counter { display: block; text-align: right; color: var(--color-muted); font-size: 0.75rem; margin-top: 0.15rem; }

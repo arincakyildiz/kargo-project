@@ -9,13 +9,24 @@ const PROOFS_KEY = 'staj2_delivery_proofs';
 @Injectable({ providedIn: 'root' })
 export class DeliveryProofService {
   private readonly proofs = signal<DeliveryProof[]>(
-    this.storage.read<DeliveryProof[]>(PROOFS_KEY, demoDeliveryProofs())
+    this.storage.read<DeliveryProof[]>(PROOFS_KEY, [])
   );
 
   constructor(private storage: StorageService) {}
 
   gonderiKaniti(shipmentId: string): DeliveryProof | undefined {
     return this.proofs().find((p) => p.shipmentId === shipmentId);
+  }
+
+  ornekVeriYukle(): void {
+    const veri = demoDeliveryProofs();
+    this.proofs.set(veri);
+    this.storage.write(PROOFS_KEY, veri);
+  }
+
+  verileriSil(): void {
+    this.proofs.set([]);
+    this.storage.write(PROOFS_KEY, []);
   }
 
   async olustur(veri: Omit<DeliveryProof, 'id' | 'createdAt' | 'updatedAt'>): Promise<DeliveryProof> {

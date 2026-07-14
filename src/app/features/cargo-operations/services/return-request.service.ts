@@ -9,7 +9,7 @@ const RETURNS_KEY = 'staj2_return_requests';
 @Injectable({ providedIn: 'root' })
 export class ReturnRequestService {
   private readonly returns = signal<ReturnRequest[]>(
-    this.storage.read<ReturnRequest[]>(RETURNS_KEY, demoReturnRequests())
+    this.storage.read<ReturnRequest[]>(RETURNS_KEY, [])
   );
 
   readonly liste = computed(() => this.returns());
@@ -23,6 +23,14 @@ export class ReturnRequestService {
   private persist(list: ReturnRequest[]): void {
     this.returns.set(list);
     this.storage.write(RETURNS_KEY, list);
+  }
+
+  ornekVeriYukle(): void {
+    this.persist(demoReturnRequests());
+  }
+
+  verileriSil(): void {
+    this.persist([]);
   }
 
   async olustur(veri: Omit<ReturnRequest, 'id' | 'createdAt' | 'updatedAt'>): Promise<ReturnRequest> {

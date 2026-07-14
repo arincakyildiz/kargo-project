@@ -20,10 +20,11 @@ export class BusinessRuleError extends Error {}
 @Injectable({ providedIn: 'root' })
 export class ShipmentService {
   private readonly shipments = signal<Shipment[]>(
-    this.storage.read<Shipment[]>(SHIPMENTS_KEY, demoShipments())
+    this.storage.read<Shipment[]>(SHIPMENTS_KEY, [])
   );
 
   readonly liste = computed(() => this.shipments());
+  readonly veriVarMi = computed(() => this.shipments().length > 0);
 
   constructor(
     private storage: StorageService,
@@ -40,6 +41,39 @@ export class ShipmentService {
   private persist(list: Shipment[]): void {
     this.shipments.set(list);
     this.storage.write(SHIPMENTS_KEY, list);
+  }
+
+  /** Sistem boşken kullanıcının isteğiyle tetiklenir; tüm ilişkili servisleri tutarlı örnek veriyle doldurur. */
+  ornekVeriYukle(): void {
+    this.zoneService.ornekVeriYukle();
+    this.courierService.ornekVeriYukle();
+    this.persist(demoShipments());
+    this.statusHistory.ornekVeriYukle();
+    this.deliveryProofService.ornekVeriYukle();
+    this.returnRequestService.ornekVeriYukle();
+    this.assignmentService.ornekVeriYukle();
+    this.audit.kaydet({
+      islemTipi: 'ornek-veri-yukle',
+      rol: this.currentUser.rol(),
+      aciklama: 'Örnek veri yüklendi.',
+    });
+  }
+
+  /** Geri alınamaz: tüm gönderi/kurye/bölge/iade/atama kayıtlarını ve audit log'u siler. */
+  verileriSil(): void {
+    this.persist([]);
+    this.zoneService.verileriSil();
+    this.courierService.verileriSil();
+    this.statusHistory.verileriSil();
+    this.deliveryProofService.verileriSil();
+    this.returnRequestService.verileriSil();
+    this.assignmentService.verileriSil();
+    this.audit.temizle();
+    this.audit.kaydet({
+      islemTipi: 'veri-sil',
+      rol: this.currentUser.rol(),
+      aciklama: 'Tüm veriler silindi.',
+    });
   }
 
   async tumunuGetir(errorRate = 0): Promise<Shipment[]> {

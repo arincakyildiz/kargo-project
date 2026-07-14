@@ -90,6 +90,10 @@ export class AppComponent {
     }
   }
 
+  tumunuOkunduIsaretle(): void {
+    this.audit.bildirimleriOkunduIsaretle(this.audit.okunmamisBildirimler().map((b) => b.id));
+  }
+
   profilAc(event: MouseEvent): void {
     event.stopPropagation();
     this.bildirimAcik.set(false);

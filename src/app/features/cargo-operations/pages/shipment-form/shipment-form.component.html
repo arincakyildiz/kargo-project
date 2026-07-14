@@ -7,13 +7,39 @@
 
   <form class="panel" [formGroup]="form" (ngSubmit)="kaydet()" *ngIf="!yukleniyor()">
     <div class="form-field">
-      <label for="adresId">Alıcı Adresi</label>
-      <select id="adresId" formControlName="adresId" (change)="adresSecildi($any($event.target).value)">
+      <div class="form-field__label-row">
+        <label for="adresId">Alıcı Adresi</label>
+        <button type="button" class="link-btn" (click)="yeniAdresModunuDegistir()">
+          {{ yeniAdresModu() ? 'Kayıtlı adres seç' : '+ Yeni adres ekle' }}
+        </button>
+      </div>
+
+      <select
+        id="adresId"
+        formControlName="adresId"
+        *ngIf="!yeniAdresModu()"
+        (change)="adresSecildi($any($event.target).value)"
+      >
         <option value="" disabled>Adres seçin</option>
         <option *ngFor="let a of adresler()" [value]="a.id">{{ a.aliciAdSoyad }} — {{ a.acikAdres }}</option>
       </select>
-      <span class="form-field__error" *ngIf="form.controls.adresId.invalid && form.controls.adresId.touched">
+      <span class="form-field__error" *ngIf="!yeniAdresModu() && form.controls.adresId.invalid && form.controls.adresId.touched">
         Adres seçimi zorunludur.
+      </span>
+
+      <input
+        id="acikAdres"
+        formControlName="acikAdres"
+        type="text"
+        *ngIf="yeniAdresModu()"
+        placeholder="Mahalle, cadde/sokak, no"
+        maxlength="150"
+      />
+      <span class="form-field__error" *ngIf="yeniAdresModu() && form.controls.acikAdres.errors?.['required'] && form.controls.acikAdres.touched">
+        Açık adres zorunludur.
+      </span>
+      <span class="form-field__error" *ngIf="yeniAdresModu() && form.controls.acikAdres.errors?.['maxlength'] && form.controls.acikAdres.touched">
+        En fazla 150 karakter girilebilir.
       </span>
     </div>
 
@@ -72,13 +98,13 @@
 
     <div class="form-field">
       <label for="aciklama">Açıklama (opsiyonel)</label>
-      <textarea id="aciklama" formControlName="aciklama" rows="3" maxlength="200"></textarea>
+      <textarea id="aciklama" formControlName="aciklama" rows="3" maxlength="100"></textarea>
       <div class="char-counter-row">
         <span class="form-field__error" *ngIf="form.controls.aciklama.errors?.['maxlength']">
-          En fazla 200 karakter girilebilir.
+          En fazla 100 karakter girilebilir.
         </span>
         <small class="char-counter">
-          {{ form.controls.aciklama.value.length }} / 200
+          {{ form.controls.aciklama.value.length }} / 100
         </small>
       </div>
     </div>

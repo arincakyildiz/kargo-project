@@ -35,7 +35,7 @@
           <dt>Telefon</dt><dd>{{ g.aliciTelefon }}</dd>
           <dt>Bölge</dt><dd>{{ zoneService.bolgeAdi(g.bolgeId) }}</dd>
           <dt>Kurye</dt><dd>{{ courierService.kuryeAdi(g.kuryeId) }}</dd>
-          <dt>Ağırlık</dt><dd>{{ g.agirlikKg }} kg</dd>
+          <dt>Ağırlık</dt><dd>{{ g.agirlikKg | number:'1.0-2' }} kg</dd>
           <dt>Açıklama</dt><dd>{{ g.aciklama || '—' }}</dd>
           <dt>Oluşturulma</dt><dd>{{ g.createdAt | tarih }}</dd>
           <dt>Son Güncelleme</dt><dd>{{ g.updatedAt | tarih }}</dd>
@@ -69,9 +69,11 @@
             <input
               id="teslimAlan"
               type="text"
+              maxlength="30"
               [value]="teslimAlan()"
               (input)="teslimAlan.set($any($event.target).value)"
             />
+            <small class="char-counter">{{ teslimAlan().length }} / 30</small>
           </div>
           <label class="checkbox-field">
             <input type="checkbox" [checked]="imzaVar()" (change)="imzaVar.set($any($event.target).checked)" />
@@ -82,9 +84,11 @@
             <textarea
               id="teslimatNot"
               rows="2"
+              maxlength="100"
               [value]="teslimatNot()"
               (input)="teslimatNot.set($any($event.target).value)"
             ></textarea>
+            <small class="char-counter">{{ teslimatNot().length }} / 100</small>
           </div>
           <button class="btn btn--success" (click)="teslimatKanitiKaydet()" [disabled]="islemDevamEdiyor()">
             Teslimat Kanıtını Kaydet

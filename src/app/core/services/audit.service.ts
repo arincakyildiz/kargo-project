@@ -44,4 +44,11 @@ export class AuditService {
     this.okunanBildirimIdler.set(guncel);
     this.storage.write(OKUNAN_BILDIRIM_KEY, [...guncel]);
   }
+
+  temizle(): void {
+    this.entries.set([]);
+    this.storage.write(AUDIT_KEY, []);
+    this.okunanBildirimIdler.set(new Set());
+    this.storage.write(OKUNAN_BILDIRIM_KEY, []);
+  }
 }

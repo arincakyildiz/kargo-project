@@ -14,7 +14,7 @@ const ASSIGNMENTS_KEY = 'staj2_assignments';
 @Injectable({ providedIn: 'root' })
 export class AssignmentService {
   private readonly assignments = signal<Assignment[]>(
-    this.storage.read<Assignment[]>(ASSIGNMENTS_KEY, demoAssignments())
+    this.storage.read<Assignment[]>(ASSIGNMENTS_KEY, [])
   );
 
   readonly liste = computed(() => this.assignments());
@@ -25,6 +25,14 @@ export class AssignmentService {
   private persist(list: Assignment[]): void {
     this.assignments.set(list);
     this.storage.write(ASSIGNMENTS_KEY, list);
+  }
+
+  ornekVeriYukle(): void {
+    this.persist(demoAssignments());
+  }
+
+  verileriSil(): void {
+    this.persist([]);
   }
 
   aktifAtama(shipmentId: string): Assignment | undefined {

@@ -10,9 +10,9 @@ export interface DemoUser {
 }
 
 const DEMO_USERS: Record<Rol, DemoUser> = {
-  'operasyon-uzmani': { rol: 'operasyon-uzmani', adSoyad: 'Elif Operasyon' },
-  'kurye-sorumlusu': { rol: 'kurye-sorumlusu', adSoyad: 'Kerem Kurye' },
-  'musteri-hizmetleri': { rol: 'musteri-hizmetleri', adSoyad: 'Aylin Destek' },
+  'operasyon-uzmani': { rol: 'operasyon-uzmani', adSoyad: 'Elif Yılmaz' },
+  'kurye-sorumlusu': { rol: 'kurye-sorumlusu', adSoyad: 'Kerem Aydın' },
+  'musteri-hizmetleri': { rol: 'musteri-hizmetleri', adSoyad: 'Aylin Şahin' },
 };
 
 /**

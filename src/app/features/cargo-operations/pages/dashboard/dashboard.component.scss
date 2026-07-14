@@ -13,6 +13,7 @@
   flex-wrap: wrap;
 }
 .dashboard__header h1 { margin: 0; }
+.dashboard__header-actions { display: flex; align-items: center; gap: 0.6rem; }
 
 /* --- KPI trend rozeti --- */
 .kpi-card__trend {

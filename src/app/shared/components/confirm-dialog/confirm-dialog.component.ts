@@ -16,10 +16,12 @@ import { DialogService } from './dialog.service';
           <textarea
             id="aciklama"
             rows="3"
+            maxlength="100"
             placeholder="Bu işlem için açıklama girin"
             [value]="aciklama()"
             (input)="aciklama.set($any($event.target).value)"
           ></textarea>
+          <small class="char-counter">{{ aciklama().length }} / 100</small>
         </div>
         <div class="dialog__actions">
           <button type="button" class="btn btn--ghost" (click)="iptal()">Vazgeç</button>
@@ -42,6 +44,7 @@ import { DialogService } from './dialog.service';
     .dialog p { margin: 0 0 1rem; color: var(--color-text); }
     .dialog__aciklama { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem; }
     .dialog__aciklama textarea { resize: vertical; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: 8px; font: inherit; }
+    .char-counter { align-self: flex-end; color: var(--color-muted); font-size: 0.75rem; }
     .zorunlu { color: var(--color-danger); }
     .dialog__actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
     .btn { padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid transparent; cursor: pointer; font-weight: 600; }

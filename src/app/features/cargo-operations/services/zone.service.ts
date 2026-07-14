@@ -10,10 +10,10 @@ const ADDRESSES_KEY = 'staj2_addresses';
 @Injectable({ providedIn: 'root' })
 export class ZoneService {
   private readonly zones = signal<DeliveryZone[]>(
-    this.storage.read<DeliveryZone[]>(ZONES_KEY, demoZones())
+    this.storage.read<DeliveryZone[]>(ZONES_KEY, [])
   );
   private readonly addresses = signal<CustomerAddress[]>(
-    this.storage.read<CustomerAddress[]>(ADDRESSES_KEY, demoAddresses())
+    this.storage.read<CustomerAddress[]>(ADDRESSES_KEY, [])
   );
 
   readonly liste = computed(() => this.zones());
@@ -30,8 +30,35 @@ export class ZoneService {
     return mockRequest(() => this.addresses().find((a) => a.id === adresId), { ms: 150 });
   }
 
+  async adresOlustur(veri: Omit<CustomerAddress, 'id' | 'createdAt' | 'updatedAt'>): Promise<CustomerAddress> {
+    return mockRequest(() => {
+      const now = new Date().toISOString();
+      const yeni: CustomerAddress = { ...veri, id: crypto.randomUUID(), createdAt: now, updatedAt: now };
+      const list = [...this.addresses(), yeni];
+      this.addresses.set(list);
+      this.storage.write(ADDRESSES_KEY, list);
+      return yeni;
+    });
+  }
+
   bolgeAdi(bolgeId: string): string {
     return this.zones().find((z) => z.id === bolgeId)?.ad ?? '—';
+  }
+
+  ornekVeriYukle(): void {
+    const zones = demoZones();
+    const addresses = demoAddresses();
+    this.zones.set(zones);
+    this.storage.write(ZONES_KEY, zones);
+    this.addresses.set(addresses);
+    this.storage.write(ADDRESSES_KEY, addresses);
+  }
+
+  verileriSil(): void {
+    this.zones.set([]);
+    this.storage.write(ZONES_KEY, []);
+    this.addresses.set([]);
+    this.storage.write(ADDRESSES_KEY, []);
   }
 
   private persistZones(list: DeliveryZone[]): void {

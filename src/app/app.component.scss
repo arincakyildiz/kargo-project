@@ -179,15 +179,6 @@
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.dropdown__header {
-  padding: 0.75rem 1rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-muted);
-  border-bottom: 1px solid var(--color-border);
-}
 .dropdown__empty { padding: 1.25rem 1rem; font-size: 0.85rem; color: var(--color-muted); text-align: center; }
 .dropdown__item {
   display: flex;
@@ -205,6 +196,42 @@
 .dropdown--profile { width: 220px; padding: 1rem; }
 .dropdown__profile-name { font-size: 0.9rem; font-weight: 700; color: var(--color-text); }
 .dropdown__profile-role { font-size: 0.78rem; color: var(--color-muted); margin-top: 0.2rem; }
+
+.notification-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.notification-modal {
+  width: min(380px, 90vw);
+  max-height: min(70vh, 480px);
+  overflow-y: auto;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: dropdown-in 0.14s ease;
+}
+.notification-modal__header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+}
+.notification-modal__header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
 
 .avatar-btn {
   display: flex;
@@ -229,7 +256,9 @@
   justify-content: center;
   flex-shrink: 0;
 }
+.avatar-btn__info { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.25; min-width: 0; }
 .avatar-btn__name { font-size: 0.83rem; font-weight: 600; color: var(--color-text); white-space: nowrap; }
+.avatar-btn__role { font-size: 0.68rem; font-weight: 500; color: var(--color-muted); white-space: nowrap; }
 
 .content { flex: 1; overflow-y: auto; }
 
@@ -285,6 +314,6 @@
   .topbar { padding: 0.6rem 1rem; justify-content: space-between; position: static; }
   .topbar__actions { flex-wrap: wrap; gap: 0.4rem; }
   .topbar__role label { display: none; }
-  .avatar-btn__name { display: none; }
+  .avatar-btn__info { display: none; }
   .dropdown { width: min(280px, 90vw); right: -0.5rem; }
 }

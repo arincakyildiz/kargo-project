@@ -5,6 +5,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ShipmentService } from '../../services/shipment.service';
 import { ZoneService } from '../../services/zone.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { AuditService } from '../../../../core/services/audit.service';
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { CanComponentDeactivate } from '../../../../core/guards/unsaved-changes.guard';
 import { telefonValidator, pozitifSayiValidator } from '../../../../shared/validators/telefon.validator';
 
@@ -21,6 +23,7 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
   readonly kaydediliyor = signal(false);
   readonly kaydedildi = signal(false);
   readonly hataMesaji = signal<string | null>(null);
+  readonly yeniAdresModu = signal(false);
   private gonderiId: string | null = null;
 
   readonly adresler = this.zoneService.adresListe;
@@ -28,11 +31,12 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
 
   readonly form = this.fb.nonNullable.group({
     adresId: ['', Validators.required],
+    acikAdres: ['', Validators.maxLength(150)],
     aliciAdSoyad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
     aliciTelefon: ['', [Validators.required, telefonValidator(), Validators.maxLength(15)]],
     bolgeId: ['', Validators.required],
     agirlikKg: [1, [Validators.required, pozitifSayiValidator(), Validators.max(500)]],
-    aciklama: ['', Validators.maxLength(200)],
+    aciklama: ['', Validators.maxLength(100)],
   });
 
   constructor(
@@ -40,6 +44,8 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
     private shipmentService: ShipmentService,
     private zoneService: ZoneService,
     private notification: NotificationService,
+    private audit: AuditService,
+    private currentUser: CurrentUserService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -80,6 +86,25 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
     }
   }
 
+  yeniAdresModunuDegistir(): void {
+    const yeni = !this.yeniAdresModu();
+    this.yeniAdresModu.set(yeni);
+    const adresIdControl = this.form.controls.adresId;
+    const acikAdresControl = this.form.controls.acikAdres;
+
+    if (yeni) {
+      adresIdControl.clearValidators();
+      adresIdControl.setValue('');
+      acikAdresControl.setValidators([Validators.required, Validators.maxLength(150)]);
+    } else {
+      adresIdControl.setValidators([Validators.required]);
+      acikAdresControl.clearValidators();
+      acikAdresControl.setValue('');
+    }
+    adresIdControl.updateValueAndValidity();
+    acikAdresControl.updateValueAndValidity();
+  }
+
   kaydedilmemisDegisiklikVarMi(): boolean {
     return this.form.dirty && !this.kaydedildi();
   }
@@ -93,13 +118,39 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
     this.hataMesaji.set(null);
     try {
       const veri = this.form.getRawValue();
+      let adresId = veri.adresId;
+
+      if (this.yeniAdresModu()) {
+        const yeniAdres = await this.zoneService.adresOlustur({
+          aliciAdSoyad: veri.aliciAdSoyad,
+          telefon: veri.aliciTelefon,
+          acikAdres: veri.acikAdres,
+          bolgeId: veri.bolgeId,
+        });
+        adresId = yeniAdres.id;
+        this.audit.kaydet({
+          islemTipi: 'adres-olustur',
+          rol: this.currentUser.rol(),
+          aciklama: `Yeni adres eklendi: ${veri.aliciAdSoyad} — ${veri.acikAdres}`,
+        });
+      }
+
+      const kayitVerisi = {
+        aliciAdSoyad: veri.aliciAdSoyad,
+        aliciTelefon: veri.aliciTelefon,
+        adresId,
+        bolgeId: veri.bolgeId,
+        agirlikKg: veri.agirlikKg,
+        aciklama: veri.aciklama,
+      };
+
       if (this.duzenlemeModu() && this.gonderiId) {
-        await this.shipmentService.guncelle(this.gonderiId, veri);
+        await this.shipmentService.guncelle(this.gonderiId, kayitVerisi);
         this.notification.success('Gönderi güncellendi.');
         this.kaydedildi.set(true);
         this.router.navigate(['/gonderiler', this.gonderiId]);
       } else {
-        const yeni = await this.shipmentService.olustur(veri);
+        const yeni = await this.shipmentService.olustur(kayitVerisi);
         this.notification.success(`Gönderi oluşturuldu: ${yeni.takipKodu}`);
         this.kaydedildi.set(true);
         this.router.navigate(['/gonderiler', yeni.id]);

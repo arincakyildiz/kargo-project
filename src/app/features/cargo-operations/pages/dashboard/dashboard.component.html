@@ -1,14 +1,26 @@
 <div class="dashboard">
   <div class="dashboard__header">
     <h1>Performans Dashboardu</h1>
-    <a
-      routerLink="/gonderiler/yeni"
-      class="btn btn--primary"
-      *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
-    >
-      <app-icon name="paket" [size]="16"></app-icon>
-      Yeni Gönderi
-    </a>
+    <div class="dashboard__header-actions">
+      <ng-container *ngIf="shipments().length && !yukleniyor()">
+        <button
+          type="button"
+          class="btn btn--ghost btn--danger-text"
+          *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
+          (click)="verileriSil()"
+        >
+          Verileri Sil
+        </button>
+      </ng-container>
+      <a
+        routerLink="/gonderiler/yeni"
+        class="btn btn--primary"
+        *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
+      >
+        <app-icon name="paket" [size]="16"></app-icon>
+        Yeni Gönderi
+      </a>
+    </div>
   </div>
 
   <div class="panel" *ngIf="yukleniyor()">
@@ -94,7 +106,14 @@
     </section>
 
     <ng-template #bosState>
-      <app-empty-state title="Henüz gönderi kaydı yok" description="İlk gönderiyi oluşturarak başlayın."></app-empty-state>
+      <app-empty-state
+        title="Henüz gönderi kaydı yok"
+        description="Kendi verilerinizi girerek başlayabilir veya sistemin nasıl işlediğini görmek için örnek veri yükleyebilirsiniz."
+      >
+        <button class="btn btn--ghost" (click)="ornekVeriYukle()" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+          Örnek Veri Yükle
+        </button>
+      </app-empty-state>
     </ng-template>
 
     <div class="summary-grid">
