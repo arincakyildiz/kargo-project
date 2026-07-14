@@ -45,6 +45,28 @@
 
   <div class="main">
     <header class="topbar">
+      <div class="topbar__left">
+        <button
+          type="button"
+          class="btn btn--primary btn--sm"
+          style="display: inline-flex; align-items: center; gap: 0.35rem;"
+          (click)="ornekVeriYukle()"
+        >
+          <app-icon name="paket" [size]="13"></app-icon>
+          Örnek Veri Yükle
+        </button>
+
+        <button
+          type="button"
+          class="btn btn--ghost btn--danger-text btn--sm"
+          style="display: inline-flex; align-items: center; gap: 0.35rem;"
+          *ngIf="veriVarMi()"
+          (click)="verileriSil()"
+        >
+          Verileri Sil
+        </button>
+      </div>
+
       <div class="topbar__actions">
         <button
           type="button"
@@ -58,17 +80,6 @@
         <button type="button" class="icon-btn" aria-label="Bildirimler" (click)="bildirimAc($event)">
           <app-icon name="bildirim" [size]="17"></app-icon>
           <span class="icon-btn__badge" *ngIf="okunmamisBildirimSayisi()">{{ okunmamisBildirimSayisi() }}</span>
-        </button>
-
-        <button
-          type="button"
-          class="btn btn--primary btn--sm"
-          style="margin-left: 0.5rem; display: inline-flex; align-items: center; gap: 0.35rem;"
-          *ngIf="!veriVarMi()"
-          (click)="ornekVeriYukle()"
-        >
-          <app-icon name="paket" [size]="13"></app-icon>
-          Örnek Veri Yükle
         </button>
 
         <div class="topbar__divider"></div>
@@ -109,15 +120,15 @@
       <button
         type="button"
         class="link-btn"
-        *ngIf="sonBildirimler().length"
+        *ngIf="gosterilenBildirimler().length"
         (click)="tumunuOkunduIsaretle()"
       >
         Tümünü okundu işaretle
       </button>
     </div>
-    <div class="dropdown__empty" *ngIf="!sonBildirimler().length">Henüz işlem yok.</div>
+    <div class="dropdown__empty" *ngIf="!gosterilenBildirimler().length">Henüz işlem yok.</div>
     <a
-      *ngFor="let b of sonBildirimler()"
+      *ngFor="let b of gosterilenBildirimler()"
       routerLink="/audit-log"
       class="dropdown__item"
       [class.dropdown__item--unread]="bildirimOkunmamis(b.id)"

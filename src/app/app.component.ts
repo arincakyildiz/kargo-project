@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, computed, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Rol } from './core/models/base-model';
+import { AuditLogEntry, Rol } from './core/models/base-model';
 import { CurrentUserService } from './core/services/current-user.service';
 import { AuditService } from './core/services/audit.service';
 import { ThemeService } from './core/services/theme.service';
@@ -70,7 +70,7 @@ export class AppComponent {
   readonly bildirimAcik = signal(false);
   readonly profilAcik = signal(false);
   readonly mobilMenuAcik = signal(false);
-  readonly sonBildirimler = computed(() => this.audit.log().slice(0, BILDIRIM_SAYISI));
+  readonly gosterilenBildirimler = signal<AuditLogEntry[]>([]);
   readonly okunmamisBildirimSayisi = computed(() => this.audit.okunmamisBildirimler().length);
 
   readonly veriVarMi = this.shipmentService.veriVarMi;
@@ -100,6 +100,19 @@ export class AppComponent {
     this.notification.success('Örnek veri yüklendi.');
   }
 
+  async verileriSil(): Promise<void> {
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Tüm Verileri Sil',
+      mesaj: 'Bu işlem geri alınamaz. Tüm gönderiler, kuryeler, bölgeler, adresler ve audit log kalıcı olarak silinecek.',
+      aciklamaGerekli: true,
+      onayMetni: 'Sil',
+    });
+    if (!sonuc.onaylandi) return;
+
+    this.shipmentService.verileriSil();
+    this.notification.success('Tüm veriler silindi.');
+  }
+
   rolDegistir(rol: string): void {
     this.currentUser.rolDegistir(rol as Rol);
   }
@@ -110,12 +123,17 @@ export class AppComponent {
     const acilacak = !this.bildirimAcik();
     this.bildirimAcik.set(acilacak);
     if (acilacak) {
-      this.audit.bildirimleriOkunduIsaretle(this.sonBildirimler().map((b) => b.id));
+      const okunmamislar = this.audit.okunmamisBildirimler().slice(0, BILDIRIM_SAYISI);
+      this.gosterilenBildirimler.set(okunmamislar);
+      this.audit.bildirimleriOkunduIsaretle(okunmamislar.map((b) => b.id));
+    } else {
+      this.gosterilenBildirimler.set([]);
     }
   }
 
   tumunuOkunduIsaretle(): void {
     this.audit.bildirimleriOkunduIsaretle(this.audit.okunmamisBildirimler().map((b) => b.id));
+    this.gosterilenBildirimler.set([]);
   }
 
   profilAc(event: MouseEvent): void {
@@ -134,5 +152,6 @@ export class AppComponent {
     this.bildirimAcik.set(false);
     this.profilAcik.set(false);
     this.mobilMenuAcik.set(false);
+    this.gosterilenBildirimler.set([]);
   }
 }
