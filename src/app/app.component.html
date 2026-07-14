@@ -50,7 +50,6 @@
           <button
             type="button"
             class="btn btn--ghost btn--sm"
-            style="display: inline-flex; align-items: center; gap: 0.35rem;"
             (click)="veriMenusuDegistir($event)"
           >
             <app-icon name="paket" [size]="14"></app-icon>
@@ -62,7 +61,7 @@
               class="dropdown-item-btn"
               (click)="ornekVeriYukleAction()"
             >
-              <app-icon name="paket" [size]="14" style="color: var(--color-primary);"></app-icon>
+              <app-icon name="paket" [size]="14" class="dropdown-item-btn__icon--primary"></app-icon>
               Örnek Veri Yükle
             </button>
             <button
@@ -145,9 +144,9 @@
       [class.dropdown__item--unread]="bildirimOkunmamis(b.id)"
       (click)="bildirimAcik.set(false)"
     >
-      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 0.75rem;">
-        <div style="display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; flex: 1;">
-          <span class="dropdown__item-title" style="white-space: normal; word-break: break-word;">{{ b.aciklama }}</span>
+      <div class="dropdown__item-row">
+        <div class="dropdown__item-main">
+          <span class="dropdown__item-title dropdown__item-title--wrap">{{ b.aciklama }}</span>
           <span class="dropdown__item-meta">{{ b.islemZamani | tarih }}</span>
         </div>
         <span class="dropdown__item-dot" *ngIf="bildirimOkunmamis(b.id)"></span>

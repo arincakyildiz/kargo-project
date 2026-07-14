@@ -77,6 +77,11 @@
         <option value="tumu">Tüm Bölgeler</option>
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
       </select>
+      <select (change)="kuryeStatusFiltresiDegisti($any($event.target).value)">
+        <option value="tumu">Tüm Kuryeler</option>
+        <option value="aktif">Aktif Kuryeler</option>
+        <option value="pasif">Pasif Kuryeler</option>
+      </select>
       <select (change)="kuryeSiralamaDegisti($any($event.target).value)">
         <option value="adSoyad-asc">Ad (A-Z)</option>
         <option value="doluluk-desc">Doluluk (Azalan)</option>
@@ -85,7 +90,7 @@
 
     <table class="data-table" *ngIf="kuryeKapasiteOzeti().length; else kuryeYok">
       <thead>
-        <tr><th>Kurye</th><th>Bölge</th><th>Telefon</th><th>Atanan / Kapasite</th><th>Doluluk</th><th></th></tr>
+        <tr><th>Kurye</th><th>Bölge</th><th>Telefon</th><th>Atanan / Kapasite</th><th>Doluluk</th><th>Durum</th><th></th></tr>
       </thead>
       <tbody>
         <tr *ngFor="let o of kuryeKapasiteOzeti()">
@@ -94,9 +99,16 @@
           <td>{{ o.kurye.telefon }}</td>
           <td>{{ o.kapasite.atananGonderiSayisi }} / {{ o.kapasite.kapasite }}</td>
           <td>%{{ o.doluluk }}</td>
+          <td>
+            <span class="status-badge" [class.status-badge--aktif]="o.kurye.aktifMi" [class.status-badge--pasif]="!o.kurye.aktifMi">
+              {{ o.kurye.aktifMi ? 'Aktif' : 'Pasif' }}
+            </span>
+          </td>
           <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
             <button class="btn btn--ghost btn--sm" (click)="kuryeDuzenleFormuAc(o.kurye)">Düzenle</button>
-            <button class="btn btn--ghost btn--sm" (click)="kuryeAktiflikDegistir(o.kurye)">Pasife Al</button>
+            <button class="btn btn--ghost btn--sm" (click)="kuryeAktiflikDegistir(o.kurye)">
+              {{ o.kurye.aktifMi ? 'Pasife Al' : 'Aktifleştir' }}
+            </button>
           </td>
         </tr>
       </tbody>

@@ -38,6 +38,7 @@ export class CourierAssignmentComponent {
 
   readonly kuryeArama = signal('');
   readonly kuryeBolgeFiltre = signal<string>('tumu');
+  readonly kuryeStatusFiltre = signal<string>('tumu'); // 'tumu' | 'aktif' | 'pasif'
   readonly kuryeSiralama = signal<KuryeSiralamaAnahtari>('adSoyad-asc');
   readonly gonderiArama = signal('');
   readonly gonderiBolgeFiltre = signal<string>('tumu');
@@ -67,9 +68,12 @@ export class CourierAssignmentComponent {
     const bugun = new Date().toISOString().slice(0, 10);
     const aramaMetni = this.kuryeArama().trim().toLowerCase();
     const bolgeFiltre = this.kuryeBolgeFiltre();
+    const statusFiltre = this.kuryeStatusFiltre();
 
-    return this.courierService.aktifKuryeler()
+    return this.courierService.liste()
       .filter((k) => {
+        if (statusFiltre === 'aktif' && !k.aktifMi) return false;
+        if (statusFiltre === 'pasif' && k.aktifMi) return false;
         if (bolgeFiltre !== 'tumu' && k.bolgeId !== bolgeFiltre) return false;
         if (aramaMetni && !k.adSoyad.toLowerCase().includes(aramaMetni)) return false;
         return true;
@@ -237,6 +241,10 @@ export class CourierAssignmentComponent {
 
   kuryeBolgeFiltresiDegisti(bolgeId: string): void {
     this.kuryeBolgeFiltre.set(bolgeId);
+  }
+
+  kuryeStatusFiltresiDegisti(status: string): void {
+    this.kuryeStatusFiltre.set(status);
   }
 
   kuryeSiralamaDegisti(deger: string): void {

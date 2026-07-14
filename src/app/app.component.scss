@@ -210,7 +210,10 @@
   flex-shrink: 0;
 }
 .dropdown__item-title { font-size: 0.82rem; color: var(--color-text); font-weight: 500; }
+.dropdown__item-title--wrap { white-space: normal; word-break: break-word; }
 .dropdown__item-meta { font-size: 0.72rem; color: var(--color-muted); }
+.dropdown__item-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 0.75rem; }
+.dropdown__item-main { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; flex: 1; }
 
 .dropdown--profile { width: 220px; padding: 1rem; }
 .dropdown__profile-name { font-size: 0.9rem; font-weight: 700; color: var(--color-text); }
@@ -243,6 +246,9 @@
 }
 .dropdown-item-btn app-icon {
   flex-shrink: 0;
+}
+.dropdown-item-btn__icon--primary {
+  color: var(--color-primary);
 }
 .dropdown-item-btn:hover {
   background: var(--color-bg);
