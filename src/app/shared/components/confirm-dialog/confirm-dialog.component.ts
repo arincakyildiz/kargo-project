@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { DialogService } from './dialog.service';
 
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="overlay" *ngIf="dialog.pending() as istek">
       <div class="dialog">
@@ -18,17 +19,16 @@ import { DialogService } from './dialog.service';
             rows="3"
             maxlength="100"
             placeholder="Bu işlem için açıklama girin"
-            [value]="aciklama()"
-            (input)="aciklama.set($any($event.target).value)"
+            [(ngModel)]="aciklama"
           ></textarea>
-          <small class="char-counter">{{ aciklama().length }} / 100</small>
+          <small class="char-counter">{{ aciklama.length }} / 100</small>
         </div>
         <div class="dialog__actions">
           <button type="button" class="btn btn--ghost" (click)="iptal()">Vazgeç</button>
           <button
             type="button"
             class="btn btn--primary"
-            [disabled]="istek.aciklamaGerekli && !aciklama().trim()"
+            [disabled]="istek.aciklamaGerekli && !aciklama.trim()"
             (click)="onayla()"
           >
             {{ istek.onayMetni ?? 'Onayla' }}
@@ -55,17 +55,17 @@ import { DialogService } from './dialog.service';
   `],
 })
 export class ConfirmDialogComponent {
-  aciklama = signal('');
+  aciklama = '';
 
   constructor(public dialog: DialogService) {}
 
   onayla(): void {
-    this.dialog.cozumle(true, this.aciklama());
-    this.aciklama.set('');
+    this.dialog.cozumle(true, this.aciklama);
+    this.aciklama = '';
   }
 
   iptal(): void {
     this.dialog.cozumle(false);
-    this.aciklama.set('');
+    this.aciklama = '';
   }
 }
