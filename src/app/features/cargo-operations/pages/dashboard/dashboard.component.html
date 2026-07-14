@@ -78,6 +78,13 @@
       </div>
     </div>
 
+    <app-map-simulation
+      *ngIf="shipments().length && !yukleniyor()"
+      [seciliBolge]="seciliBolge()"
+      (seciliBolgeDegisti)="bolgeFiltresiDegisti($event)"
+      style="margin-bottom: 1.5rem; display: block;"
+    ></app-map-simulation>
+
     <section class="panel status-panel" *ngIf="shipments().length; else bosState">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
         <h2 style="margin: 0;">Durum Dağılımı</h2>

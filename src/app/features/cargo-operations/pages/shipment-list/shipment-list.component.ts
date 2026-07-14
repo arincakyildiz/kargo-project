@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { Shipment, SHIPMENT_STATUS_LABELS, ShipmentStatus } from '../../models/shipment.model';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
@@ -77,7 +78,8 @@ export class ShipmentListComponent {
   constructor(
     private shipmentService: ShipmentService,
     public courierService: CourierService,
-    public zoneService: ZoneService
+    public zoneService: ZoneService,
+    private notification: NotificationService
   ) {
     this.yukle();
   }
@@ -118,5 +120,150 @@ export class ShipmentListComponent {
   sayfayaGit(yeniSayfa: number): void {
     if (yeniSayfa < 1 || yeniSayfa > this.toplamSayfa()) return;
     this.sayfa.set(yeniSayfa);
+  }
+
+  csvDisariAktar(): void {
+    const data = this.filtrelenmis();
+    if (!data.length) {
+      this.notification.error('Dışarı aktarılacak kargo bulunamadı.');
+      return;
+    }
+
+    const headers = ['Takip Kodu', 'Alici Ad Soyad', 'Alici Telefon', 'Bolge', 'Agirlik (kg)', 'Durum', 'Olusturulma Tarihi'];
+    const rows = data.map((s) => [
+      s.takipKodu,
+      s.aliciAdSoyad,
+      s.aliciTelefon,
+      this.zoneService.liste().find((z) => z.id === s.bolgeId)?.ad ?? s.bolgeId,
+      s.agirlikKg,
+      s.status,
+      s.createdAt
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((row) => row.map((val) => `"${val}"`).join(','))].join('\n');
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `gonderiler_listesi_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.notification.success('Kargo listesi CSV olarak indirildi.');
+  }
+
+  async csvTopluYukle(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      const text = e.target?.result as string;
+      if (!text) return;
+
+      try {
+        const lines = text.split('\n').map((line) => line.trim()).filter((line) => line.length > 0);
+        if (lines.length <= 1) {
+          this.notification.error('Yüklenen CSV dosyası boş veya geçersiz.');
+          return;
+        }
+
+        const parsedRows: Array<string[]> = [];
+        for (let i = 1; i < lines.length; i++) {
+          const row: string[] = [];
+          let insideQuote = false;
+          let currentField = '';
+          const line = lines[i];
+
+          for (let j = 0; j < line.length; j++) {
+            const char = line[j];
+            if (char === '"') {
+              insideQuote = !insideQuote;
+            } else if (char === ',' && !insideQuote) {
+              row.push(currentField.trim());
+              currentField = '';
+            } else {
+              currentField += char;
+            }
+          }
+          row.push(currentField.trim());
+          parsedRows.push(row);
+        }
+
+        let basariliAdet = 0;
+        let hataAdet = 0;
+        const zones = this.zoneService.liste();
+
+        for (const row of parsedRows) {
+          if (row.length < 4) {
+            hataAdet++;
+            continue;
+          }
+
+          const [aliciAdSoyad, telefon, bolgeAd, agirlikStr, aciklama = ''] = row.map(v => v.replace(/^"|"$/g, ''));
+
+          if (!aliciAdSoyad || aliciAdSoyad.length < 3 || aliciAdSoyad.length > 50) {
+            hataAdet++;
+            continue;
+          }
+
+          const cleanPhone = telefon.replace(/\s+/g, '');
+          if (!cleanPhone || cleanPhone.length < 10 || cleanPhone.length > 15) {
+            hataAdet++;
+            continue;
+          }
+
+          const matchedZone = zones.find(
+            (z) => z.ad.toLowerCase() === bolgeAd.toLowerCase() && z.aktifMi
+          );
+          if (!matchedZone) {
+            hataAdet++;
+            continue;
+          }
+
+          const agirlik = parseFloat(agirlikStr);
+          if (isNaN(agirlik) || agirlik <= 0 || agirlik > 500) {
+            hataAdet++;
+            continue;
+          }
+
+          const yeniAdres = await this.zoneService.adresOlustur({
+            aliciAdSoyad,
+            telefon,
+            acikAdres: `${matchedZone.ad} Bölge Teslimatı (Toplu CSV)`,
+            bolgeId: matchedZone.id,
+          });
+
+          await this.shipmentService.olustur({
+            aliciAdSoyad,
+            aliciTelefon: telefon,
+            adresId: yeniAdres.id,
+            bolgeId: matchedZone.id,
+            agirlikKg: agirlik,
+            aciklama: aciklama.substring(0, 100),
+          });
+
+          basariliAdet++;
+        }
+
+        await this.yukle();
+
+        if (basariliAdet > 0) {
+          this.notification.success(`${basariliAdet} adet gönderi toplu olarak başarıyla yüklendi.`);
+        }
+        if (hataAdet > 0) {
+          this.notification.info(`${hataAdet} adet satır geçersiz veri nedeniyle yüklenemedi.`);
+        }
+
+      } catch (err) {
+        this.notification.error('CSV ayrıştırılırken beklenmeyen bir hata oluştu.');
+      } finally {
+        input.value = '';
+      }
+    };
+
+    reader.readAsText(file, 'UTF-8');
   }
 }

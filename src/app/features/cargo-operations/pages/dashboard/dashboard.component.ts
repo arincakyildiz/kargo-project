@@ -23,6 +23,7 @@ import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { DashboardCardComponent } from '../../../../shared/components/dashboard-card/dashboard-card.component';
 import { DoughnutChartComponent, DoughnutDilim } from '../../../../shared/components/chart/doughnut-chart.component';
+import { MapSimulationComponent } from '../../components/map-simulation/map-simulation.component';
 
 const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edildi'];
 const GECIKME_GUN = 3;
@@ -51,6 +52,7 @@ function gunAyni(isoTarih: string, referans: Date): boolean {
     IconComponent,
     DashboardCardComponent,
     DoughnutChartComponent,
+    MapSimulationComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
