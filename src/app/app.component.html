@@ -46,25 +46,36 @@
   <div class="main">
     <header class="topbar">
       <div class="topbar__left">
-        <button
-          type="button"
-          class="btn btn--primary btn--sm"
-          style="display: inline-flex; align-items: center; gap: 0.35rem;"
-          (click)="ornekVeriYukle()"
-        >
-          <app-icon name="paket" [size]="13"></app-icon>
-          Örnek Veri Yükle
-        </button>
-
-        <button
-          type="button"
-          class="btn btn--ghost btn--danger-text btn--sm"
-          style="display: inline-flex; align-items: center; gap: 0.35rem;"
-          *ngIf="veriVarMi()"
-          (click)="verileriSil()"
-        >
-          Verileri Sil
-        </button>
+        <div class="dropdown-wrap">
+          <button
+            type="button"
+            class="btn btn--ghost btn--sm"
+            style="display: inline-flex; align-items: center; gap: 0.35rem;"
+            (click)="veriMenusuDegistir($event)"
+          >
+            <app-icon name="paket" [size]="14"></app-icon>
+            <span>Veri Yönetimi</span>
+          </button>
+          <div class="dropdown dropdown--demo" *ngIf="veriMenusuAcik()" (click)="$event.stopPropagation()">
+            <button
+              type="button"
+              class="dropdown-item-btn"
+              (click)="ornekVeriYukleAction()"
+            >
+              <app-icon name="paket" [size]="14" style="color: var(--color-primary);"></app-icon>
+              Örnek Veri Yükle
+            </button>
+            <button
+              type="button"
+              class="dropdown-item-btn dropdown-item-btn--danger"
+              *ngIf="veriVarMi()"
+              (click)="verileriSilAction()"
+            >
+              <app-icon name="iade" [size]="14"></app-icon>
+              Tüm Verileri Sil
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="topbar__actions">

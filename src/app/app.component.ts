@@ -70,6 +70,7 @@ export class AppComponent {
   readonly bildirimAcik = signal(false);
   readonly profilAcik = signal(false);
   readonly mobilMenuAcik = signal(false);
+  readonly veriMenusuAcik = signal(false);
   readonly gosterilenBildirimler = signal<AuditLogEntry[]>([]);
   readonly okunmamisBildirimSayisi = computed(() => this.audit.okunmamisBildirimler().length);
 
@@ -139,7 +140,25 @@ export class AppComponent {
   profilAc(event: MouseEvent): void {
     event.stopPropagation();
     this.bildirimAcik.set(false);
+    this.veriMenusuAcik.set(false);
     this.profilAcik.update((acik) => !acik);
+  }
+
+  veriMenusuDegistir(event: MouseEvent): void {
+    event.stopPropagation();
+    this.bildirimAcik.set(false);
+    this.profilAcik.set(false);
+    this.veriMenusuAcik.update((acik) => !acik);
+  }
+
+  async ornekVeriYukleAction(): Promise<void> {
+    this.veriMenusuAcik.set(false);
+    await this.ornekVeriYukle();
+  }
+
+  async verileriSilAction(): Promise<void> {
+    this.veriMenusuAcik.set(false);
+    await this.verileriSil();
   }
 
   mobilMenuDegistir(event: MouseEvent): void {
@@ -152,6 +171,7 @@ export class AppComponent {
     this.bildirimAcik.set(false);
     this.profilAcik.set(false);
     this.mobilMenuAcik.set(false);
+    this.veriMenusuAcik.set(false);
     this.gosterilenBildirimler.set([]);
   }
 }

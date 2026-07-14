@@ -216,6 +216,44 @@
 .dropdown__profile-name { font-size: 0.9rem; font-weight: 700; color: var(--color-text); }
 .dropdown__profile-role { font-size: 0.78rem; color: var(--color-muted); margin-top: 0.2rem; }
 
+.dropdown--demo {
+  left: 0;
+  right: auto;
+  width: 180px;
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dropdown-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.dropdown-item-btn app-icon {
+  flex-shrink: 0;
+}
+.dropdown-item-btn:hover {
+  background: var(--color-bg);
+}
+.dropdown-item-btn--danger {
+  color: var(--color-danger);
+}
+.dropdown-item-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
 .notification-overlay {
   position: fixed;
   inset: 0;
