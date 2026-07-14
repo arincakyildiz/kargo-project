@@ -11,15 +11,7 @@
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
       </select>
 
-      <ng-container *ngIf="shipments().length && !yukleniyor()">
-        <button
-          type="button"
-          class="btn btn--ghost btn--danger-text"
-          (click)="verileriSil()"
-        >
-          Verileri Sil
-        </button>
-      </ng-container>
+
       <a
         routerLink="/gonderiler/yeni"
         class="btn btn--primary"
