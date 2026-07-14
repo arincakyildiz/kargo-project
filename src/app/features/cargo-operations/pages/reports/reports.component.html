@@ -60,20 +60,45 @@
 
     <section class="panel">
       <h2>Kurye Bazlı Performans</h2>
-      <table class="data-table" *ngIf="kuryeRaporu().length; else kuryeBos">
-        <thead>
-          <tr><th>Kurye</th><th>Toplam Gönderi</th><th>Teslim Edildi</th><th>Başarısız</th><th>Başarı Oranı</th></tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let r of kuryeRaporu()">
-            <td>{{ r.kurye.adSoyad }}</td>
-            <td>{{ r.toplam }}</td>
-            <td>{{ r.teslimEdildi }}</td>
-            <td>{{ r.basarisiz }}</td>
-            <td>%{{ r.basariOrani }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="courier-perf-grid" *ngIf="kuryeRaporu().length; else kuryeBos">
+        <div class="courier-perf-card" *ngFor="let r of kuryeRaporu()">
+          <div class="courier-perf-card__header">
+            <span class="courier-perf-card__avatar"><app-icon name="kurye" [size]="16"></app-icon></span>
+            <div>
+              <div class="courier-perf-card__name">{{ r.kurye.adSoyad }}</div>
+              <div class="courier-perf-card__region">{{ zoneService.bolgeAdi(r.kurye.bolgeId) }}</div>
+            </div>
+          </div>
+          <div class="courier-perf-card__stats">
+            <div class="courier-perf-stat">
+              <span class="courier-perf-stat__value">{{ r.toplam }}</span>
+              <span class="courier-perf-stat__label">Toplam Gönderi</span>
+            </div>
+            <div class="courier-perf-stat">
+              <span class="courier-perf-stat__value">{{ r.teslimEdildi }}</span>
+              <span class="courier-perf-stat__label">Teslim Edildi</span>
+            </div>
+            <div class="courier-perf-stat">
+              <span class="courier-perf-stat__value">{{ sureFormatla(r.ortalamaTeslimSaat) }}</span>
+              <span class="courier-perf-stat__label">Ort. Teslim Süresi</span>
+            </div>
+          </div>
+          <div class="courier-perf-card__rate">
+            <div class="courier-perf-card__rate-row">
+              <span>Başarı Oranı</span>
+              <span class="courier-perf-card__rate-value">%{{ r.basariOrani }}</span>
+            </div>
+            <div class="status-bar__track">
+              <div
+                class="status-bar__fill"
+                [style.width.%]="r.basariOrani"
+                [class.courier-perf-card__rate-fill--dusuk]="r.basariOrani < 40"
+                [class.courier-perf-card__rate-fill--orta]="r.basariOrani >= 40 && r.basariOrani < 70"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <ng-template #kuryeBos>
         <app-empty-state title="Kurye verisi yok"></app-empty-state>
       </ng-template>

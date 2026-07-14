@@ -39,17 +39,34 @@ export class ReportsComponent {
   readonly kuryeRaporu = computed(() =>
     this.courierService.liste().map((kurye) => {
       const kuryeGonderileri = this.gonderiler().filter((g) => g.kuryeId === kurye.id);
-      const teslimEdildi = kuryeGonderileri.filter((g) => g.status === 'teslim-edildi').length;
+      const teslimEdilenler = kuryeGonderileri.filter((g) => g.status === 'teslim-edildi');
+      const teslimEdildi = teslimEdilenler.length;
       const basarisiz = kuryeGonderileri.filter((g) => g.status === 'teslim-edilemedi').length;
+
+      const ortalamaTeslimSaat = teslimEdilenler.length
+        ? teslimEdilenler.reduce((toplamSaat, g) => {
+            const saat = (new Date(g.updatedAt).getTime() - new Date(g.createdAt).getTime()) / (1000 * 60 * 60);
+            return toplamSaat + Math.max(saat, 0);
+          }, 0) / teslimEdilenler.length
+        : null;
+
       return {
         kurye,
         toplam: kuryeGonderileri.length,
         teslimEdildi,
         basarisiz,
         basariOrani: kuryeGonderileri.length ? Math.round((teslimEdildi / kuryeGonderileri.length) * 100) : 0,
+        ortalamaTeslimSaat,
       };
     }).filter((r) => r.toplam > 0)
   );
+
+  /** Ortalama teslim süresini okunur biçime çevirir: 24 saatten kısaysa saat, uzunsa gün cinsinden. */
+  sureFormatla(saat: number | null): string {
+    if (saat === null) return '—';
+    if (saat < 24) return `${Math.round(saat)} saat`;
+    return `${(saat / 24).toFixed(1)} gün`;
+  }
 
   readonly genelOzet = computed(() => {
     const list = this.gonderiler();

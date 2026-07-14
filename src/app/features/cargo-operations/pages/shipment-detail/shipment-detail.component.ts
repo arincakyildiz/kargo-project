@@ -6,7 +6,7 @@ import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
 import { DeliveryProofService } from '../../services/delivery-proof.service';
 import { StatusHistoryService } from '../../services/status-history.service';
-import { Shipment, SHIPMENT_STATUS_TRANSITIONS, ShipmentStatus } from '../../models/shipment.model';
+import { Shipment, SHIPMENT_STATUS_TRANSITIONS, SHIPMENT_STATUS_COLORS, ShipmentStatus } from '../../models/shipment.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DialogService } from '../../../../shared/components/confirm-dialog/dialog.service';
 import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
@@ -37,6 +37,10 @@ export class ShipmentDetailComponent implements OnInit {
   private gecmis = computed(() => this.statusHistory.gonderiGecmisi(this.gonderiId)());
 
   readonly gecmisListesi = computed(() => this.gecmis());
+
+  statusRengi(status: ShipmentStatus): string {
+    return SHIPMENT_STATUS_COLORS[status];
+  }
 
   readonly sonrakiDurumlar = computed<ShipmentStatus[]>(() => {
     const g = this.gonderi();

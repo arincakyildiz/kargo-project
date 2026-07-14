@@ -5,8 +5,6 @@ import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
 import { AuditService } from '../../../../core/services/audit.service';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { DialogService } from '../../../../shared/components/confirm-dialog/dialog.service';
 import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import {
   SHIPMENT_STATUS_COLORS,
@@ -59,13 +57,27 @@ export class DashboardComponent {
   readonly yukleniyor = signal(true);
   readonly hataMesaji = signal<string | null>(null);
   readonly seciliBolge = signal<string>('tumu');
+  readonly tarihAraligi = signal<string>('tumu'); // 'tumu' | '7' | '30' | '90'
+
+  /** Bölge/tarih filtresi uygulanmamış, sistemdeki tüm gönderiler — "gerçekten boş mu" kontrolü için. */
+  readonly tumGonderiler = computed(() => this.shipmentService.liste());
 
   readonly shipments = computed(() => {
-    const list = this.shipmentService.liste();
+    let list = this.tumGonderiler();
     const bolge = this.seciliBolge();
-    if (bolge === 'tumu') return list;
-    return list.filter((s) => s.bolgeId === bolge);
+    if (bolge !== 'tumu') {
+      list = list.filter((s) => s.bolgeId === bolge);
+    }
+    const gun = this.tarihAraligi();
+    if (gun !== 'tumu') {
+      const esik = Date.now() - Number(gun) * 24 * 60 * 60 * 1000;
+      list = list.filter((s) => new Date(s.createdAt).getTime() >= esik);
+    }
+    return list;
   });
+
+  /** Sistemde veri var ama seçili bölge/tarih filtresine uyan kayıt yok. */
+  readonly filtreSonucuBos = computed(() => this.tumGonderiler().length > 0 && this.shipments().length === 0);
 
   readonly metric = computed<OperationMetric>(() => {
     const list = this.shipments();
@@ -187,36 +199,9 @@ export class DashboardComponent {
     private shipmentService: ShipmentService,
     public courierService: CourierService,
     public zoneService: ZoneService,
-    private audit: AuditService,
-    private notification: NotificationService,
-    private dialog: DialogService
+    private audit: AuditService
   ) {
     this.yukle();
-  }
-
-  async ornekVeriYukle(): Promise<void> {
-    const sonuc = await this.dialog.confirm({
-      baslik: 'Örnek Veri Yükle',
-      mesaj: 'Sistem; örnek gönderi, kurye, bölge ve iade kayıtlarıyla doldurulacak. Devam edilsin mi?',
-      onayMetni: 'Yükle',
-    });
-    if (!sonuc.onaylandi) return;
-
-    this.shipmentService.ornekVeriYukle();
-    this.notification.success('Örnek veri yüklendi.');
-  }
-
-  async verileriSil(): Promise<void> {
-    const sonuc = await this.dialog.confirm({
-      baslik: 'Tüm Verileri Sil',
-      mesaj: 'Bu işlem geri alınamaz. Tüm gönderiler, kuryeler, bölgeler, adresler ve audit log kalıcı olarak silinecek.',
-      aciklamaGerekli: true,
-      onayMetni: 'Sil',
-    });
-    if (!sonuc.onaylandi) return;
-
-    this.shipmentService.verileriSil();
-    this.notification.success('Tüm veriler silindi.');
   }
 
   bolgeFiltresiDegisti(bolgeId: string): void {
@@ -241,6 +226,10 @@ export class DashboardComponent {
 
   durumSiralamasiDegisti(sira: string): void {
     this.durumSiralamasi.set(sira);
+  }
+
+  tarihFiltresiDegisti(deger: string): void {
+    this.tarihAraligi.set(deger);
   }
 
   trackByStatus(index: number, item: any): string {

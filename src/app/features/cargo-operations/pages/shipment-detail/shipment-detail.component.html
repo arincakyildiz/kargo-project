@@ -127,7 +127,12 @@
       <section class="panel timeline-panel">
         <h2>Durum Geçmişi</h2>
         <ol class="timeline" *ngIf="gecmisListesi().length; else timelineBos">
-          <li *ngFor="let h of gecmisListesi()">
+          <li *ngFor="let h of gecmisListesi(); let son = last">
+            <span
+              class="timeline__dot"
+              [class.timeline__dot--guncel]="son"
+              [style.background]="statusRengi(h.yeniStatus)"
+            ></span>
             <span class="timeline__status">{{ h.yeniStatus | statusLabel }}</span>
             <span class="timeline__meta">{{ h.islemZamani | tarih }} · {{ h.islemYapanRol }}</span>
             <p class="timeline__aciklama">{{ h.aciklama }}</p>

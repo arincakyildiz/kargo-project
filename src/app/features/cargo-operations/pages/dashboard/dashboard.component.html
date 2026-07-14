@@ -3,14 +3,24 @@
     <h1>Performans Dashboardu</h1>
     <div class="dashboard__header-actions">
       <select
+        class="dashboard__filter-select"
         [value]="seciliBolge()"
         (change)="bolgeFiltresiDegisti($any($event.target).value)"
-        style="padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card); color: var(--color-text); font: inherit; outline: none; cursor: pointer; transition: border-color 0.15s ease;"
       >
         <option value="tumu">Tüm Bölgeler</option>
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
       </select>
 
+      <select
+        class="dashboard__filter-select"
+        [value]="tarihAraligi()"
+        (change)="tarihFiltresiDegisti($any($event.target).value)"
+      >
+        <option value="tumu">Tüm Zamanlar</option>
+        <option value="7">Son 7 Gün</option>
+        <option value="30">Son 30 Gün</option>
+        <option value="90">Son 90 Gün</option>
+      </select>
 
       <a
         routerLink="/gonderiler/yeni"
@@ -81,12 +91,12 @@
 
 
     <section class="panel status-panel" *ngIf="shipments().length; else bosState">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
-        <h2 style="margin: 0;">Durum Dağılımı</h2>
+      <div class="status-panel__header">
+        <h2>Durum Dağılımı</h2>
         <select
+          class="dashboard__filter-select dashboard__filter-select--sm"
           [value]="durumSiralamasi()"
           (change)="durumSiralamasiDegisti($any($event.target).value)"
-          style="padding: 0.35rem 0.6rem; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card); color: var(--color-text); font-size: 0.8rem; font-weight: 550; cursor: pointer; outline: none; transition: border-color 0.15s ease;"
         >
           <option value="varsayilan">Varsayılan Sıralama</option>
           <option value="azalan">Kargo Sayısı: Azalan</option>
@@ -112,8 +122,8 @@
                 [style.background]="s.renk"
               ></div>
             </div>
-            <span class="status-bar__value" style="font-variant-numeric: tabular-nums;">
-              {{ s.sayi }} <span style="font-size: 0.72rem; color: var(--color-muted); font-weight: normal; margin-left: 0.15rem;">(%{{ s.yuzde }})</span>
+            <span class="status-bar__value">
+              {{ s.sayi }} <span class="status-bar__percent">(%{{ s.yuzde }})</span>
             </span>
           </div>
         </div>
@@ -121,14 +131,18 @@
     </section>
 
     <ng-template #bosState>
-      <app-empty-state
-        title="Henüz gönderi kaydı yok"
-        description="Kendi verilerinizi girerek başlayabilir veya sistemin nasıl işlediğini görmek için örnek veri yükleyebilirsiniz."
-      >
-        <button class="btn btn--ghost" (click)="ornekVeriYukle()">
-          Örnek Veri Yükle
-        </button>
-      </app-empty-state>
+      <ng-container *ngIf="!filtreSonucuBos(); else filtreBosState">
+        <app-empty-state
+          title="Henüz gönderi kaydı yok"
+          description="Kendi verilerinizi girerek başlayabilir veya üstteki Veri Yönetimi menüsünden örnek veri yükleyebilirsiniz."
+        ></app-empty-state>
+      </ng-container>
+      <ng-template #filtreBosState>
+        <app-empty-state
+          title="Seçilen kriterlere uyan gönderi yok"
+          description="Farklı bir bölge veya tarih aralığı deneyin."
+        ></app-empty-state>
+      </ng-template>
     </ng-template>
 
     <div class="summary-grid">
