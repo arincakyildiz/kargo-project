@@ -58,7 +58,14 @@ function gunAyni(isoTarih: string, referans: Date): boolean {
 export class DashboardComponent {
   readonly yukleniyor = signal(true);
   readonly hataMesaji = signal<string | null>(null);
-  readonly shipments = this.shipmentService.liste;
+  readonly seciliBolge = signal<string>('tumu');
+
+  readonly shipments = computed(() => {
+    const list = this.shipmentService.liste();
+    const bolge = this.seciliBolge();
+    if (bolge === 'tumu') return list;
+    return list.filter((s) => s.bolgeId === bolge);
+  });
 
   readonly metric = computed<OperationMetric>(() => {
     const list = this.shipments();
@@ -198,6 +205,10 @@ export class DashboardComponent {
 
     this.shipmentService.verileriSil();
     this.notification.success('Tüm veriler silindi.');
+  }
+
+  bolgeFiltresiDegisti(bolgeId: string): void {
+    this.seciliBolge.set(bolgeId);
   }
 
   async yukle(): Promise<void> {
