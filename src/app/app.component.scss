@@ -190,6 +190,19 @@
 }
 .dropdown__item:last-child { border-bottom: none; }
 .dropdown__item:hover { background: var(--color-bg); }
+.dropdown__item--unread {
+  background: rgba(37, 99, 235, 0.05);
+}
+.dropdown__item--unread:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+.dropdown__item-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
 .dropdown__item-title { font-size: 0.82rem; color: var(--color-text); font-weight: 500; }
 .dropdown__item-meta { font-size: 0.72rem; color: var(--color-muted); }
 

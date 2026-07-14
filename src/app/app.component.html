@@ -109,10 +109,16 @@
       *ngFor="let b of sonBildirimler()"
       routerLink="/audit-log"
       class="dropdown__item"
+      [class.dropdown__item--unread]="bildirimOkunmamis(b.id)"
       (click)="bildirimAcik.set(false)"
     >
-      <span class="dropdown__item-title">{{ b.aciklama }}</span>
-      <span class="dropdown__item-meta">{{ b.islemZamani | tarih }}</span>
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 0.75rem;">
+        <div style="display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; flex: 1;">
+          <span class="dropdown__item-title" style="white-space: normal; word-break: break-word;">{{ b.aciklama }}</span>
+          <span class="dropdown__item-meta">{{ b.islemZamani | tarih }}</span>
+        </div>
+        <span class="dropdown__item-dot" *ngIf="bildirimOkunmamis(b.id)"></span>
+      </div>
     </a>
   </div>
 </div>

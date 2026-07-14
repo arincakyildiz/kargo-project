@@ -6,7 +6,6 @@
         <button
           type="button"
           class="btn btn--ghost btn--danger-text"
-          *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
           (click)="verileriSil()"
         >
           Verileri Sil
@@ -110,7 +109,7 @@
         title="Henüz gönderi kaydı yok"
         description="Kendi verilerinizi girerek başlayabilir veya sistemin nasıl işlediğini görmek için örnek veri yükleyebilirsiniz."
       >
-        <button class="btn btn--ghost" (click)="ornekVeriYukle()" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+        <button class="btn btn--ghost" (click)="ornekVeriYukle()">
           Örnek Veri Yükle
         </button>
       </app-empty-state>

@@ -67,8 +67,12 @@ export class AppComponent {
   readonly bildirimAcik = signal(false);
   readonly profilAcik = signal(false);
   readonly mobilMenuAcik = signal(false);
-  readonly sonBildirimler = computed(() => this.audit.okunmamisBildirimler().slice(0, BILDIRIM_SAYISI));
+  readonly sonBildirimler = computed(() => this.audit.log().slice(0, BILDIRIM_SAYISI));
   readonly okunmamisBildirimSayisi = computed(() => this.audit.okunmamisBildirimler().length);
+
+  bildirimOkunmamis(id: string): boolean {
+    return this.audit.okunmamisBildirimler().some((b) => b.id === id);
+  }
 
   constructor(
     public currentUser: CurrentUserService,
