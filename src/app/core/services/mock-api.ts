@@ -7,7 +7,7 @@ export function mockDelay<T>(value: T, ms = 350): Promise<T> {
 }
 
 /** Sayfa yüklemelerinde error-state UI'sini gerçekten tetikleyebilmek için kullanılan olasılık. */
-export const DEMO_ERROR_RATE = 0.08;
+export const DEMO_ERROR_RATE = 0;
 
 export class MockApiError extends Error {}
 
