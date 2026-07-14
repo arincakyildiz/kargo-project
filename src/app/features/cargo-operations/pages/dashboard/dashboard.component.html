@@ -100,7 +100,11 @@
           </div>
         </div>
         <div class="status-bars">
-          <div class="status-bar" *ngFor="let s of statusListesi(); trackBy: trackByStatus">
+          <div
+            class="status-bar"
+            *ngFor="let s of statusListesi(); trackBy: trackByStatus"
+            [style.view-transition-name]="'status-bar-' + s.status"
+          >
             <span class="status-bar__dot" [style.background]="s.renk"></span>
             <span class="status-bar__label">{{ s.status | statusLabel }}</span>
             <div class="status-bar__track">
