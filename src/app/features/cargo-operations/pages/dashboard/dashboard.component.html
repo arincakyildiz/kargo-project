@@ -94,11 +94,13 @@
             <div class="status-bar__track">
               <div
                 class="status-bar__fill"
-                [style.width.%]="(s.sayi / maxStatusSayi()) * 100"
+                [style.width.%]="s.yuzde"
                 [style.background]="s.renk"
               ></div>
             </div>
-            <span class="status-bar__value">{{ s.sayi }}</span>
+            <span class="status-bar__value" style="font-variant-numeric: tabular-nums;">
+              {{ s.sayi }} <span style="font-size: 0.72rem; color: var(--color-muted); font-weight: normal; margin-left: 0.15rem;">(%{{ s.yuzde }})</span>
+            </span>
           </div>
         </div>
       </div>

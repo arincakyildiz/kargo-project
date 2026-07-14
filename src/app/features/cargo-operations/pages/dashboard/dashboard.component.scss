@@ -48,7 +48,7 @@
 .status-panel__chart-value { font-size: 1.6rem; font-weight: 700; color: #0f172a; letter-spacing: -0.02em; }
 .status-panel__chart-label { font-size: 0.72rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.04em; }
 
-.status-bar { display: grid; grid-template-columns: 10px 130px 1fr 32px; align-items: center; gap: 0.65rem; }
+.status-bar { display: grid; grid-template-columns: 10px 130px 1fr 64px; align-items: center; gap: 0.65rem; }
 .status-bar__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
 /* --- Alt özet kart grid'i --- */
@@ -98,6 +98,6 @@
 @media (max-width: 768px) {
   .dashboard { padding: 1rem 1rem 2rem; }
   .status-panel__grid { grid-template-columns: 1fr; justify-items: center; }
-  .status-bar { grid-template-columns: 8px 100px 1fr 28px; gap: 0.4rem; }
+  .status-bar { grid-template-columns: 8px 100px 1fr 52px; gap: 0.4rem; }
   .summary-grid { grid-template-columns: 1fr; }
 }

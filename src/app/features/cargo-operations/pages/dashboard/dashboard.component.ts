@@ -106,13 +106,19 @@ export class DashboardComponent {
     return { bugunOlusturulan, bugunTeslimEdilen, bugunIade, enEskiGecikenGun };
   });
 
-  readonly statusListesi = computed(() =>
-    (Object.keys(SHIPMENT_STATUS_LABELS) as ShipmentStatus[]).map((status) => ({
-      status,
-      sayi: this.metric().statusDagilimi[status] ?? 0,
-      renk: SHIPMENT_STATUS_COLORS[status],
-    }))
-  );
+  readonly statusListesi = computed(() => {
+    const toplam = this.metric().toplamGonderi;
+    return (Object.keys(SHIPMENT_STATUS_LABELS) as ShipmentStatus[]).map((status) => {
+      const sayi = this.metric().statusDagilimi[status] ?? 0;
+      const yuzde = toplam ? Math.round((sayi / toplam) * 100) : 0;
+      return {
+        status,
+        sayi,
+        yuzde,
+        renk: SHIPMENT_STATUS_COLORS[status],
+      };
+    });
+  });
 
   readonly maxStatusSayi = computed(() => Math.max(1, ...this.statusListesi().map((s) => s.sayi)));
 
