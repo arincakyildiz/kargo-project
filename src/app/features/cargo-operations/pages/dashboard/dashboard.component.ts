@@ -113,9 +113,13 @@ export class DashboardComponent {
     return { bugunOlusturulan, bugunTeslimEdilen, bugunIade, enEskiGecikenGun };
   });
 
+  readonly durumSiralamasi = signal<string>('varsayilan'); // 'varsayilan' | 'azalan' | 'artan'
+
   readonly statusListesi = computed(() => {
     const toplam = this.metric().toplamGonderi;
-    return (Object.keys(SHIPMENT_STATUS_LABELS) as ShipmentStatus[]).map((status) => {
+    const siralama = this.durumSiralamasi();
+
+    const list = (Object.keys(SHIPMENT_STATUS_LABELS) as ShipmentStatus[]).map((status) => {
       const sayi = this.metric().statusDagilimi[status] ?? 0;
       const yuzde = toplam ? Math.round((sayi / toplam) * 100) : 0;
       return {
@@ -125,6 +129,14 @@ export class DashboardComponent {
         renk: SHIPMENT_STATUS_COLORS[status],
       };
     });
+
+    if (siralama === 'azalan') {
+      return [...list].sort((a, b) => b.sayi - a.sayi);
+    }
+    if (siralama === 'artan') {
+      return [...list].sort((a, b) => a.sayi - b.sayi);
+    }
+    return list;
   });
 
   readonly maxStatusSayi = computed(() => Math.max(1, ...this.statusListesi().map((s) => s.sayi)));
@@ -225,5 +237,13 @@ export class DashboardComponent {
     } finally {
       this.yukleniyor.set(false);
     }
+  }
+
+  durumSiralamasiDegisti(sira: string): void {
+    this.durumSiralamasi.set(sira);
+  }
+
+  trackByStatus(index: number, item: any): string {
+    return item.status;
   }
 }

@@ -79,7 +79,18 @@
     </div>
 
     <section class="panel status-panel" *ngIf="shipments().length; else bosState">
-      <h2>Durum Dağılımı</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+        <h2 style="margin: 0;">Durum Dağılımı</h2>
+        <select
+          [value]="durumSiralamasi()"
+          (change)="durumSiralamasiDegisti($any($event.target).value)"
+          style="padding: 0.35rem 0.6rem; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card); color: var(--color-text); font-size: 0.8rem; font-weight: 550; cursor: pointer; outline: none; transition: border-color 0.15s ease;"
+        >
+          <option value="varsayilan">Varsayılan Sıralama</option>
+          <option value="azalan">Kargo Sayısı: Azalan</option>
+          <option value="artan">Kargo Sayısı: Artan</option>
+        </select>
+      </div>
       <div class="status-panel__grid">
         <div class="status-panel__chart">
           <app-doughnut-chart [dilimler]="durumGrafigi()" [boyut]="180"></app-doughnut-chart>
@@ -89,7 +100,7 @@
           </div>
         </div>
         <div class="status-bars">
-          <div class="status-bar" *ngFor="let s of statusListesi()">
+          <div class="status-bar" *ngFor="let s of statusListesi(); trackBy: trackByStatus">
             <span class="status-bar__dot" [style.background]="s.renk"></span>
             <span class="status-bar__label">{{ s.status | statusLabel }}</span>
             <div class="status-bar__track">
