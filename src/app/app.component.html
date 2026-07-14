@@ -60,6 +60,17 @@
           <span class="icon-btn__badge" *ngIf="okunmamisBildirimSayisi()">{{ okunmamisBildirimSayisi() }}</span>
         </button>
 
+        <button
+          type="button"
+          class="btn btn--primary btn--sm"
+          style="margin-left: 0.5rem; display: inline-flex; align-items: center; gap: 0.35rem;"
+          *ngIf="!veriVarMi()"
+          (click)="ornekVeriYukle()"
+        >
+          <app-icon name="paket" [size]="13"></app-icon>
+          Örnek Veri Yükle
+        </button>
+
         <div class="topbar__divider"></div>
 
         <div class="topbar__role">

@@ -9,6 +9,9 @@ import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confi
 import { ToastContainerComponent } from './shared/components/toast/toast-container.component';
 import { IconComponent, IconName } from './shared/components/icon/icon.component';
 import { TarihPipe } from './shared/pipes/tarih.pipe';
+import { ShipmentService } from './features/cargo-operations/services/shipment.service';
+import { NotificationService } from './core/services/notification.service';
+import { DialogService } from './shared/components/confirm-dialog/dialog.service';
 
 interface NavItem {
   yol: string;
@@ -70,6 +73,8 @@ export class AppComponent {
   readonly sonBildirimler = computed(() => this.audit.log().slice(0, BILDIRIM_SAYISI));
   readonly okunmamisBildirimSayisi = computed(() => this.audit.okunmamisBildirimler().length);
 
+  readonly veriVarMi = this.shipmentService.veriVarMi;
+
   bildirimOkunmamis(id: string): boolean {
     return this.audit.okunmamisBildirimler().some((b) => b.id === id);
   }
@@ -77,8 +82,23 @@ export class AppComponent {
   constructor(
     public currentUser: CurrentUserService,
     public theme: ThemeService,
-    private audit: AuditService
+    private audit: AuditService,
+    public shipmentService: ShipmentService,
+    private notification: NotificationService,
+    private dialog: DialogService
   ) {}
+
+  async ornekVeriYukle(): Promise<void> {
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Örnek Veri Yükle',
+      mesaj: 'Sistem; örnek gönderi, kurye, bölge ve iade kayıtlarıyla doldurulacak. Devam edilsin mi?',
+      onayMetni: 'Yükle',
+    });
+    if (!sonuc.onaylandi) return;
+
+    this.shipmentService.ornekVeriYukle();
+    this.notification.success('Örnek veri yüklendi.');
+  }
 
   rolDegistir(rol: string): void {
     this.currentUser.rolDegistir(rol as Rol);
