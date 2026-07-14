@@ -11,11 +11,11 @@
     <svg viewBox="0 0 700 300" width="100%" height="100%" class="map-svg">
       <!-- Grid Arka Plan Çizgileri -->
       <defs>
-        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--color-border)" stroke-width="0.5" opacity="0.3"/>
+        <pattern id="mapGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.15"/>
         </pattern>
       </defs>
-      <rect width="100%" height="100%" fill="url(#grid)" />
+      <rect width="100%" height="100%" fill="url(#mapGrid)" />
 
       <!-- Hub'dan Bölgelere Giden Bağlantı Hatları -->
       <ng-container *ngFor="let node of bolgeDugumleri()">
@@ -25,10 +25,11 @@
           [attr.y1]="merkezHub.y"
           [attr.x2]="node.x"
           [attr.y2]="node.y"
-          [attr.stroke]="seciliBolge === node.id ? node.color : 'var(--color-border)'"
+          [attr.stroke]="seciliBolge === node.id ? node.color : '#94a3b8'"
           [attr.stroke-width]="seciliBolge === node.id ? 2.5 : 1.25"
-          [attr.stroke-dasharray]="seciliBolge === node.id ? 'none' : '4,4'"
-          style="transition: stroke 0.3s ease, stroke-width 0.3s ease;"
+          [attr.stroke-dasharray]="seciliBolge === node.id ? 'none' : '6,4'"
+          [attr.opacity]="seciliBolge === node.id ? 1 : 0.5"
+          style="transition: all 0.3s ease;"
         />
 
         <!-- Aktif dağıtım varsa hareket eden kurye paketi (hub -> bölge) -->
@@ -36,10 +37,11 @@
           *ngIf="node.aktifMi && node.dagitimdaSayisi > 0"
           r="4.5"
           [attr.fill]="node.color"
-          class="animated-package"
+          opacity="0.9"
         >
           <animate attributeName="cx" [attr.from]="merkezHub.x" [attr.to]="node.x" dur="3s" repeatCount="indefinite" />
           <animate attributeName="cy" [attr.from]="merkezHub.y" [attr.to]="node.y" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite" />
         </circle>
       </ng-container>
 
@@ -53,45 +55,53 @@
             [attr.y2]="pt.y"
             [attr.stroke]="path.color"
             stroke-width="1"
-            stroke-dasharray="2,2"
-            opacity="0.6"
+            stroke-dasharray="3,3"
+            opacity="0.45"
           />
+          <!-- Teslimat noktası -->
           <circle
             [attr.cx]="pt.x"
             [attr.cy]="pt.y"
             r="3"
-            fill="var(--color-text)"
-            opacity="0.4"
+            [attr.fill]="path.color"
+            opacity="0.35"
           />
-          <!-- Düğümler arası teslimat kurye noktası -->
+          <!-- Hareket eden kurye noktası -->
           <circle
             r="3.5"
             [attr.fill]="path.color"
           >
             <animate attributeName="cx" [attr.from]="path.startX" [attr.to]="pt.x" [attr.dur]="(2 + i) + 's'" repeatCount="indefinite" />
             <animate attributeName="cy" [attr.from]="path.startY" [attr.to]="pt.y" [attr.dur]="(2 + i) + 's'" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.4;1;0.4" [attr.dur]="(2 + i) + 's'" repeatCount="indefinite" />
           </circle>
         </g>
       </ng-container>
 
       <!-- Ana Dağıtım Hub'ı (Merkez) -->
-      <g class="hub-group">
+      <g>
+        <!-- Hub pulse (glow ring) -->
         <circle
           [attr.cx]="merkezHub.x"
           [attr.cy]="merkezHub.y"
-          r="12"
+          r="14"
           fill="var(--color-primary)"
-          class="hub-pulse"
-        />
+          opacity="0.15"
+        >
+          <animate attributeName="r" values="12;18;12" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.2;0.08;0.2" dur="3s" repeatCount="indefinite" />
+        </circle>
+        <!-- Hub core -->
         <circle
           [attr.cx]="merkezHub.x"
           [attr.cy]="merkezHub.y"
           r="8"
           fill="var(--color-primary-dark)"
         />
+        <!-- Hub label -->
         <text
           [attr.x]="merkezHub.x"
-          [attr.y]="merkezHub.y - 18"
+          [attr.y]="merkezHub.y - 20"
           text-anchor="middle"
           class="hub-label"
         >
@@ -102,45 +112,70 @@
       <!-- Bölge Düğümleri -->
       <g
         *ngFor="let node of bolgeDugumleri()"
-        [class.node-group]="true"
+        class="node-group"
         [class.node-group--active]="node.aktifMi"
         [class.node-group--selected]="seciliBolge === node.id"
         (click)="node.aktifMi && dugumSec(node.id)"
       >
-        <!-- Geniş tıklama alanı (Kullanılabilirlik kolaylığı için görünmez geniş daire) -->
+        <!-- Geniş tıklama alanı -->
         <circle
           *ngIf="node.aktifMi"
           [attr.cx]="node.x"
           [attr.cy]="node.y"
-          r="26"
+          r="28"
           fill="transparent"
           style="cursor: pointer;"
         />
 
-        <!-- Seçilmişlik halkası -->
+        <!-- Seçilmişlik halkası (CSS animasyon yerine SVG animate ile döndürme) -->
+        <ng-container *ngIf="seciliBolge === node.id">
+          <circle
+            [attr.cx]="node.x"
+            [attr.cy]="node.y"
+            r="18"
+            fill="none"
+            [attr.stroke]="node.color"
+            stroke-width="1.5"
+            stroke-dasharray="5,3"
+            opacity="0.7"
+          >
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              [attr.from]="'0 ' + node.x + ' ' + node.y"
+              [attr.to]="'360 ' + node.x + ' ' + node.y"
+              dur="6s"
+              repeatCount="indefinite"
+            />
+          </circle>
+        </ng-container>
+
+        <!-- Düğüm hover glow halkası -->
         <circle
-          *ngIf="seciliBolge === node.id"
+          *ngIf="node.aktifMi"
           [attr.cx]="node.x"
           [attr.cy]="node.y"
-          r="18"
+          r="13"
           fill="none"
           [attr.stroke]="node.color"
-          stroke-width="1.5"
-          class="selected-glow"
+          stroke-width="0"
+          opacity="0"
+          class="node-hover-ring"
         />
 
+        <!-- Ana düğüm dairesi -->
         <circle
           [attr.cx]="node.x"
           [attr.cy]="node.y"
           r="9"
-          [attr.fill]="node.aktifMi ? node.color : '#e2e8f0'"
+          [attr.fill]="node.aktifMi ? node.color : '#cbd5e1'"
           class="node-circle"
         />
 
-        <!-- Bölge Etiketleri ve İstatistikleri -->
+        <!-- Bölge Etiketleri -->
         <text
           [attr.x]="node.x"
-          [attr.y]="node.y - 14"
+          [attr.y]="node.y - 16"
           text-anchor="middle"
           class="node-label"
           [class.node-label--inactive]="!node.aktifMi"
@@ -148,23 +183,24 @@
           {{ node.ad }}
         </text>
 
+        <!-- İstatistikler -->
         <text
           [attr.x]="node.x"
-          [attr.y]="node.y + 20"
+          [attr.y]="node.y + 22"
           text-anchor="middle"
           class="node-sub"
           *ngIf="node.aktifMi"
         >
-          Kargo: {{ node.gonderiSayisi }} | Kurye: {{ node.kuryeSayisi }}
+          {{ node.gonderiSayisi }} kargo · {{ node.kuryeSayisi }} kurye
         </text>
         <text
           [attr.x]="node.x"
-          [attr.y]="node.y + 20"
+          [attr.y]="node.y + 22"
           text-anchor="middle"
           class="node-sub node-sub--inactive"
           *ngIf="!node.aktifMi"
         >
-          Pasif
+          Pasif Bölge
         </text>
       </g>
     </svg>
