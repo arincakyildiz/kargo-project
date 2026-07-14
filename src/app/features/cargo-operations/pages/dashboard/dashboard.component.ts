@@ -220,13 +220,7 @@ export class DashboardComponent {
   }
 
   bolgeFiltresiDegisti(bolgeId: string): void {
-    if ((document as any).startViewTransition) {
-      (document as any).startViewTransition(() => {
-        this.seciliBolge.set(bolgeId);
-      });
-    } else {
-      this.seciliBolge.set(bolgeId);
-    }
+    this.seciliBolge.set(bolgeId);
   }
 
   async yukle(): Promise<void> {
@@ -246,13 +240,7 @@ export class DashboardComponent {
   }
 
   durumSiralamasiDegisti(sira: string): void {
-    if ((document as any).startViewTransition) {
-      (document as any).startViewTransition(() => {
-        this.durumSiralamasi.set(sira);
-      });
-    } else {
-      this.durumSiralamasi.set(sira);
-    }
+    this.durumSiralamasi.set(sira);
   }
 
   trackByStatus(index: number, item: any): string {
