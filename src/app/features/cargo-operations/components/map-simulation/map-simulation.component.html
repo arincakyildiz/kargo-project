@@ -25,23 +25,21 @@
           [attr.y1]="merkezHub.y"
           [attr.x2]="node.x"
           [attr.y2]="node.y"
-          stroke="var(--color-border)"
-          stroke-width="1.5"
-          stroke-dasharray="4,4"
+          [attr.stroke]="seciliBolge === node.id ? node.color : 'var(--color-border)'"
+          [attr.stroke-width]="seciliBolge === node.id ? 2.5 : 1.25"
+          [attr.stroke-dasharray]="seciliBolge === node.id ? 'none' : '4,4'"
+          style="transition: stroke 0.3s ease, stroke-width 0.3s ease;"
         />
 
         <!-- Aktif dağıtım varsa hareket eden kurye paketi (hub -> bölge) -->
         <circle
           *ngIf="node.aktifMi && node.dagitimdaSayisi > 0"
-          r="4"
+          r="4.5"
           [attr.fill]="node.color"
           class="animated-package"
         >
-          <animateMotion
-            [attr.path]="'M ' + merkezHub.x + ',' + merkezHub.y + ' L ' + node.x + ',' + node.y"
-            dur="3s"
-            repeatCount="indefinite"
-          />
+          <animate attributeName="cx" [attr.from]="merkezHub.x" [attr.to]="node.x" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="cy" [attr.from]="merkezHub.y" [attr.to]="node.y" dur="3s" repeatCount="indefinite" />
         </circle>
       </ng-container>
 
@@ -69,13 +67,9 @@
           <circle
             r="3.5"
             [attr.fill]="path.color"
-            class="animated-courier"
           >
-            <animateMotion
-              [attr.path]="'M ' + path.startX + ',' + path.startY + ' L ' + pt.x + ',' + pt.y"
-              [attr.dur]="(2 + i) + 's'"
-              repeatCount="indefinite"
-            />
+            <animate attributeName="cx" [attr.from]="path.startX" [attr.to]="pt.x" [attr.dur]="(2 + i) + 's'" repeatCount="indefinite" />
+            <animate attributeName="cy" [attr.from]="path.startY" [attr.to]="pt.y" [attr.dur]="(2 + i) + 's'" repeatCount="indefinite" />
           </circle>
         </g>
       </ng-container>
@@ -113,6 +107,16 @@
         [class.node-group--selected]="seciliBolge === node.id"
         (click)="node.aktifMi && dugumSec(node.id)"
       >
+        <!-- Geniş tıklama alanı (Kullanılabilirlik kolaylığı için görünmez geniş daire) -->
+        <circle
+          *ngIf="node.aktifMi"
+          [attr.cx]="node.x"
+          [attr.cy]="node.y"
+          r="26"
+          fill="transparent"
+          style="cursor: pointer;"
+        />
+
         <!-- Seçilmişlik halkası -->
         <circle
           *ngIf="seciliBolge === node.id"

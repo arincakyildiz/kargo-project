@@ -109,9 +109,10 @@
 }
 
 .node-label {
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 700;
   fill: var(--color-text);
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95);
 
   &--inactive {
     fill: var(--color-muted);
@@ -120,13 +121,23 @@
 }
 
 .node-sub {
-  font-size: 0.64rem;
+  font-size: 0.66rem;
   font-weight: 600;
   fill: var(--color-muted);
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95);
 
   &--inactive {
     fill: var(--color-danger);
     opacity: 0.65;
+  }
+}
+
+:root[data-theme='dark'] {
+  .node-label {
+    text-shadow: 0 1px 3px rgba(15, 23, 42, 0.95);
+  }
+  .node-sub {
+    text-shadow: 0 1px 3px rgba(15, 23, 42, 0.95);
   }
 }
 
