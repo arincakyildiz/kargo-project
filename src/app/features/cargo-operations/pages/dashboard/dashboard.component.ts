@@ -232,7 +232,7 @@ export class DashboardComponent {
     this.tarihAraligi.set(deger);
   }
 
-  trackByStatus(index: number, item: any): string {
+  trackByStatus(_index: number, item: { status: ShipmentStatus }): string {
     return item.status;
   }
 }

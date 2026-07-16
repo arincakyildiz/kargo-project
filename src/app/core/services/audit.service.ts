@@ -1,5 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { AuditLogEntry, Rol } from '../models/base-model';
+import { AuditLogEntry } from '../models/base-model';
 import { StorageService } from './storage.service';
 
 const AUDIT_KEY = 'staj2_audit_log';

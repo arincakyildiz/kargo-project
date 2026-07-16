@@ -12,6 +12,7 @@ import { TarihPipe } from './shared/pipes/tarih.pipe';
 import { ShipmentService } from './features/cargo-operations/services/shipment.service';
 import { NotificationService } from './core/services/notification.service';
 import { DialogService } from './shared/components/confirm-dialog/dialog.service';
+import { demoHataTetikle } from './core/services/mock-api';
 
 interface NavItem {
   yol: string;
@@ -159,6 +160,13 @@ export class AppComponent {
   async verileriSilAction(): Promise<void> {
     this.veriMenusuAcik.set(false);
     await this.verileriSil();
+  }
+
+  /** Demo/sunum amaçlı: bir sonraki sayfa yüklemesinde hata ekranını tetikler. */
+  hataSimuleEt(): void {
+    this.veriMenusuAcik.set(false);
+    demoHataTetikle();
+    this.notification.info('Sonraki sayfa yüklemesinde hata simüle edilecek. Bir sayfayı yenileyin veya açın.');
   }
 
   mobilMenuDegistir(event: MouseEvent): void {

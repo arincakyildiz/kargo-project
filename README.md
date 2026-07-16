@@ -17,7 +17,9 @@ npm install
 ng serve
 ```
 
-`http://localhost:4200` adresinden açılır. Sistem **boş** başlar; kendi verilerinizi (bölge, kurye, gönderi) sıfırdan girebilirsiniz. Sistemin nasıl işlediğini görmek isterseniz, veri olmadığı sürece Dashboard'da çıkan **"Örnek Veri Yükle"** butonuyla tutarlı bir örnek veri setini (gönderiler, kuryeler, bölgeler, adresler, iadeler) tek tıkla yükleyebilirsiniz.
+`http://localhost:4200` adresinden açılır. Sistem **boş** başlar; kendi verilerinizi (bölge, kurye, gönderi) sıfırdan girebilirsiniz. Sistemin nasıl işlediğini görmek isterseniz, üst bardaki **Veri Yönetimi → "Örnek Veri Yükle"** ile tutarlı bir örnek veri setini (gönderiler, kuryeler, bölgeler, adresler, iadeler) tek tıkla yükleyebilirsiniz.
+
+**Hata senaryosu:** Mock API loading + error durumlarını simüle eder. Yükleme hata ekranını (ör. "Tekrar Dene") görmek için **Veri Yönetimi → "Hata Ekranını Simüle Et"** seçildikten sonra herhangi bir sayfa yüklendiğinde sonraki istek bilerek başarısız olur; "Tekrar Dene" ile normale döner. (İş kuralı hataları — kapasite aşımı, yanlış bölge, kanıtsız teslim — ayrıca gerçek hata mesajları üretir.)
 
 ## Test
 
