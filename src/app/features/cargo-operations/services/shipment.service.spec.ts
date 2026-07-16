@@ -4,6 +4,7 @@ import { CourierService } from './courier.service';
 import { ZoneService } from './zone.service';
 import { DeliveryProofService } from './delivery-proof.service';
 import { AssignmentService } from './assignment.service';
+import { AuditService } from '../../../core/services/audit.service';
 
 describe('ShipmentService', () => {
   let shipmentService: ShipmentService;
@@ -11,6 +12,7 @@ describe('ShipmentService', () => {
   let zoneService: ZoneService;
   let proofService: DeliveryProofService;
   let assignmentService: AssignmentService;
+  let auditService: AuditService;
 
   beforeEach(() => {
     localStorage.clear();
@@ -20,6 +22,7 @@ describe('ShipmentService', () => {
     zoneService = TestBed.inject(ZoneService);
     proofService = TestBed.inject(DeliveryProofService);
     assignmentService = TestBed.inject(AssignmentService);
+    auditService = TestBed.inject(AuditService);
     // Uygulama artık boş başlıyor; testler bölge/adres verisine ihtiyaç duyduğu için örnek veriyi elle yükler.
     zoneService.ornekVeriYukle();
   });
@@ -148,5 +151,27 @@ describe('ShipmentService', () => {
 
     await shipmentService.iptalEt(gonderi.id, 'iptal');
     expect(assignmentService.aktifAtama(gonderi.id)).toBeUndefined();
+  });
+
+  it('müşteri notu eklendiğinde durum değişmez ama audit log kaydı üretilir', async () => {
+    const zone = zoneService.aktifBolgeler()[0];
+    const gonderi = await shipmentService.olustur({
+      aliciAdSoyad: 'A', aliciTelefon: '0532 111 22 33', adresId: 'adr-1', bolgeId: zone.id, agirlikKg: 1,
+    });
+
+    await shipmentService.musteriNotuEkle(gonderi.id, 'Müşteri geri arama istedi.');
+
+    const guncel = await shipmentService.birGetir(gonderi.id);
+    expect(guncel?.status).toBe('olusturuldu');
+
+    const kayit = auditService.log().find((e) => e.islemTipi === 'musteri-notu' && e.hedefId === gonderi.id);
+    expect(kayit).toBeDefined();
+    expect(kayit?.aciklama).toContain('Müşteri geri arama istedi.');
+  });
+
+  it('var olmayan gönderiye müşteri notu eklenemez', async () => {
+    await expectAsync(
+      shipmentService.musteriNotuEkle('olmayan-id', 'not')
+    ).toBeRejected();
   });
 });

@@ -99,9 +99,16 @@
 
     <ng-template #bosState>
       <app-empty-state
+        *ngIf="!aramaGerekli(); else musteriAramaBos"
         title="Sonuç bulunamadı"
         description="Arama veya filtre kriterlerinizi değiştirmeyi deneyin."
       ></app-empty-state>
+      <ng-template #musteriAramaBos>
+        <app-empty-state
+          title="Bir gönderi arayın"
+          description="Müşteri hizmetleri görünümünde kayıtlar listelenmez; takip kodu veya alıcı adı ile arama yapın."
+        ></app-empty-state>
+      </ng-template>
     </ng-template>
   </ng-container>
 </div>

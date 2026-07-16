@@ -4,6 +4,17 @@
   margin: 0 auto;
 }
 
+.reports__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media print {
+  .reports__print-btn { display: none; }
+}
+
 .courier-perf-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

@@ -19,7 +19,8 @@ export type IconName =
   | 'gunes'
   | 'kullanici'
   | 'trend-yukari'
-  | 'menu';
+  | 'menu'
+  | 'yazdir';
 
 /** Uygulama genelinde kullanılan çizgi (stroke) ikon seti. */
 @Component({
@@ -119,6 +120,11 @@ export type IconName =
         <path d="M3 6h18" />
         <path d="M3 12h18" />
         <path d="M3 18h18" />
+      </ng-container>
+      <ng-container *ngSwitchCase="'yazdir'">
+        <path d="M6 9V3h12v6" />
+        <rect x="4" y="9" width="16" height="8" rx="1" />
+        <path d="M6 17v4h12v-4" />
       </ng-container>
     </svg>
   `,

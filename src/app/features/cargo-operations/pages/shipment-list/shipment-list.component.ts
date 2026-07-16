@@ -5,6 +5,7 @@ import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { Shipment, SHIPMENT_STATUS_LABELS, ShipmentStatus } from '../../models/shipment.model';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
@@ -55,9 +56,15 @@ export class ShipmentListComponent {
     'agirlikKg-desc': (a, b) => b.agirlikKg - a.agirlikKg,
   };
 
+  /** Müşteri hizmetleri yalnızca arama yaparak "kendi kaydını" bulur; tüm listeyi göremez. */
+  readonly aramaGerekli = computed(
+    () => this.currentUser.rol() === 'musteri-hizmetleri' && !this.arama().trim()
+  );
+
   readonly filtrelenmis = computed(() => {
     const aramaMetni = this.arama().trim().toLowerCase();
     const status = this.statusFiltre();
+    if (this.aramaGerekli()) return [];
     return this.gonderiler()
       .filter((g) => (status === 'tumu' ? true : g.status === status))
       .filter((g) =>
@@ -79,7 +86,8 @@ export class ShipmentListComponent {
     private shipmentService: ShipmentService,
     public courierService: CourierService,
     public zoneService: ZoneService,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private currentUser: CurrentUserService
   ) {
     this.yukle();
   }

@@ -1,5 +1,11 @@
 <div class="reports" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']; mode: 'blur'">
-  <h1>Raporlar</h1>
+  <div class="reports__header">
+    <h1>Raporlar</h1>
+    <button type="button" class="btn btn--ghost reports__print-btn" (click)="yazdir()">
+      <app-icon name="yazdir" [size]="14"></app-icon>
+      Rapor Yazdır
+    </button>
+  </div>
 
   <div class="panel" *ngIf="yukleniyor()">
     <p>Yükleniyor...</p>

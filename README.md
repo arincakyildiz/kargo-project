@@ -35,7 +35,7 @@ Backend/login akışı olmadığı için üst bardaki **Aktif Rol** seçicisiyle
 |---|---|
 | Operasyon Uzmanı | Tüm ekranlara tam erişim: onay, atama, durum değişikliği, rapor |
 | Kurye Sorumlusu | Operasyon Uzmanı ile aynı işlem yetkisine sahip |
-| Müşteri Hizmetleri | Yalnızca görüntüleme; oluşturma/düzenleme/durum değişikliği ekranları gizlenir |
+| Müşteri Hizmetleri | Gönderiler listesinde kayıtları göremez; yalnızca takip kodu/alıcı adıyla arama yaparak "kendi kaydını" bulur. Durum değiştiremez; gönderi detayında sınırlı bir işlem olarak müşteri notu ekleyebilir (audit log üretir) |
 
 ## Mimari
 

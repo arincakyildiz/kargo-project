@@ -274,4 +274,18 @@ export class ShipmentService {
     await this.durumDegistir(shipmentId, 'iade-talebi', neden);
     await this.returnRequestService.olustur({ shipmentId, neden, status: 'beklemede' });
   }
+
+  /** Müşteri hizmetlerinin durum değiştirmeden bırakabildiği tek sınırlı işlem: gönderiye not düşmek. */
+  async musteriNotuEkle(shipmentId: string, not: string): Promise<void> {
+    return mockRequest(() => {
+      const shipment = this.shipments().find((s) => s.id === shipmentId);
+      if (!shipment) throw new MockApiError('Gönderi bulunamadı.');
+      this.audit.kaydet({
+        islemTipi: 'musteri-notu',
+        rol: this.currentUser.rol(),
+        aciklama: `${shipment.takipKodu} için müşteri hizmetleri notu: ${not}`,
+        hedefId: shipmentId,
+      });
+    }, { ms: 250 });
+  }
 }

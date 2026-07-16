@@ -124,6 +124,27 @@
         </section>
       </ng-container>
 
+      <ng-container *appYetki="['musteri-hizmetleri']">
+        <section class="panel">
+          <h2>Müşteri Notu Ekle</h2>
+          <p class="muted">Müşteri hizmetleri durumu değiştiremez; yalnızca gönderiye not düşebilir.</p>
+          <div class="form-field">
+            <label for="musteriNotu">Not</label>
+            <textarea
+              id="musteriNotu"
+              rows="2"
+              maxlength="100"
+              [value]="musteriNotu()"
+              (input)="musteriNotu.set($any($event.target).value)"
+            ></textarea>
+            <small class="char-counter">{{ musteriNotu().length }} / 100</small>
+          </div>
+          <button class="btn btn--primary" (click)="musteriNotuEkle()" [disabled]="islemDevamEdiyor()">
+            Notu Kaydet
+          </button>
+        </section>
+      </ng-container>
+
       <section class="panel timeline-panel">
         <h2>Durum Geçmişi</h2>
         <ol class="timeline" *ngIf="gecmisListesi().length; else timelineBos">

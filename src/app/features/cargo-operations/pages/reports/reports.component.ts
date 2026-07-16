@@ -99,4 +99,8 @@ export class ReportsComponent {
     this.gonderiler.set(await this.shipmentService.tumunuGetir());
     this.yukleniyor.set(false);
   }
+
+  yazdir(): void {
+    window.print();
+  }
 }

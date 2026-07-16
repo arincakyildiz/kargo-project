@@ -32,6 +32,7 @@ export class ShipmentDetailComponent implements OnInit {
   readonly teslimAlan = signal('');
   readonly imzaVar = signal(true);
   readonly teslimatNot = signal('');
+  readonly musteriNotu = signal('');
 
   private gonderiId = '';
   private gecmis = computed(() => this.statusHistory.gonderiGecmisi(this.gonderiId)());
@@ -225,5 +226,23 @@ export class ShipmentDetailComponent implements OnInit {
 
   duzenle(): void {
     this.router.navigate(['/gonderiler', this.gonderiId, 'duzenle']);
+  }
+
+  async musteriNotuEkle(): Promise<void> {
+    const not = this.musteriNotu().trim();
+    if (!not) {
+      this.notification.error('Not alanı boş olamaz.');
+      return;
+    }
+    this.islemDevamEdiyor.set(true);
+    try {
+      await this.shipmentService.musteriNotuEkle(this.gonderiId, not);
+      this.notification.success('Notunuz kaydedildi.');
+      this.musteriNotu.set('');
+    } catch {
+      this.notification.error('Not kaydedilemedi.');
+    } finally {
+      this.islemDevamEdiyor.set(false);
+    }
   }
 }
