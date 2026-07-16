@@ -13,6 +13,7 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { TURKIYE_ILLERI } from '../../data/turkiye-iller';
 import { ShipmentService } from '../../services/shipment.service';
+import { CourierService } from '../../services/courier.service';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
@@ -90,6 +91,7 @@ export class ZonesComponent {
     private fb: FormBuilder,
     private zoneService: ZoneService,
     private shipmentService: ShipmentService,
+    private courierService: CourierService,
     private notification: NotificationService,
     private audit: AuditService,
     private currentUser: CurrentUserService,
@@ -225,6 +227,44 @@ export class ZonesComponent {
       await this.yukle();
     } catch {
       this.notification.error('Bölge durumu güncellenemedi.');
+    }
+  }
+
+  async sil(zone: DeliveryZone): Promise<void> {
+    // 1. Check active shipments
+    const aktifGonderiler = this.shipmentService.liste().filter(
+      (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal-edildi'].includes(s.status)
+    );
+    if (aktifGonderiler.length > 0) {
+      this.notification.error(`Bu bölgede ${aktifGonderiler.length} adet aktif gönderi bulunduğundan bölge silinemez!`);
+      return;
+    }
+
+    // 2. Check assigned couriers
+    const kuryeler = this.courierService.liste().filter((k) => k.bolgeId === zone.id);
+    if (kuryeler.length > 0) {
+      this.notification.error(`Bu bölgeye atanmış ${kuryeler.length} adet kurye bulunduğundan bölge silinemez!`);
+      return;
+    }
+
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Bölgeyi Sil',
+      mesaj: `"${zone.ad}" bölgesi kalıcı olarak silinecek. Onaylıyor musunuz?`,
+      onayMetni: 'Sil',
+    });
+    if (!sonuc.onaylandi) return;
+
+    try {
+      await this.zoneService.sil(zone.id);
+      this.audit.kaydet({
+        islemTipi: 'bolge-sil',
+        rol: this.currentUser.rol(),
+        aciklama: `Bölge silindi: ${zone.ad}`,
+      });
+      this.notification.success('Bölge başarıyla silindi.');
+      await this.yukle();
+    } catch {
+      this.notification.error('Bölge silinirken bir hata oluştu.');
     }
   }
 }

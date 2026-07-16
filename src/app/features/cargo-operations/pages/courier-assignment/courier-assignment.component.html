@@ -127,6 +127,9 @@
             <button class="btn btn--ghost btn--sm" (click)="kuryeAktiflikDegistir(o.kurye)">
               {{ o.kurye.aktifMi ? 'Pasife Al' : 'Aktifleştir' }}
             </button>
+            <button class="btn btn--danger btn--sm" (click)="kuryeSil(o.kurye)">
+              Sil
+            </button>
           </td>
         </tr>
       </tbody>

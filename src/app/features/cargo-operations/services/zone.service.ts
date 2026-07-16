@@ -89,4 +89,11 @@ export class ZoneService {
       return guncellenen;
     });
   }
+
+  async sil(id: string): Promise<void> {
+    return mockRequest(() => {
+      const list = this.zones().filter((z) => z.id !== id);
+      this.persistZones(list);
+    });
+  }
 }

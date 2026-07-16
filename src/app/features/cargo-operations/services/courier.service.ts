@@ -66,4 +66,11 @@ export class CourierService {
       return guncellenen;
     });
   }
+
+  async sil(id: string): Promise<void> {
+    return mockRequest(() => {
+      const list = this.couriers().filter((k) => k.id !== id);
+      this.persist(list);
+    });
+  }
 }

@@ -254,6 +254,37 @@ export class CourierAssignmentComponent {
     }
   }
 
+  async kuryeSil(kurye: Courier): Promise<void> {
+    const atanan = this.shipmentService
+      .liste()
+      .filter((s) => s.kuryeId === kurye.id && ['kurye-atandi', 'dagitimda'].includes(s.status)).length;
+    
+    if (atanan > 0) {
+      this.notification.error(`Bu kuryenin ${atanan} adet aktif dağıtım/atama kaydı bulunduğundan silinemez!`);
+      return;
+    }
+
+    const sonuc = await this.dialog.confirm({
+      baslik: 'Kuryeyi Sil',
+      mesaj: `"${kurye.adSoyad}" kuryesi kalıcı olarak silinecek. Onaylıyor musunuz?`,
+      onayMetni: 'Sil',
+    });
+    if (!sonuc.onaylandi) return;
+
+    try {
+      await this.courierService.sil(kurye.id);
+      this.audit.kaydet({
+        islemTipi: 'kurye-sil',
+        rol: this.currentUser.rol(),
+        aciklama: `Kurye silindi: ${kurye.adSoyad}`,
+      });
+      this.notification.success('Kurye başarıyla silindi.');
+      await this.yukle();
+    } catch {
+      this.notification.error('Kurye silinirken bir hata oluştu.');
+    }
+  }
+
   kuryeAramaDegisti(deger: string): void {
     this.kuryeArama.set(deger);
   }
