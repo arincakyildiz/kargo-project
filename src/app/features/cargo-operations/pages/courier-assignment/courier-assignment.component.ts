@@ -16,6 +16,8 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { telefonValidator, pozitifSayiValidator } from '../../../../shared/validators/telefon.validator';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
+import { TelefonMaskDirective } from '../../../../shared/directives/telefon-mask.directive';
+import { NoWheelDirective } from '../../../../shared/directives/no-wheel.directive';
 
 type KuryeSiralamaAnahtari = 'adSoyad-asc' | 'doluluk-desc';
 type GonderiSiralamaAnahtari = 'takipKodu-asc' | 'createdAt-desc';
@@ -23,7 +25,7 @@ type GonderiSiralamaAnahtari = 'takipKodu-asc' | 'createdAt-desc';
 @Component({
   selector: 'app-courier-assignment',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective, DebounceDirective],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective, DebounceDirective, TelefonMaskDirective, NoWheelDirective],
   templateUrl: './courier-assignment.component.html',
   styleUrl: './courier-assignment.component.scss',
 })
@@ -186,7 +188,16 @@ export class CourierAssignmentComponent {
     this.kuryeFormAcik.set(true);
   }
 
-  kuryeFormunuKapat(): void {
+  async kuryeFormunuKapat(): Promise<void> {
+    if (this.kuryeForm.dirty) {
+      const sonuc = await this.dialog.confirm({
+        baslik: 'Değişiklikler Kaydedilmedi',
+        mesaj: 'Formda kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?',
+        onayMetni: 'Çık',
+      });
+      if (!sonuc.onaylandi) return;
+    }
+    this.kuryeForm.reset();
     this.kuryeFormAcik.set(false);
   }
 

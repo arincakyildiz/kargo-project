@@ -12,6 +12,7 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { TURKIYE_ILLERI } from '../../data/turkiye-iller';
+import { ShipmentService } from '../../services/shipment.service';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
@@ -88,6 +89,7 @@ export class ZonesComponent {
   constructor(
     private fb: FormBuilder,
     private zoneService: ZoneService,
+    private shipmentService: ShipmentService,
     private notification: NotificationService,
     private audit: AuditService,
     private currentUser: CurrentUserService,
@@ -191,9 +193,21 @@ export class ZonesComponent {
   }
 
   async aktiflikDegistir(zone: DeliveryZone): Promise<void> {
+    let mesaj = `"${zone.ad}" bölgesi ${zone.aktifMi ? 'pasife alınacak' : 'aktifleştirilecek'}. Onaylıyor musunuz?`;
+
+    // Pasife almadan önce aktif gönderi kontrolü
+    if (zone.aktifMi) {
+      const aktifGonderiler = this.shipmentService.liste().filter(
+        (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal'].includes(s.status)
+      );
+      if (aktifGonderiler.length > 0) {
+        mesaj = `"${zone.ad}" bölgesinde ${aktifGonderiler.length} aktif gönderi bulunuyor! Pasife alırsa bu gönderiler etkilenebilir. Devam etmek istediğinize emin misiniz?`;
+      }
+    }
+
     const sonuc = await this.dialog.confirm({
       baslik: zone.aktifMi ? 'Bölgeyi Pasife Al' : 'Bölgeyi Aktifleştir',
-      mesaj: `"${zone.ad}" bölgesi ${zone.aktifMi ? 'pasife alınacak' : 'aktifleştirilecek'}. Onaylıyor musunuz?`,
+      mesaj,
       aciklamaGerekli: true,
       onayMetni: 'Onayla',
     });

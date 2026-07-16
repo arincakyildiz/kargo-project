@@ -94,7 +94,9 @@ export class ShipmentService {
   }): Promise<Shipment> {
     return mockRequest(() => {
       const now = new Date().toISOString();
-      const takipKodu = `TK-${Math.floor(100000 + Math.random() * 899999)}`;
+      const tarihKisim = now.slice(0, 10).replace(/-/g, '');
+      const rastgele = Math.floor(1000 + Math.random() * 9000);
+      const takipKodu = `KRG-${tarihKisim}-${rastgele}`;
       const yeni: Shipment = {
         ...veri,
         id: crypto.randomUUID(),

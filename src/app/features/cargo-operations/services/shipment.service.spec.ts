@@ -37,7 +37,7 @@ describe('ShipmentService', () => {
       agirlikKg: 1,
     });
     expect(gonderi.status).toBe('olusturuldu');
-    expect(gonderi.takipKodu).toMatch(/^TK-/);
+    expect(gonderi.takipKodu).toMatch(/^KRG-\d{8}-\d{4}$/);
   });
 
   it('tanımsız durum geçişini reddeder (olusturuldu -> teslim-edildi)', async () => {

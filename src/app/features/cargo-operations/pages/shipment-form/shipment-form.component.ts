@@ -9,11 +9,13 @@ import { AuditService } from '../../../../core/services/audit.service';
 import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { CanComponentDeactivate } from '../../../../core/guards/unsaved-changes.guard';
 import { telefonValidator, pozitifSayiValidator } from '../../../../shared/validators/telefon.validator';
+import { TelefonMaskDirective } from '../../../../shared/directives/telefon-mask.directive';
+import { NoWheelDirective } from '../../../../shared/directives/no-wheel.directive';
 
 @Component({
   selector: 'app-shipment-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TelefonMaskDirective, NoWheelDirective],
   templateUrl: './shipment-form.component.html',
   styleUrl: './shipment-form.component.scss',
 })

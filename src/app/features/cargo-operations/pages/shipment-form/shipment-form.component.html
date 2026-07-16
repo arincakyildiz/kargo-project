@@ -59,15 +59,12 @@
 
     <div class="form-field">
       <label for="aliciTelefon">Alıcı Telefon</label>
-      <input id="aliciTelefon" formControlName="aliciTelefon" type="text" placeholder="05XX XXX XX XX" maxlength="15" />
+      <input id="aliciTelefon" formControlName="aliciTelefon" appTelefonMask type="text" placeholder="05XX XXX XX XX" maxlength="15" />
       <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['required'] && form.controls.aliciTelefon.touched">
         Telefon numarası zorunludur.
       </span>
       <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['telefonGecersiz'] && form.controls.aliciTelefon.touched">
-        Telefon biçimi geçersiz (örn. 0532 111 22 33).
-      </span>
-      <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['maxlength'] && form.controls.aliciTelefon.touched">
-        En fazla 15 karakter girilebilir.
+        Geçerli bir Türkiye telefon numarası girin (0 ile başlayan 11 hane).
       </span>
     </div>
 
@@ -84,11 +81,12 @@
 
     <div class="form-field">
       <label for="agirlikKg">Ağırlık (kg)</label>
-      <input id="agirlikKg" formControlName="agirlikKg" type="number" step="0.1" min="0.1" max="500" />
+      <input id="agirlikKg" formControlName="agirlikKg" appNoWheel type="number" step="0.1" min="0.1" max="500"
+        (input)="$any($event.target).value > 500 && ($any($event.target).value = 500) && form.controls.agirlikKg.setValue(500)" />
       <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['required'] && form.controls.agirlikKg.touched">
         Ağırlık zorunludur.
       </span>
-      <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['pozitifGecersiz'] && form.controls.agirlikKg.touched">
+      <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['pozitifDegil'] && form.controls.agirlikKg.touched">
         Ağırlık pozitif bir sayı olmalıdır.
       </span>
       <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['max'] && form.controls.agirlikKg.touched">
