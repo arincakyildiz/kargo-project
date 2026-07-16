@@ -118,7 +118,7 @@
         <tr *ngFor="let o of kuryeKapasiteOzeti()">
           <td>{{ o.kurye.adSoyad }}</td>
           <td>{{ zoneService.bolgeAdi(o.kurye.bolgeId) }}</td>
-          <td>{{ o.kurye.telefon }}</td>
+          <td class="cell-nowrap">{{ o.kurye.telefon }}</td>
           <td>{{ o.kapasite.atananGonderiSayisi }} / {{ o.kapasite.kapasite }}</td>
           <td>
             <span

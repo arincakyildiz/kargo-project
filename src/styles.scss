@@ -236,6 +236,10 @@ table.data-table tbody tr:last-child td { border-bottom: none; }
   white-space: nowrap;
 }
 
+.cell-nowrap {
+  white-space: nowrap;
+}
+
 .form-field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
 .form-field label { font-size: 0.85rem; font-weight: 600; color: var(--color-text); }
 .form-field input, .form-field select, .form-field textarea {
