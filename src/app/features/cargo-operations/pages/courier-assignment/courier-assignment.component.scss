@@ -14,6 +14,21 @@
 .actions {
   display: flex;
   gap: 0.4rem;
+  align-items: center;
+
+  .btn {
+    justify-content: center;
+    
+    &:nth-child(1) {
+      min-width: 75px;
+    }
+    &:nth-child(2) {
+      min-width: 105px;
+    }
+    &:nth-child(3) {
+      min-width: 65px;
+    }
+  }
 }
 
 .toolbar--compact {

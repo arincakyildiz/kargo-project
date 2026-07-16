@@ -279,6 +279,12 @@ export const TRANSLATIONS = {
     dialog_confirm_title: 'Onay',
     dialog_confirm_message: 'Bu işlemi onaylıyor musunuz?',
     description_required: 'Açıklama alanı boş bırakılamaz.',
+    load_demo_confirm_title: 'Örnek Veri Yükle',
+    load_demo_confirm_message: 'Sistem; örnek gönderi, kurye, bölge ve iade kayıtlarıyla doldurulacak. Devam edilsin mi?',
+    delete_all_confirm_title: 'Tüm Verileri Sil',
+    delete_all_confirm_message: 'Bu işlem geri alınamaz. Tüm gönderiler, kuryeler, bölgeler, adresler ve audit log kalıcı olarak silinecek.',
+    demo_data_loaded: 'Örnek veri yüklendi.',
+    all_data_deleted: 'Tüm veriler silindi.',
 
     // Additional keys for Dashboard
     no_filtered_shipments_dashboard_desc: 'Farklı bir bölge veya tarih aralığı deneyin.',
@@ -699,6 +705,12 @@ export const TRANSLATIONS = {
     dialog_confirm_title: 'Confirmation',
     dialog_confirm_message: 'Do you confirm this action?',
     description_required: 'Description cannot be empty.',
+    load_demo_confirm_title: 'Load Demo Data',
+    load_demo_confirm_message: 'The system will be populated with sample shipments, couriers, zones, and return records. Do you want to continue?',
+    delete_all_confirm_title: 'Delete All Data',
+    delete_all_confirm_message: 'This action cannot be undone. All shipments, couriers, zones, addresses, and audit logs will be permanently deleted.',
+    demo_data_loaded: 'Sample data loaded successfully.',
+    all_data_deleted: 'All data successfully deleted.',
 
     // Additional keys for Dashboard
     no_filtered_shipments_dashboard_desc: 'Try a different zone or date range.',

@@ -2,36 +2,37 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogService } from './dialog.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <div class="overlay" *ngIf="dialog.pending() as istek">
       <div class="dialog">
         <h3>{{ istek.baslik }}</h3>
         <p>{{ istek.mesaj }}</p>
         <div class="dialog__aciklama" *ngIf="istek.aciklamaGerekli">
-          <label for="aciklama">Açıklama <span class="zorunlu">*</span></label>
+          <label for="aciklama">{{ 'description_label' | translate }} <span class="zorunlu">*</span></label>
           <textarea
             id="aciklama"
             rows="3"
             maxlength="100"
-            placeholder="Bu işlem için açıklama girin"
+            [placeholder]="'description_required' | translate"
             [(ngModel)]="aciklama"
           ></textarea>
           <small class="char-counter">{{ aciklama.length }} / 100</small>
         </div>
         <div class="dialog__actions">
-          <button type="button" class="btn btn--ghost" (click)="iptal()">Vazgeç</button>
+          <button type="button" class="btn btn--ghost" (click)="iptal()">{{ 'cancel' | translate }}</button>
           <button
             type="button"
             class="btn btn--primary"
             [disabled]="istek.aciklamaGerekli && !aciklama.trim()"
             (click)="onayla()"
           >
-            {{ istek.onayMetni ?? 'Onayla' }}
+            {{ istek.onayMetni ?? ('confirm' | translate) }}
           </button>
         </div>
       </div>

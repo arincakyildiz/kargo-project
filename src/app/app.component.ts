@@ -93,27 +93,27 @@ export class AppComponent {
 
   async ornekVeriYukle(): Promise<void> {
     const sonuc = await this.dialog.confirm({
-      baslik: 'Örnek Veri Yükle',
-      mesaj: 'Sistem; örnek gönderi, kurye, bölge ve iade kayıtlarıyla doldurulacak. Devam edilsin mi?',
-      onayMetni: 'Yükle',
+      baslik: this.langService.translate('load_demo_confirm_title'),
+      mesaj: this.langService.translate('load_demo_confirm_message'),
+      onayMetni: this.langService.translate('load_demo_data'),
     });
     if (!sonuc.onaylandi) return;
 
     this.shipmentService.ornekVeriYukle();
-    this.notification.success('Örnek veri yüklendi.');
+    this.notification.success(this.langService.translate('demo_data_loaded'));
   }
 
   async verileriSil(): Promise<void> {
     const sonuc = await this.dialog.confirm({
-      baslik: 'Tüm Verileri Sil',
-      mesaj: 'Bu işlem geri alınamaz. Tüm gönderiler, kuryeler, bölgeler, adresler ve audit log kalıcı olarak silinecek.',
+      baslik: this.langService.translate('delete_all_confirm_title'),
+      mesaj: this.langService.translate('delete_all_confirm_message'),
       aciklamaGerekli: true,
-      onayMetni: 'Sil',
+      onayMetni: this.langService.translate('delete'),
     });
     if (!sonuc.onaylandi) return;
 
     this.shipmentService.verileriSil();
-    this.notification.success('Tüm veriler silindi.');
+    this.notification.success(this.langService.translate('all_data_deleted'));
   }
 
   rolDegistir(rol: string): void {
