@@ -21,3 +21,11 @@ export function pozitifSayiValidator(): ValidatorFn {
     return Number(control.value) > 0 ? null : { pozitifDegil: true };
   };
 }
+
+export function tamSayiValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (control.value === null || control.value === undefined || control.value === '') return null;
+    const num = Number(control.value);
+    return Number.isInteger(num) ? null : { tamSayiGecersiz: true };
+  };
+}

@@ -14,7 +14,7 @@ import { CurrentUserService } from '../../../../core/services/current-user.servi
 import { DialogService } from '../../../../shared/components/confirm-dialog/dialog.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
-import { telefonValidator, pozitifSayiValidator } from '../../../../shared/validators/telefon.validator';
+import { telefonValidator, pozitifSayiValidator, tamSayiValidator } from '../../../../shared/validators/telefon.validator';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { TelefonMaskDirective } from '../../../../shared/directives/telefon-mask.directive';
 import { NoWheelDirective } from '../../../../shared/directives/no-wheel.directive';
@@ -52,7 +52,7 @@ export class CourierAssignmentComponent {
     adSoyad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
     telefon: ['', [Validators.required, telefonValidator(), Validators.maxLength(15)]],
     bolgeId: ['', Validators.required],
-    gunlukKapasite: [10, [Validators.required, pozitifSayiValidator(), Validators.max(200)]],
+    gunlukKapasite: [10, [Validators.required, pozitifSayiValidator(), tamSayiValidator(), Validators.max(200)]],
   });
 
   private readonly kuryeSiralamaFonksiyonlari: Record<
@@ -199,6 +199,20 @@ export class CourierAssignmentComponent {
     }
     this.kuryeForm.reset();
     this.kuryeFormAcik.set(false);
+  }
+
+  kapasiteGirdisiDegisti(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let val = input.value.replace(/\D/g, ''); // Sadece rakamları tut (ondalık nokta, e, artı, eksi engellenir)
+    if (val) {
+      let num = parseInt(val, 10);
+      if (num > 200) num = 200;
+      if (num < 1) num = 1;
+      input.value = num.toString();
+      this.kuryeForm.controls.gunlukKapasite.setValue(num);
+    } else {
+      this.kuryeForm.controls.gunlukKapasite.setValue(null as any);
+    }
   }
 
   async kuryeKaydet(): Promise<void> {

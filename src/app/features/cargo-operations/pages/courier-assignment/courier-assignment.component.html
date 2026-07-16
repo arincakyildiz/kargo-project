@@ -50,13 +50,17 @@
         appNoWheel
         min="1"
         max="200"
-        (input)="$any($event.target).value > 200 && ($any($event.target).value = 200) && kuryeForm.controls.gunlukKapasite.setValue(200)"
+        step="1"
+        (input)="kapasiteGirdisiDegisti($event)"
       />
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['required'] && kuryeForm.controls.gunlukKapasite.touched">
         Kapasite zorunludur.
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['pozitifDegil'] && kuryeForm.controls.gunlukKapasite.touched">
         Kapasite pozitif bir sayı olmalıdır.
+      </span>
+      <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['tamSayiGecersiz'] && kuryeForm.controls.gunlukKapasite.touched">
+        Kapasite sadece tam sayı olabilir.
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['max'] && kuryeForm.controls.gunlukKapasite.touched">
         Maksimum kapasite 200 olabilir.
