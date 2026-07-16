@@ -268,4 +268,8 @@ export class ShipmentDetailComponent implements OnInit {
   yazdir(): void {
     window.print();
   }
+
+  bolgeAdresDetayi(adresId: string): string {
+    return this.zoneService.adresListe().find((a) => a.id === adresId)?.acikAdres ?? '—';
+  }
 }
