@@ -325,6 +325,15 @@
 
 .content { flex: 1; overflow-y: auto; }
 
+@media (max-width: 1080px) {
+  .topbar__role label {
+    display: none;
+  }
+  .avatar-btn__info {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .layout { flex-direction: column; min-height: auto; }
 
