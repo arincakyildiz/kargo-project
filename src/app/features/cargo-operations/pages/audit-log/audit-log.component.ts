@@ -4,6 +4,7 @@ import { AuditService } from '../../../../core/services/audit.service';
 import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { AuditLogEntry } from '../../../../core/models/base-model';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
@@ -13,7 +14,7 @@ type SiralamaAnahtari = 'islemZamani-desc' | 'islemZamani-asc' | 'rol-asc';
 @Component({
   selector: 'app-audit-log',
   standalone: true,
-  imports: [CommonModule, TarihPipe, DebounceDirective, EmptyStateComponent],
+  imports: [CommonModule, TarihPipe, DebounceDirective, EmptyStateComponent, IconComponent],
   templateUrl: './audit-log.component.html',
   styleUrl: './audit-log.component.scss',
 })
@@ -26,6 +27,7 @@ export class AuditLogComponent {
   readonly sayfa = signal(1);
   readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
   readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
+  readonly seciliKayit = signal<AuditLogEntry | null>(null);
 
   private readonly siralamaFonksiyonlari: Record<SiralamaAnahtari, (a: AuditLogEntry, b: AuditLogEntry) => number> = {
     'islemZamani-desc': (a, b) => b.islemZamani.localeCompare(a.islemZamani),
@@ -79,5 +81,13 @@ export class AuditLogComponent {
   sayfayaGit(yeniSayfa: number): void {
     if (yeniSayfa < 1 || yeniSayfa > this.toplamSayfa()) return;
     this.sayfa.set(yeniSayfa);
+  }
+
+  detayAc(entry: AuditLogEntry): void {
+    this.seciliKayit.set(entry);
+  }
+
+  detayKapat(): void {
+    this.seciliKayit.set(null);
   }
 }

@@ -27,16 +27,19 @@
   <div class="panel">
     <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
-        <tr><th>Zaman</th><th>Rol</th><th>İşlem</th><th>Açıklama</th><th>Eski → Yeni</th></tr>
+        <tr><th>Zaman</th><th>Rol</th><th>İşlem</th><th>Açıklama</th><th>Eski → Yeni</th><th></th></tr>
       </thead>
       <tbody>
-        <tr *ngFor="let e of sayfalanmis()">
+        <tr *ngFor="let e of sayfalanmis()" class="audit-log__row" (click)="detayAc(e)">
           <td>{{ e.islemZamani | tarih }}</td>
           <td>{{ e.rol }}</td>
           <td>{{ e.islemTipi }}</td>
           <td class="cell-truncate" [title]="e.aciklama">{{ e.aciklama }}</td>
           <td>
             <ng-container *ngIf="e.eskiDeger || e.yeniDeger">{{ e.eskiDeger || '—' }} → {{ e.yeniDeger || '—' }}</ng-container>
+          </td>
+          <td>
+            <button type="button" class="btn btn--ghost btn--sm" (click)="detayAc(e); $event.stopPropagation()">Detay</button>
           </td>
         </tr>
       </tbody>
@@ -57,5 +60,29 @@
         description="Filtreyi değiştirin veya bir işlem yaptıktan sonra tekrar bakın."
       ></app-empty-state>
     </ng-template>
+  </div>
+
+  <div class="audit-detail-overlay" *ngIf="seciliKayit() as kayit" (click)="detayKapat()">
+    <div class="audit-detail-card" (click)="$event.stopPropagation()">
+      <div class="audit-detail-card__header">
+        <h2>İşlem Detayı</h2>
+        <button type="button" class="icon-btn" aria-label="Kapat" (click)="detayKapat()">
+          <app-icon name="kapat" [size]="16"></app-icon>
+        </button>
+      </div>
+      <dl>
+        <dt>Zaman</dt><dd>{{ kayit.islemZamani | tarih }}</dd>
+        <dt>Rol</dt><dd>{{ kayit.rol }}</dd>
+        <dt>İşlem Tipi</dt><dd>{{ kayit.islemTipi }}</dd>
+        <dt>Açıklama</dt><dd class="audit-detail-card__aciklama">{{ kayit.aciklama }}</dd>
+        <ng-container *ngIf="kayit.eskiDeger || kayit.yeniDeger">
+          <dt>Eski Değer</dt><dd>{{ kayit.eskiDeger || '—' }}</dd>
+          <dt>Yeni Değer</dt><dd>{{ kayit.yeniDeger || '—' }}</dd>
+        </ng-container>
+        <ng-container *ngIf="kayit.hedefId">
+          <dt>Hedef ID</dt><dd>{{ kayit.hedefId }}</dd>
+        </ng-container>
+      </dl>
+    </div>
   </div>
 </div>
