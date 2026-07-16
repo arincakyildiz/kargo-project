@@ -8,13 +8,14 @@ describe('telefonValidator', () => {
     expect(validator(new FormControl(''))).toBeNull();
   });
 
-  it('doğru biçimli telefonu kabul eder', () => {
+  it('doğru biçimli veya birleşik yazılan telefonu kabul eder', () => {
     expect(validator(new FormControl('0532 111 22 33'))).toBeNull();
+    expect(validator(new FormControl('05321112233'))).toBeNull();
   });
 
   it('yanlış biçimli telefonu reddeder', () => {
-    expect(validator(new FormControl('05321112233'))).toEqual({ telefonGecersiz: true });
     expect(validator(new FormControl('abc'))).toEqual({ telefonGecersiz: true });
+    expect(validator(new FormControl('12345678901'))).toEqual({ telefonGecersiz: true });
   });
 });
 

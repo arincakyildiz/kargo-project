@@ -1,12 +1,17 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-const TELEFON_REGEX = /^0\d{3} \d{3} \d{2} \d{2}$/;
+/** Boşluk, tire, parantez temizlendikten sonra "0" + 10 rakam (toplam 11 hane) beklenir. */
+const TELEFON_REGEX = /^0\d{10}$/;
 
-/** Beklenen biçim: "05XX XXX XX XX". */
+/**
+ * Türkiye telefon biçimini doğrular ama biçimlendirmeye zorlamaz:
+ * "0532 111 22 33" de "05321112233" de geçerlidir (boşluk/tire/parantez serbest).
+ */
 export function telefonValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     if (!control.value) return null;
-    return TELEFON_REGEX.test(control.value) ? null : { telefonGecersiz: true };
+    const temiz = String(control.value).replace(/[\s()-]/g, '');
+    return TELEFON_REGEX.test(temiz) ? null : { telefonGecersiz: true };
   };
 }
 
