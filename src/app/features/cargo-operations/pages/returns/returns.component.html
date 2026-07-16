@@ -27,7 +27,12 @@
     <p>Yükleniyor...</p>
   </div>
 
-  <div class="panel" *ngIf="!yukleniyor()">
+  <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
+    <p>{{ hataMesaji() }}</p>
+    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+  </div>
+
+  <div class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
     <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
         <tr><th>Takip Kodu</th><th>Neden</th><th>Durum</th><th>Oluşturulma</th><th *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"></th></tr>

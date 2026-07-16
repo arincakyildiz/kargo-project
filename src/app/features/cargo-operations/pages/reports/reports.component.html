@@ -11,7 +11,12 @@
     <p>Yükleniyor...</p>
   </div>
 
-  <ng-container *ngIf="!yukleniyor()">
+  <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
+    <p>{{ hataMesaji() }}</p>
+    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+  </div>
+
+  <ng-container *ngIf="!yukleniyor() && !hataMesaji()">
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-card__body">

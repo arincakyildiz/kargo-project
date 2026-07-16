@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ShipmentService, BusinessRuleError } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { Courier, CourierCapacity } from '../../models/courier.model';
 import { Shipment } from '../../models/shipment.model';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -28,6 +29,7 @@ type GonderiSiralamaAnahtari = 'takipKodu-asc' | 'createdAt-desc';
 })
 export class CourierAssignmentComponent {
   readonly yukleniyor = signal(true);
+  readonly hataMesaji = signal<string | null>(null);
   readonly bekleyenler = signal<Shipment[]>([]);
   readonly secimler = signal<Record<string, string>>({});
   readonly islemDevamEdiyor = signal<string | null>(null);
@@ -121,10 +123,16 @@ export class CourierAssignmentComponent {
 
   async yukle(): Promise<void> {
     this.yukleniyor.set(true);
-    await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
-    const liste = await this.shipmentService.tumunuGetir();
-    this.bekleyenler.set(liste.filter((s) => s.status === 'olusturuldu'));
-    this.yukleniyor.set(false);
+    this.hataMesaji.set(null);
+    try {
+      await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
+      const liste = await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE);
+      this.bekleyenler.set(liste.filter((s) => s.status === 'olusturuldu'));
+    } catch {
+      this.hataMesaji.set('Kurye atama verileri yüklenirken bir hata oluştu.');
+    } finally {
+      this.yukleniyor.set(false);
+    }
   }
 
   uygunKuryeler(bolgeId: string) {

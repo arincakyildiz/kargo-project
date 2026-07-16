@@ -3,6 +3,7 @@ import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReturnRequestService } from '../../services/return-request.service';
 import { ShipmentService } from '../../services/shipment.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { ReturnRequest, ReturnRequestStatus } from '../../models/assignment.model';
 import { Shipment } from '../../models/shipment.model';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -33,6 +34,7 @@ type SiralamaAnahtari = 'createdAt-desc' | 'createdAt-asc';
 })
 export class ReturnsComponent {
   readonly yukleniyor = signal(true);
+  readonly hataMesaji = signal<string | null>(null);
   readonly returns = signal<ReturnRequest[]>([]);
   readonly gonderiler = signal<Map<string, Shipment>>(new Map());
   readonly islemDevamEdiyor = signal<string | null>(null);
@@ -110,10 +112,16 @@ export class ReturnsComponent {
 
   async yukle(): Promise<void> {
     this.yukleniyor.set(true);
-    const gonderiler = await this.shipmentService.tumunuGetir();
-    this.gonderiler.set(new Map(gonderiler.map((g) => [g.id, g])));
-    this.returns.set(this.returnRequestService.liste());
-    this.yukleniyor.set(false);
+    this.hataMesaji.set(null);
+    try {
+      const gonderiler = await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE);
+      this.gonderiler.set(new Map(gonderiler.map((g) => [g.id, g])));
+      this.returns.set(this.returnRequestService.liste());
+    } catch {
+      this.hataMesaji.set('İade talepleri yüklenirken bir hata oluştu.');
+    } finally {
+      this.yukleniyor.set(false);
+    }
   }
 
   takipKodu(shipmentId: string): string {

@@ -63,9 +63,14 @@
     </div>
   </form>
 
-  <section class="panel">
+  <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
+    <p>{{ hataMesaji() }}</p>
+    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+  </div>
+
+  <section class="panel" *ngIf="!hataMesaji()">
     <h2>Kurye Kapasite Durumu</h2>
-    
+
     <div class="toolbar toolbar--compact">
       <input
         type="search"
@@ -118,7 +123,7 @@
     </ng-template>
   </section>
 
-  <section class="panel" *ngIf="!yukleniyor()">
+  <section class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
     <h2>Atama Bekleyen Gönderiler</h2>
 
     <div class="toolbar toolbar--compact">

@@ -5,6 +5,7 @@ import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
 import { DeliveryProofService } from '../../services/delivery-proof.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { Shipment, ShipmentStatus } from '../../models/shipment.model';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
@@ -26,6 +27,7 @@ type SiralamaAnahtari = 'updatedAt-desc' | 'updatedAt-asc' | 'takipKodu-asc' | '
 })
 export class DeliveriesComponent {
   readonly yukleniyor = signal(true);
+  readonly hataMesaji = signal<string | null>(null);
   readonly gonderiler = signal<Shipment[]>([]);
   readonly statusFiltre = signal<ShipmentStatus | 'tumu'>('tumu');
   readonly arama = signal('');
@@ -74,9 +76,15 @@ export class DeliveriesComponent {
 
   async yukle(): Promise<void> {
     this.yukleniyor.set(true);
-    await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
-    this.gonderiler.set(await this.shipmentService.tumunuGetir());
-    this.yukleniyor.set(false);
+    this.hataMesaji.set(null);
+    try {
+      await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
+      this.gonderiler.set(await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE));
+    } catch {
+      this.hataMesaji.set('Teslimatlar yüklenirken bir hata oluştu.');
+    } finally {
+      this.yukleniyor.set(false);
+    }
   }
 
   kanitVarMi(shipmentId: string): boolean {

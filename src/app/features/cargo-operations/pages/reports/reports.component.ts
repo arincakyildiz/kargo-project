@@ -3,6 +3,7 @@ import { Component, computed, signal } from '@angular/core';
 import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 import { ZoneService } from '../../services/zone.service';
+import { DEMO_ERROR_RATE } from '../../../../core/services/mock-api';
 import { Shipment, ShipmentStatus } from '../../models/shipment.model';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
@@ -19,6 +20,7 @@ const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edild
 })
 export class ReportsComponent {
   readonly yukleniyor = signal(true);
+  readonly hataMesaji = signal<string | null>(null);
   readonly gonderiler = signal<Shipment[]>([]);
 
   readonly bolgeRaporu = computed(() =>
@@ -95,9 +97,15 @@ export class ReportsComponent {
 
   async yukle(): Promise<void> {
     this.yukleniyor.set(true);
-    await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
-    this.gonderiler.set(await this.shipmentService.tumunuGetir());
-    this.yukleniyor.set(false);
+    this.hataMesaji.set(null);
+    try {
+      await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
+      this.gonderiler.set(await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE));
+    } catch {
+      this.hataMesaji.set('Rapor verileri yüklenirken bir hata oluştu.');
+    } finally {
+      this.yukleniyor.set(false);
+    }
   }
 
   yazdir(): void {
