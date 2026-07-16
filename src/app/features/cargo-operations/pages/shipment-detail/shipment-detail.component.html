@@ -1,8 +1,8 @@
 <div class="shipment-detail">
-  <a routerLink="/gonderiler" class="back-link">‹ Gönderilere Dön</a>
+  <a routerLink="/gonderiler" class="back-link">{{ 'back_to_shipments' | translate }}</a>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
@@ -16,13 +16,13 @@
         <span [appStatusBadge]="g.status">{{ g.status | statusLabel }}</span>
       </div>
       <div class="header-actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
-        <button class="btn btn--ghost" (click)="duzenle()" [disabled]="g.status === 'iptal-edildi'">Düzenle</button>
+        <button class="btn btn--ghost" (click)="duzenle()" [disabled]="g.status === 'iptal-edildi'">{{ 'edit' | translate }}</button>
         <button
           class="btn btn--danger"
           (click)="iptalEt()"
           [disabled]="islemDevamEdiyor() || !iptalEdilebilir()"
         >
-          İptal Et
+          {{ 'cancel_shipment' | translate }}
         </button>
       </div>
     </div>
@@ -32,13 +32,13 @@
       <div class="tracker-steps">
         <div class="tracker-step" [class.tracker-step--active]="aktifAdimIndex() >= 1">
           <div class="tracker-step__circle">1</div>
-          <span class="tracker-step__label">Kayıt Alındı</span>
+          <span class="tracker-step__label">{{ 'step_created' | translate }}</span>
         </div>
         <div class="tracker-step__line" [class.tracker-step__line--active]="aktifAdimIndex() >= 2"></div>
         
         <div class="tracker-step" [class.tracker-step--active]="aktifAdimIndex() >= 2">
           <div class="tracker-step__circle">2</div>
-          <span class="tracker-step__label">Kurye Atandı</span>
+          <span class="tracker-step__label">{{ 'step_assigned' | translate }}</span>
         </div>
         <div class="tracker-step__line" [class.tracker-step__line--active]="aktifAdimIndex() >= 3"></div>
         
@@ -47,9 +47,9 @@
             <span *ngIf="g.status === 'teslim-edilemedi'">⚠️</span>
             <span *ngIf="g.status !== 'teslim-edilemedi'">3</span>
           </div>
-          <span class="tracker-step__label" *ngIf="g.status === 'teslim-edilemedi'">Teslim Edilemedi</span>
-          <span class="tracker-step__label" *ngIf="g.status === 'iade-talebi'">İade Sürecinde</span>
-          <span class="tracker-step__label" *ngIf="g.status !== 'teslim-edilemedi' && g.status !== 'iade-talebi'">Dağıtımda</span>
+          <span class="tracker-step__label" *ngIf="g.status === 'teslim-edilemedi'">{{ 'step_failed_delivery' | translate }}</span>
+          <span class="tracker-step__label" *ngIf="g.status === 'iade-talebi'">{{ 'step_returning' | translate }}</span>
+          <span class="tracker-step__label" *ngIf="g.status !== 'teslim-edilemedi' && g.status !== 'iade-talebi'">{{ 'step_in_delivery' | translate }}</span>
         </div>
         <div class="tracker-step__line" [class.tracker-step__line--active]="aktifAdimIndex() >= 4"></div>
         
@@ -58,8 +58,8 @@
             <span *ngIf="g.status === 'iade-edildi'">↩️</span>
             <span *ngIf="g.status !== 'iade-edildi'">4</span>
           </div>
-          <span class="tracker-step__label" *ngIf="g.status === 'iade-edildi'">İade Edildi</span>
-          <span class="tracker-step__label" *ngIf="g.status !== 'iade-edildi'">Teslim Edildi</span>
+          <span class="tracker-step__label" *ngIf="g.status === 'iade-edildi'">{{ 'step_returned' | translate }}</span>
+          <span class="tracker-step__label" *ngIf="g.status !== 'iade-edildi'">{{ 'step_delivered' | translate }}</span>
         </div>
       </div>
     </div>
@@ -68,49 +68,49 @@
     <div class="panel status-tracker-panel status-tracker-panel--canceled" *ngIf="g.status === 'iptal-edildi'">
       <div class="canceled-banner">
         <span>❌</span>
-        <h2>Bu gönderi iptal edilmiştir.</h2>
+        <h2>{{ 'shipment_canceled_banner' | translate }}</h2>
       </div>
     </div>
 
     <div class="detail-grid">
       <section class="panel">
-        <h2>Gönderi Bilgileri</h2>
+        <h2>{{ 'shipment_info' | translate }}</h2>
         <dl>
-          <dt>Alıcı</dt><dd>{{ g.aliciAdSoyad }}</dd>
-          <dt>Telefon</dt><dd>{{ g.aliciTelefon }}</dd>
-          <dt>Bölge</dt><dd>{{ zoneService.bolgeAdi(g.bolgeId) }}</dd>
-          <dt>Kurye</dt><dd>{{ courierService.kuryeAdi(g.kuryeId) }}</dd>
-          <dt>Ağırlık</dt><dd>{{ g.agirlikKg | number:'1.0-2' }} kg</dd>
-          <dt>Açıklama</dt><dd>{{ g.aciklama || '—' }}</dd>
-          <dt>Oluşturulma</dt><dd>{{ g.createdAt | tarih }}</dd>
-          <dt>Son Güncelleme</dt><dd>{{ g.updatedAt | tarih }}</dd>
+          <dt>{{ 'recipient' | translate }}</dt><dd>{{ g.aliciAdSoyad }}</dd>
+          <dt>{{ 'phone' | translate }}</dt><dd>{{ g.aliciTelefon }}</dd>
+          <dt>{{ 'zone' | translate }}</dt><dd>{{ zoneService.bolgeAdi(g.bolgeId) }}</dd>
+          <dt>{{ 'courier' | translate }}</dt><dd>{{ courierService.kuryeAdi(g.kuryeId) }}</dd>
+          <dt>{{ 'weight' | translate }}</dt><dd>{{ g.agirlikKg | number:'1.0-2' }} kg</dd>
+          <dt>{{ 'description_label' | translate }}</dt><dd>{{ g.aciklama || '—' }}</dd>
+          <dt>{{ 'created_at' | translate }}</dt><dd>{{ g.createdAt | tarih }}</dd>
+          <dt>{{ 'last_update' | translate }}</dt><dd>{{ g.updatedAt | tarih }}</dd>
         </dl>
       </section>
 
       <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
         <section class="panel" *ngIf="kuryeAtanabilir()">
-          <h2>Kurye Ata</h2>
+          <h2>{{ 'assign_courier' | translate }}</h2>
           <div class="form-field" *ngIf="uygunKuryeler().length; else uygunKuryeYok">
-            <label for="kurye">Bölgeye uygun aktif kurye</label>
+            <label for="kurye">{{ 'active_courier_suitable_for_zone' | translate }}</label>
             <select id="kurye" [value]="secilenKurye()" (change)="secilenKurye.set($any($event.target).value)">
-              <option value="" disabled>Kurye seçin</option>
+              <option value="" disabled>{{ 'select_courier_placeholder' | translate }}</option>
               <option *ngFor="let k of uygunKuryeler()" [value]="k.id">{{ k.adSoyad }} (kapasite: {{ k.gunlukKapasite }})</option>
             </select>
           </div>
           <ng-template #uygunKuryeYok>
-            <p class="muted">Bu bölgede uygun aktif kurye bulunamadı.</p>
+            <p class="muted">{{ 'no_suitable_courier_found' | translate }}</p>
           </ng-template>
           <button class="btn btn--primary" (click)="kuryeAta()" [disabled]="islemDevamEdiyor() || !uygunKuryeler().length">
-            Kurye Ata
+            {{ 'assign_courier' | translate }}
           </button>
         </section>
       </ng-container>
 
       <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
         <section class="panel" *ngIf="teslimatKanitiGerekli()">
-          <h2>Teslimat Kanıtı Ekle</h2>
+          <h2>{{ 'add_delivery_proof' | translate }}</h2>
           <div class="form-field">
-            <label for="teslimAlan">Teslim Alan Ad Soyad</label>
+            <label for="teslimAlan">{{ 'proof_recipient_name' | translate }}</label>
             <input
               id="teslimAlan"
               type="text"
@@ -122,10 +122,10 @@
           </div>
           <label class="checkbox-field">
             <input type="checkbox" [checked]="imzaVar()" (change)="imzaVar.set($any($event.target).checked)" />
-            İmza alındı
+            {{ 'signature_label' | translate }}
           </label>
           <div class="form-field">
-            <label for="teslimatNot">Not (opsiyonel)</label>
+            <label for="teslimatNot">{{ 'note_optional' | translate }}</label>
             <textarea
               id="teslimatNot"
               rows="2"
@@ -136,23 +136,23 @@
             <small class="char-counter">{{ teslimatNot().length }} / 100</small>
           </div>
           <button class="btn btn--success" (click)="teslimatKanitiKaydet()" [disabled]="islemDevamEdiyor()">
-            Teslimat Kanıtını Kaydet
+            {{ 'save_proof' | translate }}
           </button>
         </section>
       </ng-container>
 
       <section class="panel" *ngIf="kanit() as k">
-        <h2>Teslimat Kanıtı</h2>
+        <h2>{{ 'delivery_proof_title' | translate }}</h2>
         <dl>
-          <dt>Teslim Alan</dt><dd>{{ k.teslimAlanAdSoyad }}</dd>
-          <dt>İmza</dt><dd>{{ k.imzaVarMi ? 'Alındı' : 'Alınmadı' }}</dd>
-          <dt>Not</dt><dd>{{ k.not || '—' }}</dd>
+          <dt>{{ 'delivery_recipient' | translate }}</dt><dd>{{ k.teslimAlanAdSoyad }}</dd>
+          <dt>{{ 'signature' | translate }}</dt><dd>{{ k.imzaVarMi ? ('signature_taken' | translate) : ('signature_not_taken' | translate) }}</dd>
+          <dt>{{ 'proof_note' | translate }}</dt><dd>{{ k.not || '—' }}</dd>
         </dl>
       </section>
 
       <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
         <section class="panel" *ngIf="sonrakiDurumlar().length || iadeAcilabilir()">
-          <h2>Durum İşlemleri</h2>
+          <h2>{{ 'status_actions' | translate }}</h2>
           <div class="status-actions">
             <button
               *ngFor="let s of sonrakiDurumlar()"
@@ -160,10 +160,10 @@
               (click)="durumDegistir(s)"
               [disabled]="islemDevamEdiyor()"
             >
-              {{ s | statusLabel }} Olarak İşaretle
+              {{ 'mark_as_status' | translate:{ status: (s | statusLabel) } }}
             </button>
             <button *ngIf="iadeAcilabilir()" class="btn btn--ghost" (click)="iadeTalebiAc()" [disabled]="islemDevamEdiyor()">
-              İade Talebi Aç
+              {{ 'open_return_request' | translate }}
             </button>
           </div>
         </section>
@@ -171,10 +171,10 @@
 
       <ng-container *appYetki="['musteri-hizmetleri']">
         <section class="panel">
-          <h2>Müşteri Notu Ekle</h2>
-          <p class="muted">Müşteri hizmetleri durumu değiştiremez; yalnızca gönderiye not düşebilir.</p>
+          <h2>{{ 'add_customer_note' | translate }}</h2>
+          <p class="muted">{{ 'customer_note_info' | translate }}</p>
           <div class="form-field">
-            <label for="musteriNotu">Not</label>
+            <label for="musteriNotu">{{ 'proof_note' | translate }}</label>
             <textarea
               id="musteriNotu"
               rows="2"
@@ -185,13 +185,13 @@
             <small class="char-counter">{{ musteriNotu().length }} / 100</small>
           </div>
           <button class="btn btn--primary" (click)="musteriNotuEkle()" [disabled]="islemDevamEdiyor()">
-            Notu Kaydet
+            {{ 'save_note' | translate }}
           </button>
         </section>
       </ng-container>
 
       <section class="panel timeline-panel">
-        <h2>Durum Geçmişi</h2>
+        <h2>{{ 'status_history' | translate }}</h2>
         <ol class="timeline" *ngIf="gecmisListesi().length; else timelineBos">
           <li *ngFor="let h of gecmisListesi(); let son = last">
             <span
@@ -205,7 +205,7 @@
           </li>
         </ol>
         <ng-template #timelineBos>
-          <p class="muted">Henüz durum geçmişi yok.</p>
+          <p class="muted">{{ 'no_history' | translate }}</p>
         </ng-template>
       </section>
     </div>

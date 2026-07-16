@@ -1,13 +1,13 @@
 <div class="dashboard">
   <div class="dashboard__header">
-    <h1>Performans Dashboardu</h1>
+    <h1>{{ 'perf_dashboard' | translate }}</h1>
     <div class="dashboard__header-actions">
       <select
         class="dashboard__filter-select"
         [value]="seciliBolge()"
         (change)="bolgeFiltresiDegisti($any($event.target).value)"
       >
-        <option value="tumu">Tüm Bölgeler</option>
+        <option value="tumu">{{ 'all_zones' | translate }}</option>
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
       </select>
 
@@ -16,10 +16,10 @@
         [value]="tarihAraligi()"
         (change)="tarihFiltresiDegisti($any($event.target).value)"
       >
-        <option value="tumu">Tüm Zamanlar</option>
-        <option value="7">Son 7 Gün</option>
-        <option value="30">Son 30 Gün</option>
-        <option value="90">Son 90 Gün</option>
+        <option value="tumu">{{ 'all_times' | translate }}</option>
+        <option value="7">{{ 'last_7_days' | translate }}</option>
+        <option value="30">{{ 'last_30_days' | translate }}</option>
+        <option value="90">{{ 'last_90_days' | translate }}</option>
       </select>
 
       <a
@@ -28,60 +28,60 @@
         *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
       >
         <app-icon name="paket" [size]="16"></app-icon>
-        Yeni Gönderi
+        {{ 'create_new_shipment' | translate }}
       </a>
     </div>
   </div>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
     <p>{{ hataMesaji() }}</p>
-    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+    <button class="btn btn--ghost" (click)="yukle()">{{ 'retry' | translate }}</button>
   </div>
 
   <ng-container *ngIf="!yukleniyor() && !hataMesaji()">
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">Toplam Gönderi</span>
+          <span class="kpi-card__label">{{ 'total_shipments' | translate }}</span>
           <span class="kpi-card__value">{{ metric().toplamGonderi }}</span>
           <span class="kpi-card__trend" *ngIf="gunlukTrend().bugunOlusturulan as n">
             <app-icon name="trend-yukari" [size]="12"></app-icon>
-            +{{ n }} bugün
+            +{{ n }} {{ 'today' | translate }}
           </span>
         </div>
         <span class="kpi-card__icon"><app-icon name="paket" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--success">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">Teslim Edildi Oranı</span>
+          <span class="kpi-card__label">{{ 'delivered_rate' | translate }}</span>
           <span class="kpi-card__value">%{{ metric().teslimEdildiOrani }}</span>
           <span class="kpi-card__trend" *ngIf="gunlukTrend().bugunTeslimEdilen as n">
             <app-icon name="trend-yukari" [size]="12"></app-icon>
-            +{{ n }} bugün teslim
+            +{{ n }} {{ 'today_delivery' | translate }}
           </span>
         </div>
         <span class="kpi-card__icon"><app-icon name="teslimat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--warning">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">Geciken Gönderi</span>
+          <span class="kpi-card__label">{{ 'delayed_shipments' | translate }}</span>
           <span class="kpi-card__value">{{ metric().geciken }}</span>
           <span class="kpi-card__trend kpi-card__trend--muted" *ngIf="metric().geciken">
-            En eski: {{ gunlukTrend().enEskiGecikenGun }} gün
+            {{ 'en_eski' | translate }}: {{ gunlukTrend().enEskiGecikenGun }} {{ 'gun' | translate }}
           </span>
         </div>
         <span class="kpi-card__icon"><app-icon name="saat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--purple">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">İade Oranı</span>
+          <span class="kpi-card__label">{{ 'return_rate' | translate }}</span>
           <span class="kpi-card__value">%{{ metric().iadeOrani }}</span>
           <span class="kpi-card__trend kpi-card__trend--muted" *ngIf="gunlukTrend().bugunIade as n">
-            +{{ n }} bugün
+            +{{ n }} {{ 'today' | translate }}
           </span>
         </div>
         <span class="kpi-card__icon"><app-icon name="iade" [size]="18"></app-icon></span>
@@ -92,15 +92,15 @@
 
     <section class="panel status-panel" *ngIf="shipments().length; else bosState">
       <div class="status-panel__header">
-        <h2>Durum Dağılımı</h2>
+        <h2>{{ 'status_dist' | translate }}</h2>
         <select
           class="dashboard__filter-select dashboard__filter-select--sm"
           [value]="durumSiralamasi()"
           (change)="durumSiralamasiDegisti($any($event.target).value)"
         >
-          <option value="varsayilan">Varsayılan Sıralama</option>
-          <option value="azalan">Kargo Sayısı: Azalan</option>
-          <option value="artan">Kargo Sayısı: Artan</option>
+          <option value="varsayilan">{{ 'default_sort' | translate }}</option>
+          <option value="azalan">{{ 'sort_desc' | translate }}</option>
+          <option value="artan">{{ 'sort_asc' | translate }}</option>
         </select>
       </div>
       <div class="status-panel__grid">
@@ -108,7 +108,7 @@
           <app-doughnut-chart [dilimler]="durumGrafigi()" [boyut]="180"></app-doughnut-chart>
           <div class="status-panel__chart-center">
             <span class="status-panel__chart-value">{{ metric().toplamGonderi }}</span>
-            <span class="status-panel__chart-label">Toplam</span>
+            <span class="status-panel__chart-label">{{ 'total' | translate }}</span>
           </div>
         </div>
         <div class="status-bars">
@@ -133,20 +133,20 @@
     <ng-template #bosState>
       <ng-container *ngIf="!filtreSonucuBos(); else filtreBosState">
         <app-empty-state
-          title="Henüz gönderi kaydı yok"
-          description="Kendi verilerinizi girerek başlayabilir veya üstteki Veri Yönetimi menüsünden örnek veri yükleyebilirsiniz."
+          [title]="'no_shipments' | translate"
+          [description]="'no_shipments_desc' | translate"
         ></app-empty-state>
       </ng-container>
       <ng-template #filtreBosState>
         <app-empty-state
-          title="Seçilen kriterlere uyan gönderi yok"
-          description="Farklı bir bölge veya tarih aralığı deneyin."
+          [title]="'no_filtered_shipments' | translate"
+          [description]="'no_filtered_shipments_dashboard_desc' | translate"
         ></app-empty-state>
       </ng-template>
     </ng-template>
 
     <div class="summary-grid">
-      <app-dashboard-card baslik="Son Gönderiler" ikon="paket" tumunuGorYolu="/gonderiler">
+      <app-dashboard-card [baslik]="'latest_shipments' | translate" ikon="paket" tumunuGorYolu="/gonderiler">
         <div class="mini-list" *ngIf="sonGonderiler().length; else miniBos1">
           <a
             *ngFor="let g of sonGonderiler()"
@@ -160,10 +160,10 @@
             <span [appStatusBadge]="g.status" class="mini-list__badge">{{ g.status | statusLabel }}</span>
           </a>
         </div>
-        <ng-template #miniBos1><p class="mini-list__empty">Henüz gönderi yok.</p></ng-template>
+        <ng-template #miniBos1><p class="mini-list__empty">{{ 'no_shipments_yet' | translate }}</p></ng-template>
       </app-dashboard-card>
 
-      <app-dashboard-card baslik="En Aktif Kuryeler" ikon="kurye" tumunuGorYolu="/kurye-atama">
+      <app-dashboard-card [baslik]="'most_active_couriers' | translate" ikon="kurye" tumunuGorYolu="/kurye-atama">
         <div class="mini-list" *ngIf="enAktifKuryeler().length; else miniBos2">
           <div class="mini-list__row" *ngFor="let k of enAktifKuryeler()">
             <div class="mini-list__main">
@@ -178,10 +178,10 @@
             </div>
           </div>
         </div>
-        <ng-template #miniBos2><p class="mini-list__empty">Henüz atama yapılmadı.</p></ng-template>
+        <ng-template #miniBos2><p class="mini-list__empty">{{ 'no_assignments_yet' | translate }}</p></ng-template>
       </app-dashboard-card>
 
-      <app-dashboard-card baslik="En Yoğun Bölgeler" ikon="bolge" tumunuGorYolu="/bolgeler">
+      <app-dashboard-card [baslik]="'busiest_zones' | translate" ikon="bolge" tumunuGorYolu="/bolgeler">
         <div class="mini-list" *ngIf="enYogunBolgeler().length; else miniBos3">
           <div class="mini-list__row" *ngFor="let b of enYogunBolgeler()">
             <div class="mini-list__main">
@@ -196,10 +196,10 @@
             </div>
           </div>
         </div>
-        <ng-template #miniBos3><p class="mini-list__empty">Henüz bölge verisi yok.</p></ng-template>
+        <ng-template #miniBos3><p class="mini-list__empty">{{ 'no_zone_data_yet' | translate }}</p></ng-template>
       </app-dashboard-card>
 
-      <app-dashboard-card baslik="Son Audit Log" ikon="kayit" tumunuGorYolu="/audit-log">
+      <app-dashboard-card [baslik]="'latest_audit_log' | translate" ikon="kayit" tumunuGorYolu="/audit-log">
         <div class="mini-list" *ngIf="sonAuditLog().length; else miniBos4">
           <div class="mini-list__row" *ngFor="let a of sonAuditLog()">
             <div class="mini-list__main">
@@ -208,7 +208,7 @@
             </div>
           </div>
         </div>
-        <ng-template #miniBos4><p class="mini-list__empty">Henüz işlem kaydı yok.</p></ng-template>
+        <ng-template #miniBos4><p class="mini-list__empty">{{ 'no_actions_yet' | translate }}</p></ng-template>
       </app-dashboard-card>
     </div>
   </ng-container>

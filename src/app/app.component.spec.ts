@@ -20,6 +20,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.sidebar__brand')?.textContent).toContain('Kargo Operasyon');
+    expect(compiled.querySelector('.sidebar__brand')?.textContent).toContain('Kargo Takip Sistemi');
   });
 });

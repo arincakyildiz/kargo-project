@@ -1,45 +1,53 @@
 <div class="deliveries">
   <div class="toolbar">
-    <h1>Teslimatlar</h1>
+    <h1>{{ 'deliveries_title' | translate }}</h1>
   </div>
 
   <div class="toolbar">
     <input
       type="search"
-      placeholder="Takip kodu veya alıcı ara..."
+      [placeholder]="'search_deliveries_placeholder' | translate"
       [debounceMs]="350"
       (appDebounce)="aramaDegisti($event)"
     />
     <select (change)="statusFiltresiDegisti($any($event.target).value)">
-      <option value="tumu">Tüm Teslimat Durumları</option>
-      <option value="dagitimda">Dağıtımda</option>
-      <option value="teslim-edildi">Teslim Edildi</option>
-      <option value="teslim-edilemedi">Teslim Edilemedi</option>
+      <option value="tumu">{{ 'all_delivery_statuses' | translate }}</option>
+      <option value="dagitimda">{{ 'step_in_delivery' | translate }}</option>
+      <option value="teslim-edildi">{{ 'step_delivered' | translate }}</option>
+      <option value="teslim-edilemedi">{{ 'step_failed_delivery' | translate }}</option>
     </select>
     <select (change)="siralamaDegisti($any($event.target).value)">
-      <option value="updatedAt-desc">Son Güncellenen</option>
-      <option value="updatedAt-asc">İlk Güncellenen</option>
-      <option value="takipKodu-asc">Takip Kodu (A-Z)</option>
-      <option value="agirlikKg-desc">Ağırlık (Azalan)</option>
+      <option value="updatedAt-desc">{{ 'last_updated' | translate }}</option>
+      <option value="updatedAt-asc">{{ 'first_updated' | translate }}</option>
+      <option value="takipKodu-asc">{{ 'sort_tracking_code' | translate }}</option>
+      <option value="agirlikKg-desc">{{ 'weight_desc' | translate }}</option>
     </select>
     <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
-      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ 'page_size' | translate:{ size: boyut } }}</option>
     </select>
   </div>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
     <p>{{ hataMesaji() }}</p>
-    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+    <button class="btn btn--ghost" (click)="yukle()">{{ 'retry' | translate }}</button>
   </div>
 
   <div class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
     <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
-        <tr><th>Takip Kodu</th><th>Alıcı</th><th>Kurye</th><th>Durum</th><th>Kanıt</th><th>Güncelleme</th><th></th></tr>
+        <tr>
+          <th>{{ 'tracking_code' | translate }}</th>
+          <th>{{ 'recipient' | translate }}</th>
+          <th>{{ 'courier' | translate }}</th>
+          <th>{{ 'status' | translate }}</th>
+          <th>{{ 'proof' | translate }}</th>
+          <th>{{ 'update_time' | translate }}</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let g of sayfalanmis()">
@@ -47,24 +55,24 @@
           <td>{{ g.aliciAdSoyad }}</td>
           <td>{{ courierService.kuryeAdi(g.kuryeId) }}</td>
           <td><span [appStatusBadge]="g.status">{{ g.status | statusLabel }}</span></td>
-          <td>{{ kanitVarMi(g.id) ? 'Var' : '—' }}</td>
+          <td>{{ kanitVarMi(g.id) ? ('proof_exists' | translate) : ('proof_none' | translate) }}</td>
           <td>{{ g.updatedAt | tarih }}</td>
-          <td><a [routerLink]="['/gonderiler', g.id]" class="btn btn--ghost btn--sm">Detay</a></td>
+          <td><a [routerLink]="['/gonderiler', g.id]" class="btn btn--ghost btn--sm">{{ 'detail' | translate }}</a></td>
         </tr>
       </tbody>
     </table>
 
     <div class="pagination" *ngIf="sayfalanmis().length">
-      <span class="pagination__info">Toplam {{ filtrelenmis().length }} kayıt</span>
+      <span class="pagination__info">{{ 'total_records' | translate:{ count: filtrelenmis().length } }}</span>
       <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">‹ Önceki</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">{{ 'previous' | translate }}</button>
         <span>{{ gecerliSayfa() }} / {{ toplamSayfa() }}</span>
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">Sonraki ›</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">{{ 'next' | translate }}</button>
       </div>
     </div>
 
     <ng-template #bosState>
-      <app-empty-state title="Teslimat kaydı bulunamadı"></app-empty-state>
+      <app-empty-state [title]="'empty_deliveries' | translate"></app-empty-state>
     </ng-template>
   </div>
 </div>

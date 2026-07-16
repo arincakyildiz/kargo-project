@@ -7,7 +7,7 @@
   >
     <div class="sidebar__brand">
       <img src="assets/logo.jpg" alt="Logo" class="sidebar__logo" />
-      <span>Kargo Operasyon</span>
+      <span>{{ 'brand_name' | translate }}</span>
       <button
         type="button"
         class="hamburger-btn"
@@ -26,7 +26,7 @@
         class="sidebar__link"
       >
         <app-icon [name]="item.ikon" [size]="17"></app-icon>
-        <span>{{ item.etiket }}</span>
+        <span>{{ item.etiket | translate }}</span>
       </a>
     </nav>
     <nav class="mobil-menu" *ngIf="mobilMenuAcik()" (click)="$event.stopPropagation()">
@@ -38,7 +38,7 @@
         (click)="mobilMenuAcik.set(false)"
       >
         <app-icon [name]="item.ikon" [size]="18"></app-icon>
-        <span>{{ item.etiket }}</span>
+        <span>{{ item.etiket | translate }}</span>
       </a>
     </nav>
   </aside>
@@ -53,7 +53,7 @@
             (click)="veriMenusuDegistir($event)"
           >
             <app-icon name="paket" [size]="14"></app-icon>
-            <span>Veri Yönetimi</span>
+            <span>{{ 'data_management' | translate }}</span>
           </button>
           <div class="dropdown dropdown--demo" *ngIf="veriMenusuAcik()" (click)="$event.stopPropagation()">
             <button
@@ -62,7 +62,7 @@
               (click)="ornekVeriYukleAction()"
             >
               <app-icon name="paket" [size]="14" class="dropdown-item-btn__icon--primary"></app-icon>
-              Örnek Veri Yükle
+              {{ 'load_demo_data' | translate }}
             </button>
             <button
               type="button"
@@ -71,7 +71,7 @@
               (click)="verileriSilAction()"
             >
               <app-icon name="iade" [size]="14"></app-icon>
-              Tüm Verileri Sil
+              {{ 'delete_all_data' | translate }}
             </button>
             <button
               type="button"
@@ -79,7 +79,7 @@
               (click)="hataSimuleEt()"
             >
               <app-icon name="saat" [size]="14"></app-icon>
-              Hata Ekranını Simüle Et
+              {{ 'simulate_error' | translate }}
             </button>
           </div>
         </div>
@@ -103,9 +103,17 @@
         <div class="topbar__divider"></div>
 
         <div class="topbar__role">
-          <label for="rolSelect">Aktif Rol</label>
+          <label for="rolSelect">{{ 'active_role' | translate }}</label>
           <select id="rolSelect" (change)="rolDegistir($any($event.target).value)">
-            <option *ngFor="let r of roller" [value]="r" [selected]="r === currentUser.rol()">{{ rolEtiketleri[r] }}</option>
+            <option *ngFor="let r of roller" [value]="r" [selected]="r === currentUser.rol()">{{ r | translate }}</option>
+          </select>
+        </div>
+
+        <div class="topbar__role">
+          <label for="langSelect">{{ 'language' | translate }}</label>
+          <select id="langSelect" [value]="langService.currentLang()" (change)="langService.setLanguage($any($event.target).value)">
+            <option value="tr">TR</option>
+            <option value="en">EN</option>
           </select>
         </div>
 
@@ -114,12 +122,12 @@
             <span class="avatar-btn__circle"><app-icon name="kullanici" [size]="16"></app-icon></span>
             <span class="avatar-btn__info">
               <span class="avatar-btn__name">{{ currentUser.kullanici().adSoyad }}</span>
-              <span class="avatar-btn__role">{{ rolEtiketleri[currentUser.rol()] }}</span>
+              <span class="avatar-btn__role">{{ currentUser.rol() | translate }}</span>
             </span>
           </button>
           <div class="dropdown dropdown--profile" *ngIf="profilAcik()" (click)="$event.stopPropagation()">
             <div class="dropdown__profile-name">{{ currentUser.kullanici().adSoyad }}</div>
-            <div class="dropdown__profile-role">{{ rolEtiketleri[currentUser.rol()] }}</div>
+            <div class="dropdown__profile-role">{{ currentUser.rol() | translate }}</div>
           </div>
         </div>
       </div>
@@ -134,17 +142,17 @@
 <div class="notification-overlay" *ngIf="bildirimAcik()" (click)="bildirimAcik.set(false)">
   <div class="notification-modal" (click)="$event.stopPropagation()">
     <div class="notification-modal__header">
-      <h3>Son İşlemler</h3>
+      <h3>{{ 'latest_actions' | translate }}</h3>
       <button
         type="button"
         class="link-btn"
         *ngIf="gosterilenBildirimler().length"
         (click)="tumunuOkunduIsaretle()"
       >
-        Tümünü okundu işaretle
+        {{ 'mark_all_read' | translate }}
       </button>
     </div>
-    <div class="dropdown__empty" *ngIf="!gosterilenBildirimler().length">Henüz işlem yok.</div>
+    <div class="dropdown__empty" *ngIf="!gosterilenBildirimler().length">{{ 'no_actions' | translate }}</div>
     <a
       *ngFor="let b of gosterilenBildirimler()"
       routerLink="/audit-log"

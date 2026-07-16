@@ -22,6 +22,9 @@ import { IconComponent } from '../../../../shared/components/icon/icon.component
 import { DashboardCardComponent } from '../../../../shared/components/dashboard-card/dashboard-card.component';
 import { DoughnutChartComponent, DoughnutDilim } from '../../../../shared/components/chart/doughnut-chart.component';
 
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
+
 const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edildi'];
 const GECIKME_GUN = 3;
 const OZET_LISTE_UZUNLUGU = 5;
@@ -49,6 +52,7 @@ function gunAyni(isoTarih: string, referans: Date): boolean {
     IconComponent,
     DashboardCardComponent,
     DoughnutChartComponent,
+    TranslatePipe,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -199,7 +203,8 @@ export class DashboardComponent {
     private shipmentService: ShipmentService,
     public courierService: CourierService,
     public zoneService: ZoneService,
-    private audit: AuditService
+    private audit: AuditService,
+    private langService: LanguageService
   ) {
     this.yukle();
   }
@@ -218,7 +223,7 @@ export class DashboardComponent {
         this.zoneService.tumunuGetir(DEMO_ERROR_RATE),
       ]);
     } catch {
-      this.hataMesaji.set('Dashboard verileri yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_dashboard'));
     } finally {
       this.yukleniyor.set(false);
     }

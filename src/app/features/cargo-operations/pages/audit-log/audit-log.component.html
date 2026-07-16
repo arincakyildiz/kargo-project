@@ -1,33 +1,40 @@
 <div class="audit-log">
   <div class="toolbar">
-    <h1>Audit Log</h1>
+    <h1>{{ 'audit_log' | translate }}</h1>
   </div>
 
   <div class="toolbar">
     <input
       type="search"
-      placeholder="Açıklamada ara..."
+      [placeholder]="'search_description_placeholder' | translate"
       [debounceMs]="350"
       (appDebounce)="aramaDegisti($event)"
     />
     <select (change)="tipFiltresiDegisti($any($event.target).value)">
-      <option value="tumu">Tüm İşlem Tipleri</option>
+      <option value="tumu">{{ 'all_action_types' | translate }}</option>
       <option *ngFor="let tip of islemTipleri()" [value]="tip">{{ tip }}</option>
     </select>
     <select (change)="siralamaDegisti($any($event.target).value)">
-      <option value="islemZamani-desc">En Yeni</option>
-      <option value="islemZamani-asc">En Eski</option>
-      <option value="rol-asc">Rol (A-Z)</option>
+      <option value="islemZamani-desc">{{ 'newest' | translate }}</option>
+      <option value="islemZamani-asc">{{ 'oldest' | translate }}</option>
+      <option value="rol-asc">{{ 'sort_role' | translate }}</option>
     </select>
     <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
-      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ 'page_size' | translate:{ size: boyut } }}</option>
     </select>
   </div>
 
   <div class="panel">
     <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
-        <tr><th>Zaman</th><th>Rol</th><th>İşlem</th><th>Açıklama</th><th>Eski → Yeni</th><th></th></tr>
+        <tr>
+          <th>{{ 'time' | translate }}</th>
+          <th>{{ 'role_header' | translate }}</th>
+          <th>{{ 'action_header' | translate }}</th>
+          <th>{{ 'description_label' | translate }}</th>
+          <th>{{ 'old_new_header' | translate }}</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let e of sayfalanmis()" class="audit-log__row" (click)="detayAc(e)">
@@ -39,25 +46,25 @@
             <ng-container *ngIf="e.eskiDeger || e.yeniDeger">{{ e.eskiDeger || '—' }} → {{ e.yeniDeger || '—' }}</ng-container>
           </td>
           <td>
-            <button type="button" class="btn btn--ghost btn--sm" (click)="detayAc(e); $event.stopPropagation()">Detay</button>
+            <button type="button" class="btn btn--ghost btn--sm" (click)="detayAc(e); $event.stopPropagation()">{{ 'detail' | translate }}</button>
           </td>
         </tr>
       </tbody>
     </table>
 
     <div class="pagination" *ngIf="sayfalanmis().length">
-      <span class="pagination__info">Toplam {{ filtrelenmis().length }} kayıt</span>
+      <span class="pagination__info">{{ 'total_records' | translate:{ count: filtrelenmis().length } }}</span>
       <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">‹ Önceki</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">{{ 'previous' | translate }}</button>
         <span>{{ gecerliSayfa() }} / {{ toplamSayfa() }}</span>
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">Sonraki ›</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">{{ 'next' | translate }}</button>
       </div>
     </div>
 
     <ng-template #bosState>
       <app-empty-state
-        title="İşlem kaydı bulunamadı"
-        description="Filtreyi değiştirin veya bir işlem yaptıktan sonra tekrar bakın."
+        [title]="'no_actions_found' | translate"
+        [description]="'no_actions_desc' | translate"
       ></app-empty-state>
     </ng-template>
   </div>
@@ -65,22 +72,22 @@
   <div class="audit-detail-overlay" *ngIf="seciliKayit() as kayit" (click)="detayKapat()">
     <div class="audit-detail-card" (click)="$event.stopPropagation()">
       <div class="audit-detail-card__header">
-        <h2>İşlem Detayı</h2>
-        <button type="button" class="icon-btn" aria-label="Kapat" (click)="detayKapat()">
+        <h2>{{ 'action_detail_title' | translate }}</h2>
+        <button type="button" class="icon-btn" [attr.aria-label]="'close' | translate" (click)="detayKapat()">
           <app-icon name="kapat" [size]="16"></app-icon>
         </button>
       </div>
       <dl>
-        <dt>Zaman</dt><dd>{{ kayit.islemZamani | tarih }}</dd>
-        <dt>Rol</dt><dd>{{ kayit.rol }}</dd>
-        <dt>İşlem Tipi</dt><dd>{{ kayit.islemTipi }}</dd>
-        <dt>Açıklama</dt><dd class="audit-detail-card__aciklama">{{ kayit.aciklama }}</dd>
-        <ng-container *ngIf="kayit.eskiDeger || kayit.yeniDeger">
-          <dt>Eski Değer</dt><dd>{{ kayit.eskiDeger || '—' }}</dd>
-          <dt>Yeni Değer</dt><dd>{{ kayit.yeniDeger || '—' }}</dd>
+        <dt>{{ 'time' | translate }}</dt><dd>{{ kayit.islemZamani | tarih }}</dd>
+        <dt>{{ 'role_header' | translate }}</dt><dd>{{ kayit.rol }}</dd>
+        <dt>{{ 'action_type' | translate }}</dt><dd>{{ kayit.islemTipi }}</dd>
+        <dt>{{ 'description_label' | translate }}</dt><dd class="audit-detail-card__aciklama">{{ kayit.aciklama }}</dd>
+        <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+          <dt *ngIf="kayit.eskiDeger || kayit.yeniDeger">{{ 'old_value' | translate }}</dt><dd *ngIf="kayit.eskiDeger || kayit.yeniDeger">{{ kayit.eskiDeger || '—' }}</dd>
+          <dt *ngIf="kayit.eskiDeger || kayit.yeniDeger">{{ 'new_value' | translate }}</dt><dd *ngIf="kayit.eskiDeger || kayit.yeniDeger">{{ kayit.yeniDeger || '—' }}</dd>
         </ng-container>
         <ng-container *ngIf="kayit.hedefId">
-          <dt>Hedef ID</dt><dd>{{ kayit.hedefId }}</dd>
+          <dt>{{ 'target_id' | translate }}</dt><dd>{{ kayit.hedefId }}</dd>
         </ng-container>
       </dl>
     </div>

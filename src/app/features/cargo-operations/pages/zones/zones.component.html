@@ -1,76 +1,82 @@
 <div class="zones" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']; mode: 'blur'">
   <div class="toolbar">
-    <h1>Bölgeler</h1>
+    <h1>{{ 'zones_title' | translate }}</h1>
     <button class="btn btn--primary" (click)="yeniFormAc()" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
-      + Yeni Bölge
+      + {{ 'add_new_zone' | translate }}
     </button>
   </div>
 
   <div class="toolbar">
     <input
       type="search"
-      placeholder="Bölge, il veya ilçe ara..."
+      [placeholder]="'search_zones_placeholder' | translate"
       [debounceMs]="350"
       (appDebounce)="aramaDegisti($event)"
     />
     <select (change)="statusFiltresiDegisti($any($event.target).value)">
-      <option value="tumu">Tüm Bölgeler</option>
-      <option value="aktif">Aktif Bölgeler</option>
-      <option value="pasif">Pasif Bölgeler</option>
+      <option value="tumu">{{ 'all_zones_opt' | translate }}</option>
+      <option value="aktif">{{ 'active_zones_opt' | translate }}</option>
+      <option value="pasif">{{ 'passive_zones_opt' | translate }}</option>
     </select>
     <select (change)="siralamaDegisti($any($event.target).value)">
-      <option value="ad-asc">Ad (A-Z)</option>
-      <option value="il-asc">İl (A-Z)</option>
-      <option value="createdAt-desc">En Yeni</option>
+      <option value="ad-asc">{{ 'sort_name' | translate }}</option>
+      <option value="il-asc">{{ 'sort_province' | translate }}</option>
+      <option value="createdAt-desc">{{ 'newest' | translate }}</option>
     </select>
     <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
-      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ 'page_size' | translate:{ size: boyut } }}</option>
     </select>
   </div>
 
   <form class="panel" [formGroup]="form" (ngSubmit)="kaydet()" *ngIf="formAcik()">
-    <h2>{{ duzenlenenId() ? 'Bölgeyi Düzenle' : 'Yeni Bölge' }}</h2>
+    <h2>{{ (duzenlenenId() ? 'edit_zone' : 'new_zone') | translate }}</h2>
     <div class="form-field">
-      <label for="ad">Bölge Adı</label>
+      <label for="ad">{{ 'zone_name' | translate }}</label>
       <input id="ad" formControlName="ad" type="text" maxlength="50" />
-      <span class="form-field__error" *ngIf="form.controls.ad.errors?.['required'] && form.controls.ad.touched">Zorunlu alan.</span>
-      <span class="form-field__error" *ngIf="form.controls.ad.errors?.['maxlength'] && form.controls.ad.touched">En fazla 50 karakter girilebilir.</span>
+      <span class="form-field__error" *ngIf="form.controls.ad.errors?.['required'] && form.controls.ad.touched">{{ 'zone_required_error' | translate }}</span>
+      <span class="form-field__error" *ngIf="form.controls.ad.errors?.['maxlength'] && form.controls.ad.touched">{{ 'max_length_50_error' | translate }}</span>
     </div>
     <div class="form-field">
-      <label for="il">İl</label>
+      <label for="il">{{ 'province' | translate }}</label>
       <select id="il" [value]="seciliIl()" (change)="ilDegisti($any($event.target).value)">
-        <option value="" disabled>İl seçin</option>
+        <option value="" disabled>{{ 'select_province_placeholder' | translate }}</option>
         <option *ngFor="let item of turkiyeIlleri" [value]="item.il">{{ item.il }}</option>
       </select>
-      <span class="form-field__error" *ngIf="form.controls.il.errors?.['required'] && form.controls.il.touched">Zorunlu alan.</span>
+      <span class="form-field__error" *ngIf="form.controls.il.errors?.['required'] && form.controls.il.touched">{{ 'zone_required_error' | translate }}</span>
     </div>
     <div class="form-field">
-      <label for="ilce">İlçe</label>
+      <label for="ilce">{{ 'district' | translate }}</label>
       <select id="ilce" [value]="form.controls.ilce.value" (change)="ilceDegisti($any($event.target).value)" [disabled]="!seciliIl()">
-        <option value="" disabled>{{ seciliIl() ? 'İlçe seçin' : 'Önce il seçin' }}</option>
+        <option value="" disabled>{{ seciliIl() ? ('select_district_placeholder' | translate) : ('select_province_first' | translate) }}</option>
         <option *ngFor="let ilce of secilenIlinIlceleri()" [value]="ilce">{{ ilce }}</option>
       </select>
-      <span class="form-field__error" *ngIf="form.controls.ilce.errors?.['required'] && form.controls.ilce.touched">Zorunlu alan.</span>
+      <span class="form-field__error" *ngIf="form.controls.ilce.errors?.['required'] && form.controls.ilce.touched">{{ 'zone_required_error' | translate }}</span>
     </div>
     <div class="form-actions">
-      <button type="button" class="btn btn--ghost" (click)="formuKapat()">Vazgeç</button>
-      <button type="submit" class="btn btn--primary" [disabled]="kaydediliyor()">Kaydet</button>
+      <button type="button" class="btn btn--ghost" (click)="formuKapat()">{{ 'cancel' | translate }}</button>
+      <button type="submit" class="btn btn--primary" [disabled]="kaydediliyor()">{{ 'save' | translate }}</button>
     </div>
   </form>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
     <p>{{ hataMesaji() }}</p>
-    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+    <button class="btn btn--ghost" (click)="yukle()">{{ 'retry' | translate }}</button>
   </div>
 
   <div class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
     <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
-        <tr><th>Ad</th><th>İl</th><th>İlçe</th><th>Durum</th><th></th></tr>
+        <tr>
+          <th>{{ 'name_label' | translate }}</th>
+          <th>{{ 'province' | translate }}</th>
+          <th>{{ 'district' | translate }}</th>
+          <th>{{ 'status' | translate }}</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let z of sayfalanmis()">
@@ -79,16 +85,16 @@
           <td>{{ z.ilce }}</td>
           <td>
             <span class="status-badge" [class.status-badge--aktif]="z.aktifMi" [class.status-badge--pasif]="!z.aktifMi">
-              {{ z.aktifMi ? 'Aktif' : 'Pasif' }}
+              {{ z.aktifMi ? ('status_badge_active' | translate) : ('status_badge_passive' | translate) }}
             </span>
           </td>
           <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
-            <button class="btn btn--ghost btn--sm" (click)="duzenleFormuAc(z)">Düzenle</button>
+            <button class="btn btn--ghost btn--sm" (click)="duzenleFormuAc(z)">{{ 'edit' | translate }}</button>
             <button class="btn btn--ghost btn--sm" (click)="aktiflikDegistir(z)">
-              {{ z.aktifMi ? 'Pasife Al' : 'Aktifleştir' }}
+              {{ z.aktifMi ? ('pasife_al' | translate) : ('aktiflestir' | translate) }}
             </button>
             <button class="btn btn--danger btn--sm" (click)="sil(z)">
-              Sil
+              {{ 'delete' | translate }}
             </button>
           </td>
         </tr>
@@ -96,16 +102,16 @@
     </table>
 
     <div class="pagination" *ngIf="sayfalanmis().length">
-      <span class="pagination__info">Toplam {{ filtrelenmis().length }} kayıt</span>
+      <span class="pagination__info">{{ 'total_records' | translate:{ count: filtrelenmis().length } }}</span>
       <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">‹ Önceki</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">{{ 'previous' | translate }}</button>
         <span>{{ gecerliSayfa() }} / {{ toplamSayfa() }}</span>
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">Sonraki ›</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">{{ 'next' | translate }}</button>
       </div>
     </div>
 
     <ng-template #bosState>
-      <app-empty-state title="Henüz bölge tanımlı değil"></app-empty-state>
+      <app-empty-state [title]="'empty_zones' | translate"></app-empty-state>
     </ng-template>
   </div>
 </div>

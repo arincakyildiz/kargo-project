@@ -1,47 +1,47 @@
 <div class="reports" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']; mode: 'blur'">
   <div class="reports__header">
-    <h1>Raporlar</h1>
+    <h1>{{ 'reports_title' | translate }}</h1>
     <button type="button" class="btn btn--ghost reports__print-btn" (click)="yazdir()">
       <app-icon name="yazdir" [size]="14"></app-icon>
-      Rapor Yazdır
+      {{ 'print_report' | translate }}
     </button>
   </div>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
     <p>{{ hataMesaji() }}</p>
-    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+    <button class="btn btn--ghost" (click)="yukle()">{{ 'retry' | translate }}</button>
   </div>
 
   <ng-container *ngIf="!yukleniyor() && !hataMesaji()">
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">Toplam Gönderi</span>
+          <span class="kpi-card__label">{{ 'total_shipments' | translate }}</span>
           <span class="kpi-card__value">{{ genelOzet().toplam }}</span>
         </div>
         <span class="kpi-card__icon"><app-icon name="paket" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--success">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">Teslim Edildi</span>
+          <span class="kpi-card__label">{{ 'step_delivered' | translate }}</span>
           <span class="kpi-card__value">{{ genelOzet().teslimEdildi }}</span>
         </div>
         <span class="kpi-card__icon"><app-icon name="teslimat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--warning">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">Geciken</span>
+          <span class="kpi-card__label">{{ 'delayed' | translate }}</span>
           <span class="kpi-card__value">{{ genelOzet().geciken }}</span>
         </div>
         <span class="kpi-card__icon"><app-icon name="saat" [size]="18"></app-icon></span>
       </div>
       <div class="kpi-card kpi-card--purple">
         <div class="kpi-card__body">
-          <span class="kpi-card__label">İade</span>
+          <span class="kpi-card__label">{{ 'return_label' | translate }}</span>
           <span class="kpi-card__value">{{ genelOzet().iade }}</span>
         </div>
         <span class="kpi-card__icon"><app-icon name="iade" [size]="18"></app-icon></span>
@@ -49,10 +49,16 @@
     </div>
 
     <section class="panel">
-      <h2>Bölge Bazlı Performans</h2>
+      <h2>{{ 'zone_based_performance' | translate }}</h2>
       <table class="data-table" *ngIf="bolgeRaporu().length; else bolgeBos">
         <thead>
-          <tr><th>Bölge</th><th>Toplam Gönderi</th><th>Teslim Edildi</th><th>İade</th><th>Teslim Oranı</th></tr>
+          <tr>
+            <th>{{ 'zone' | translate }}</th>
+            <th>{{ 'total_shipments' | translate }}</th>
+            <th>{{ 'step_delivered' | translate }}</th>
+            <th>{{ 'return_label' | translate }}</th>
+            <th>{{ 'delivery_rate' | translate }}</th>
+          </tr>
         </thead>
         <tbody>
           <tr *ngFor="let r of bolgeRaporu()">
@@ -65,12 +71,12 @@
         </tbody>
       </table>
       <ng-template #bolgeBos>
-        <app-empty-state title="Bölge verisi yok"></app-empty-state>
+        <app-empty-state [title]="'no_zone_data' | translate"></app-empty-state>
       </ng-template>
     </section>
 
     <section class="panel">
-      <h2>Kurye Bazlı Performans</h2>
+      <h2>{{ 'courier_based_performance' | translate }}</h2>
       <div class="courier-perf-grid" *ngIf="kuryeRaporu().length; else kuryeBos">
         <div class="courier-perf-card" *ngFor="let r of kuryeRaporu()">
           <div class="courier-perf-card__header">
@@ -83,20 +89,20 @@
           <div class="courier-perf-card__stats">
             <div class="courier-perf-stat">
               <span class="courier-perf-stat__value">{{ r.toplam }}</span>
-              <span class="courier-perf-stat__label">Toplam Gönderi</span>
+              <span class="courier-perf-stat__label">{{ 'total_shipments' | translate }}</span>
             </div>
             <div class="courier-perf-stat">
               <span class="courier-perf-stat__value">{{ r.teslimEdildi }}</span>
-              <span class="courier-perf-stat__label">Teslim Edildi</span>
+              <span class="courier-perf-stat__label">{{ 'step_delivered' | translate }}</span>
             </div>
             <div class="courier-perf-stat">
               <span class="courier-perf-stat__value">{{ sureFormatla(r.ortalamaTeslimSaat) }}</span>
-              <span class="courier-perf-stat__label">Ort. Teslim Süresi</span>
+              <span class="courier-perf-stat__label">{{ 'average_delivery_time' | translate }}</span>
             </div>
           </div>
           <div class="courier-perf-card__rate">
             <div class="courier-perf-card__rate-row">
-              <span>Başarı Oranı</span>
+              <span>{{ 'success_rate' | translate }}</span>
               <span class="courier-perf-card__rate-value">%{{ r.basariOrani }}</span>
             </div>
             <div class="status-bar__track">
@@ -111,7 +117,7 @@
         </div>
       </div>
       <ng-template #kuryeBos>
-        <app-empty-state title="Kurye verisi yok"></app-empty-state>
+        <app-empty-state [title]="'no_courier_data' | translate"></app-empty-state>
       </ng-template>
     </section>
   </ng-container>

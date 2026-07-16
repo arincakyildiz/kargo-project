@@ -6,6 +6,8 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { AuditLogEntry } from '../../../../core/models/base-model';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
@@ -14,7 +16,7 @@ type SiralamaAnahtari = 'islemZamani-desc' | 'islemZamani-asc' | 'rol-asc';
 @Component({
   selector: 'app-audit-log',
   standalone: true,
-  imports: [CommonModule, TarihPipe, DebounceDirective, EmptyStateComponent, IconComponent],
+  imports: [CommonModule, TarihPipe, DebounceDirective, EmptyStateComponent, IconComponent, TranslatePipe],
   templateUrl: './audit-log.component.html',
   styleUrl: './audit-log.component.scss',
 })

@@ -1,48 +1,48 @@
 <div class="courier-assignment" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']; mode: 'blur'">
   <div class="toolbar">
-    <h1>Kurye Atama</h1>
+    <h1>{{ 'courier_assignment_title' | translate }}</h1>
     <button class="btn btn--primary" (click)="yeniKuryeFormAc()" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
-      + Yeni Kurye
+      + {{ 'new_courier' | translate }}
     </button>
   </div>
 
   <form class="panel" [formGroup]="kuryeForm" (ngSubmit)="kuryeKaydet()" *ngIf="kuryeFormAcik()">
-    <h2>{{ duzenlenenKuryeId() ? 'Kuryeyi Düzenle' : 'Yeni Kurye' }}</h2>
+    <h2>{{ (duzenlenenKuryeId() ? 'edit_courier' : 'new_courier') | translate }}</h2>
     <div class="form-field">
-      <label for="adSoyad">Ad Soyad</label>
+      <label for="adSoyad">{{ 'courier_name' | translate }}</label>
       <input id="adSoyad" formControlName="adSoyad" type="text" maxlength="50" />
       <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.errors?.['required'] && kuryeForm.controls.adSoyad.touched">
-        Ad Soyad zorunludur.
+        {{ 'courier_name_required' | translate }}
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.errors?.['minlength'] && kuryeForm.controls.adSoyad.touched">
-        En az 3 karakter girin.
+        {{ 'min_length_3' | translate }}
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.adSoyad.errors?.['maxlength'] && kuryeForm.controls.adSoyad.touched">
-        En fazla 50 karakter girilebilir.
+        {{ 'max_length_50' | translate }}
       </span>
     </div>
     <div class="form-field">
-      <label for="telefon">Telefon</label>
+      <label for="telefon">{{ 'phone' | translate }}</label>
       <input id="telefon" formControlName="telefon" appTelefonMask type="text" placeholder="05XX XXX XX XX" maxlength="15" />
       <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['required'] && kuryeForm.controls.telefon.touched">
-        Telefon numarası zorunludur.
+        {{ 'phone_required' | translate }}
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['telefonGecersiz'] && kuryeForm.controls.telefon.touched">
-        Geçerli bir Türkiye telefon numarası girin (0 ile başlayan 11 hane).
+        {{ 'phone_invalid' | translate }}
       </span>
     </div>
     <div class="form-field">
-      <label for="bolgeId">Bölge</label>
+      <label for="bolgeId">{{ 'zone' | translate }}</label>
       <select id="bolgeId" formControlName="bolgeId">
-        <option value="" disabled>Bölge seçin</option>
+        <option value="" disabled>{{ 'select_zone_placeholder' | translate }}</option>
         <option *ngFor="let b of zoneService.aktifBolgeler()" [value]="b.id">{{ b.ad }} ({{ b.il }})</option>
       </select>
       <span class="form-field__error" *ngIf="kuryeForm.controls.bolgeId.invalid && kuryeForm.controls.bolgeId.touched">
-        Bölge seçimi zorunludur.
+        {{ 'zone_required' | translate }}
       </span>
     </div>
     <div class="form-field">
-      <label for="gunlukKapasite">Günlük Kapasite</label>
+      <label for="gunlukKapasite">{{ 'daily_capacity' | translate }}</label>
       <input
         id="gunlukKapasite"
         formControlName="gunlukKapasite"
@@ -54,57 +54,65 @@
         (input)="kapasiteGirdisiDegisti($event)"
       />
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['required'] && kuryeForm.controls.gunlukKapasite.touched">
-        Kapasite zorunludur.
+        {{ 'capacity_required' | translate }}
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['pozitifDegil'] && kuryeForm.controls.gunlukKapasite.touched">
-        Kapasite pozitif bir sayı olmalıdır.
+        {{ 'capacity_positive' | translate }}
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['tamSayiGecersiz'] && kuryeForm.controls.gunlukKapasite.touched">
-        Kapasite sadece tam sayı olabilir.
+        {{ 'capacity_integer' | translate }}
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['max'] && kuryeForm.controls.gunlukKapasite.touched">
-        Maksimum kapasite 200 olabilir.
+        {{ 'capacity_max' | translate }}
       </span>
     </div>
     <div class="form-actions">
-      <button type="button" class="btn btn--ghost" (click)="kuryeFormunuKapat()">Vazgeç</button>
-      <button type="submit" class="btn btn--primary" [disabled]="kuryeKaydediliyor()">Kaydet</button>
+      <button type="button" class="btn btn--ghost" (click)="kuryeFormunuKapat()">{{ 'cancel' | translate }}</button>
+      <button type="submit" class="btn btn--primary" [disabled]="kuryeKaydediliyor()">{{ 'save' | translate }}</button>
     </div>
   </form>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
     <p>{{ hataMesaji() }}</p>
-    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+    <button class="btn btn--ghost" (click)="yukle()">{{ 'retry' | translate }}</button>
   </div>
 
   <section class="panel" *ngIf="!hataMesaji()">
-    <h2>Kurye Kapasite Durumu</h2>
+    <h2>{{ 'courier_capacity_status' | translate }}</h2>
 
     <div class="toolbar toolbar--compact">
       <input
         type="search"
-        placeholder="Kurye ara..."
+        [placeholder]="'search_courier_placeholder' | translate"
         [debounceMs]="350"
         (appDebounce)="kuryeAramaDegisti($event)"
       />
       <select (change)="kuryeBolgeFiltresiDegisti($any($event.target).value)">
-        <option value="tumu">Tüm Bölgeler</option>
+        <option value="tumu">{{ 'all_zones' | translate }}</option>
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
       </select>
       <select (change)="kuryeStatusFiltresiDegisti($any($event.target).value)">
-        <option value="tumu">Tüm Kuryeler</option>
-        <option value="aktif">Aktif Kuryeler</option>
-        <option value="pasif">Pasif Kuryeler</option>
+        <option value="tumu">{{ 'all_couriers' | translate }}</option>
+        <option value="aktif">{{ 'active_couriers_opt' | translate }}</option>
+        <option value="pasif">{{ 'passive_couriers_opt' | translate }}</option>
       </select>
       <select (change)="kuryeSiralamaDegisti($any($event.target).value)">
-        <option value="adSoyad-asc">Ad (A-Z)</option>
-        <option value="doluluk-desc">Doluluk (Azalan)</option>
+        <option value="adSoyad-asc">{{ 'sort_name' | translate }}</option>
+        <option value="doluluk-desc">{{ 'sort_fullness' | translate }}</option>
       </select>
     </div>
 
     <table class="data-table" *ngIf="kuryeKapasiteOzeti().length; else kuryeYok">
       <thead>
-        <tr><th>Kurye</th><th>Bölge</th><th>Telefon</th><th>Atanan / Kapasite</th><th>Doluluk</th><th>Durum</th><th></th></tr>
+        <tr>
+          <th>{{ 'courier' | translate }}</th>
+          <th>{{ 'zone' | translate }}</th>
+          <th>{{ 'phone' | translate }}</th>
+          <th>{{ 'assigned_capacity' | translate }}</th>
+          <th>{{ 'fullness' | translate }}</th>
+          <th>{{ 'status' | translate }}</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let o of kuryeKapasiteOzeti()">
@@ -118,54 +126,60 @@
               [style.font-weight]="'700'"
             >
               %{{ o.doluluk }}
-              <span *ngIf="o.doluluk >= 100"> ⚠️ Dolu</span>
+              <span *ngIf="o.doluluk >= 100"> ⚠️ {{ 'dolu' | translate }}</span>
             </span>
           </td>
           <td>
             <span class="status-badge" [class.status-badge--aktif]="o.kurye.aktifMi" [class.status-badge--pasif]="!o.kurye.aktifMi">
-              {{ o.kurye.aktifMi ? 'Aktif' : 'Pasif' }}
+              {{ o.kurye.aktifMi ? ('status_badge_active' | translate) : ('status_badge_passive' | translate) }}
             </span>
           </td>
           <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
-            <button class="btn btn--ghost btn--sm" (click)="kuryeDuzenleFormuAc(o.kurye)">Düzenle</button>
+            <button class="btn btn--ghost btn--sm" (click)="kuryeDuzenleFormuAc(o.kurye)">{{ 'edit' | translate }}</button>
             <button class="btn btn--ghost btn--sm" (click)="kuryeAktiflikDegistir(o.kurye)">
-              {{ o.kurye.aktifMi ? 'Pasife Al' : 'Aktifleştir' }}
+              {{ o.kurye.aktifMi ? ('pasife_al' | translate) : ('aktiflestir' | translate) }}
             </button>
             <button class="btn btn--danger btn--sm" (click)="kuryeSil(o.kurye)">
-              Sil
+              {{ 'delete' | translate }}
             </button>
           </td>
         </tr>
       </tbody>
     </table>
     <ng-template #kuryeYok>
-      <app-empty-state title="Sonuç bulunamadı" description="Kriterlere uygun kurye bulunmuyor."></app-empty-state>
+      <app-empty-state [title]="'no_results' | translate" [description]="'no_couriers_matching' | translate"></app-empty-state>
     </ng-template>
   </section>
 
   <section class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
-    <h2>Atama Bekleyen Gönderiler</h2>
+    <h2>{{ 'assigned_shipments' | translate }}</h2>
 
     <div class="toolbar toolbar--compact">
       <input
         type="search"
-        placeholder="Takip kodu veya alıcı ara..."
+        [placeholder]="'search_pending_placeholder' | translate"
         [debounceMs]="350"
         (appDebounce)="gonderiAramaDegisti($event)"
       />
       <select (change)="gonderiBolgeFiltresiDegisti($any($event.target).value)">
-        <option value="tumu">Tüm Bölgeler</option>
+        <option value="tumu">{{ 'all_zones' | translate }}</option>
         <option *ngFor="let b of zoneService.liste()" [value]="b.id">{{ b.ad }}</option>
       </select>
       <select (change)="gonderiSiralamaDegisti($any($event.target).value)">
-        <option value="createdAt-desc">En Yeni</option>
-        <option value="takipKodu-asc">Takip Kodu (A-Z)</option>
+        <option value="createdAt-desc">{{ 'newest' | translate }}</option>
+        <option value="takipKodu-asc">{{ 'sort_tracking_code' | translate }}</option>
       </select>
     </div>
 
     <table class="data-table" *ngIf="filtrelenmisBekleyenler().length; else bosState">
       <thead>
-        <tr><th>Takip Kodu</th><th>Alıcı</th><th>Bölge</th><th>Kurye Seç</th><th></th></tr>
+        <tr>
+          <th>{{ 'tracking_code' | translate }}</th>
+          <th>{{ 'recipient' | translate }}</th>
+          <th>{{ 'zone' | translate }}</th>
+          <th>{{ 'select_courier_header' | translate }}</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let s of filtrelenmisBekleyenler()">
@@ -174,20 +188,20 @@
           <td>{{ zoneService.bolgeAdi(s.bolgeId) }}</td>
           <td>
             <select (change)="secimYap(s.id, $any($event.target).value)">
-              <option value="" disabled selected>Kurye seçin</option>
+              <option value="" disabled selected>{{ 'select_courier_placeholder' | translate }}</option>
               <option *ngFor="let k of uygunKuryeler(s.bolgeId)" [value]="k.id">{{ k.adSoyad }}</option>
             </select>
           </td>
           <td>
             <button class="btn btn--primary btn--sm" (click)="ata(s)" [disabled]="islemDevamEdiyor() === s.id">
-              Ata
+              {{ 'assign' | translate }}
             </button>
           </td>
         </tr>
       </tbody>
     </table>
     <ng-template #bosState>
-      <app-empty-state title="Sonuç bulunamadı" description="Bekleyen atamalarda kriterlerinize uyan kayıt bulunmuyor."></app-empty-state>
+      <app-empty-state [title]="'no_results' | translate" [description]="'no_pending_assignments_matching' | translate"></app-empty-state>
     </ng-template>
   </section>
 </div>

@@ -8,13 +8,15 @@ import { Shipment, ShipmentStatus } from '../../models/shipment.model';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 const TERMINAL: ShipmentStatus[] = ['teslim-edildi', 'iade-edildi', 'iptal-edildi'];
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, EmptyStateComponent, IconComponent, YetkiDirective],
+  imports: [CommonModule, EmptyStateComponent, IconComponent, YetkiDirective, TranslatePipe],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss',
 })
@@ -66,8 +68,8 @@ export class ReportsComponent {
   /** Ortalama teslim süresini okunur biçime çevirir: 24 saatten kısaysa saat, uzunsa gün cinsinden. */
   sureFormatla(saat: number | null): string {
     if (saat === null) return '—';
-    if (saat < 24) return `${Math.round(saat)} saat`;
-    return `${(saat / 24).toFixed(1)} gün`;
+    if (saat < 24) return `${Math.round(saat)} ${this.langService.translate('hours')}`;
+    return `${(saat / 24).toFixed(1)} ${this.langService.translate('days')}`;
   }
 
   readonly genelOzet = computed(() => {
@@ -90,7 +92,8 @@ export class ReportsComponent {
   constructor(
     private shipmentService: ShipmentService,
     public courierService: CourierService,
-    public zoneService: ZoneService
+    public zoneService: ZoneService,
+    private langService: LanguageService
   ) {
     this.yukle();
   }
@@ -102,7 +105,7 @@ export class ReportsComponent {
       await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
       this.gonderiler.set(await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE));
     } catch {
-      this.hataMesaji.set('Rapor verileri yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_reports'));
     } finally {
       this.yukleniyor.set(false);
     }

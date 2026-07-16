@@ -13,6 +13,8 @@ import { ShipmentService } from './features/cargo-operations/services/shipment.s
 import { NotificationService } from './core/services/notification.service';
 import { DialogService } from './shared/components/confirm-dialog/dialog.service';
 import { demoHataTetikle } from './core/services/mock-api';
+import { LanguageService } from './core/services/language.service';
+import { TranslatePipe } from './shared/pipes/translate.pipe';
 
 interface NavItem {
   yol: string;
@@ -25,14 +27,14 @@ interface NavItem {
 const OPERASYON_ROLLERI: Rol[] = ['operasyon-uzmani', 'kurye-sorumlusu'];
 
 const NAV_ITEMS: NavItem[] = [
-  { yol: '/dashboard', etiket: 'Dashboard', ikon: 'dashboard' },
-  { yol: '/gonderiler', etiket: 'Gönderiler', ikon: 'paket' },
-  { yol: '/kurye-atama', etiket: 'Kurye Atama', ikon: 'kurye', roller: OPERASYON_ROLLERI },
-  { yol: '/teslimatlar', etiket: 'Teslimatlar', ikon: 'teslimat' },
-  { yol: '/iadeler', etiket: 'İadeler', ikon: 'iade' },
-  { yol: '/bolgeler', etiket: 'Bölgeler', ikon: 'bolge', roller: OPERASYON_ROLLERI },
-  { yol: '/raporlar', etiket: 'Raporlar', ikon: 'rapor', roller: OPERASYON_ROLLERI },
-  { yol: '/audit-log', etiket: 'Audit Log', ikon: 'kayit' },
+  { yol: '/dashboard', etiket: 'dashboard', ikon: 'dashboard' },
+  { yol: '/gonderiler', etiket: 'shipments', ikon: 'paket' },
+  { yol: '/kurye-atama', etiket: 'couriers', ikon: 'kurye', roller: OPERASYON_ROLLERI },
+  { yol: '/teslimatlar', etiket: 'deliveries', ikon: 'teslimat' },
+  { yol: '/iadeler', etiket: 'returns', ikon: 'iade' },
+  { yol: '/bolgeler', etiket: 'zones', ikon: 'bolge', roller: OPERASYON_ROLLERI },
+  { yol: '/raporlar', etiket: 'reports', ikon: 'rapor', roller: OPERASYON_ROLLERI },
+  { yol: '/audit-log', etiket: 'audit_log', ikon: 'kayit' },
 ];
 
 const BILDIRIM_SAYISI = 5;
@@ -49,17 +51,23 @@ const BILDIRIM_SAYISI = 5;
     ToastContainerComponent,
     IconComponent,
     TarihPipe,
+    TranslatePipe,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   readonly roller: Rol[] = ['operasyon-uzmani', 'kurye-sorumlusu', 'musteri-hizmetleri'];
-  readonly rolEtiketleri: Record<Rol, string> = {
-    'operasyon-uzmani': 'Operasyon Uzmanı',
-    'kurye-sorumlusu': 'Kurye Sorumlusu',
-    'musteri-hizmetleri': 'Müşteri Hizmetleri',
-  };
+
+  constructor(
+    public currentUser: CurrentUserService,
+    public theme: ThemeService,
+    private audit: AuditService,
+    public shipmentService: ShipmentService,
+    private notification: NotificationService,
+    private dialog: DialogService,
+    public langService: LanguageService
+  ) {}
 
   /** Sidebar varsayılan olarak daraltık; imleç sol kenara yaklaşınca genişler. */
   readonly sidebarGenisletildi = signal(false);
@@ -81,14 +89,7 @@ export class AppComponent {
     return this.audit.okunmamisBildirimler().some((b) => b.id === id);
   }
 
-  constructor(
-    public currentUser: CurrentUserService,
-    public theme: ThemeService,
-    private audit: AuditService,
-    public shipmentService: ShipmentService,
-    private notification: NotificationService,
-    private dialog: DialogService
-  ) {}
+  // Constructor is moved above to replace rolEtiketleri
 
   async ornekVeriYukle(): Promise<void> {
     const sonuc = await this.dialog.confirm({

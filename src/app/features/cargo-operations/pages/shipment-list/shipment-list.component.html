@@ -1,14 +1,14 @@
 <div class="shipment-list">
   <div class="toolbar">
-    <h1>Gönderiler</h1>
+    <h1>{{ 'shipments' | translate }}</h1>
     <div class="toolbar__actions">
       <button type="button" class="btn btn--ghost" (click)="csvDisariAktar()">
-        CSV İndir
+        {{ 'download_csv' | translate }}
       </button>
 
       <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
         <label for="csvFileInput" class="btn btn--ghost csv-upload-label">
-          Toplu CSV Yükle
+          {{ 'upload_bulk_csv' | translate }}
         </label>
         <input
           id="csvFileInput"
@@ -24,7 +24,7 @@
         class="btn btn--primary"
         *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"
       >
-        + Yeni Gönderi
+        + {{ 'create_new_shipment' | translate }}
       </a>
     </div>
   </div>
@@ -32,32 +32,32 @@
   <div class="toolbar">
     <input
       type="search"
-      placeholder="Takip kodu veya alıcı ara..."
+      [placeholder]="'search_pending_placeholder' | translate"
       [debounceMs]="350"
       (appDebounce)="aramaDegisti($event)"
     />
     <select (change)="statusFiltresiDegisti($any($event.target).value)">
-      <option value="tumu">Tüm Durumlar</option>
-      <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ s[1] }}</option>
+      <option value="tumu">{{ 'all_statuses' | translate }}</option>
+      <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ s[0] | statusLabel }}</option>
     </select>
     <select (change)="siralamaDegisti($any($event.target).value)">
-      <option value="createdAt-desc">En Yeni</option>
-      <option value="createdAt-asc">En Eski</option>
-      <option value="takipKodu-asc">Takip Kodu (A-Z)</option>
-      <option value="agirlikKg-desc">Ağırlık (Azalan)</option>
+      <option value="createdAt-desc">{{ 'newest' | translate }}</option>
+      <option value="createdAt-asc">{{ 'oldest' | translate }}</option>
+      <option value="takipKodu-asc">{{ 'sort_tracking_code' | translate }}</option>
+      <option value="agirlikKg-desc">{{ 'weight_desc' | translate }}</option>
     </select>
     <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
-      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ 'page_size' | translate:{ size: boyut } }}</option>
     </select>
   </div>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
     <p>{{ hataMesaji() }}</p>
-    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+    <button class="btn btn--ghost" (click)="yukle()">{{ 'retry' | translate }}</button>
   </div>
 
   <ng-container *ngIf="!yukleniyor() && !hataMesaji()">
@@ -65,12 +65,12 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Takip Kodu</th>
-            <th>Alıcı</th>
-            <th>Bölge</th>
-            <th>Kurye</th>
-            <th>Durum</th>
-            <th>Oluşturulma</th>
+            <th>{{ 'tracking_code' | translate }}</th>
+            <th>{{ 'recipient' | translate }}</th>
+            <th>{{ 'zone' | translate }}</th>
+            <th>{{ 'courier' | translate }}</th>
+            <th>{{ 'status' | translate }}</th>
+            <th>{{ 'created_at' | translate }}</th>
             <th></th>
           </tr>
         </thead>
@@ -82,17 +82,17 @@
             <td>{{ courierService.kuryeAdi(g.kuryeId) }}</td>
             <td><span [appStatusBadge]="g.status">{{ g.status | statusLabel }}</span></td>
             <td>{{ g.createdAt | tarih:false }}</td>
-            <td><a [routerLink]="['/gonderiler', g.id]" class="btn btn--ghost btn--sm">Detay</a></td>
+            <td><a [routerLink]="['/gonderiler', g.id]" class="btn btn--ghost btn--sm">{{ 'detail' | translate }}</a></td>
           </tr>
         </tbody>
       </table>
 
       <div class="pagination">
-        <span class="pagination__info">Toplam {{ filtrelenmis().length }} kayıt</span>
+        <span class="pagination__info">{{ 'total_records' | translate:{ count: filtrelenmis().length } }}</span>
         <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
-          <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">‹ Önceki</button>
+          <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">{{ 'previous' | translate }}</button>
           <span>{{ gecerliSayfa() }} / {{ toplamSayfa() }}</span>
-          <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">Sonraki ›</button>
+          <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">{{ 'next' | translate }}</button>
         </div>
       </div>
     </div>
@@ -100,13 +100,13 @@
     <ng-template #bosState>
       <app-empty-state
         *ngIf="!aramaGerekli(); else musteriAramaBos"
-        title="Sonuç bulunamadı"
-        description="Arama veya filtre kriterlerinizi değiştirmeyi deneyin."
+        [title]="'no_results' | translate"
+        [description]="'no_results_desc' | translate"
       ></app-empty-state>
       <ng-template #musteriAramaBos>
         <app-empty-state
-          title="Bir gönderi arayın"
-          description="Müşteri hizmetleri görünümünde kayıtlar listelenmez; takip kodu veya alıcı adı ile arama yapın."
+          [title]="'search_shipment_title' | translate"
+          [description]="'search_shipment_desc' | translate"
         ></app-empty-state>
       </ng-template>
     </ng-template>

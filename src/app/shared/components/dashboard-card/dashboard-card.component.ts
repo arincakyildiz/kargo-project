@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IconComponent, IconName } from '../icon/icon.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 /**
  * Dashboard'daki özet kartları için ortak kabuk: başlık + ikon + opsiyonel
@@ -10,7 +11,7 @@ import { IconComponent, IconName } from '../icon/icon.component';
 @Component({
   selector: 'app-dashboard-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent],
+  imports: [CommonModule, RouterLink, IconComponent, TranslatePipe],
   template: `
     <section class="dashboard-card">
       <header class="dashboard-card__header">
@@ -18,7 +19,7 @@ import { IconComponent, IconName } from '../icon/icon.component';
           <app-icon *ngIf="ikon" [name]="ikon" [size]="16"></app-icon>
           {{ baslik }}
         </h2>
-        <a *ngIf="tumunuGorYolu" [routerLink]="tumunuGorYolu" class="dashboard-card__link">Tümünü Gör</a>
+        <a *ngIf="tumunuGorYolu" [routerLink]="tumunuGorYolu" class="dashboard-card__link">{{ 'view_all' | translate }}</a>
       </header>
       <div class="dashboard-card__body">
         <ng-content></ng-content>

@@ -1,52 +1,58 @@
 <div class="returns">
   <div class="toolbar">
-    <h1>İadeler</h1>
+    <h1>{{ 'returns_title' | translate }}</h1>
   </div>
 
   <div class="toolbar">
     <input
       type="search"
-      placeholder="Takip kodu veya neden ara..."
+      [placeholder]="'search_returns_placeholder' | translate"
       [debounceMs]="350"
       (appDebounce)="aramaDegisti($event)"
     />
     <select (change)="statusFiltresiDegisti($any($event.target).value)">
-      <option value="tumu">Tüm Durumlar</option>
-      <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ s[1] }}</option>
+      <option value="tumu">{{ 'all_statuses_returns' | translate }}</option>
+      <option *ngFor="let s of statusSecenekleri" [value]="s[0]">{{ 'return_status_' + s[0] | translate }}</option>
     </select>
     <select (change)="siralamaDegisti($any($event.target).value)">
-      <option value="createdAt-desc">En Yeni</option>
-      <option value="createdAt-asc">En Eski</option>
+      <option value="createdAt-desc">{{ 'newest' | translate }}</option>
+      <option value="createdAt-asc">{{ 'oldest' | translate }}</option>
     </select>
     <select [value]="sayfaBoyu()" (change)="sayfaBoyuDegisti($any($event.target).value)">
-      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ boyut }} / sayfa</option>
+      <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ 'page_size' | translate:{ size: boyut } }}</option>
     </select>
   </div>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <div class="panel panel--error" *ngIf="!yukleniyor() && hataMesaji()">
     <p>{{ hataMesaji() }}</p>
-    <button class="btn btn--ghost" (click)="yukle()">Tekrar Dene</button>
+    <button class="btn btn--ghost" (click)="yukle()">{{ 'retry' | translate }}</button>
   </div>
 
   <div class="panel" *ngIf="!yukleniyor() && !hataMesaji()">
     <table class="data-table" *ngIf="sayfalanmis().length; else bosState">
       <thead>
-        <tr><th>Takip Kodu</th><th>Neden</th><th>Durum</th><th>Oluşturulma</th><th *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"></th></tr>
+        <tr>
+          <th>{{ 'tracking_code' | translate }}</th>
+          <th>{{ 'reason' | translate }}</th>
+          <th>{{ 'status' | translate }}</th>
+          <th>{{ 'request_time' | translate }}</th>
+          <th *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']"></th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let r of sayfalanmis()">
           <td><a [routerLink]="['/gonderiler', r.shipmentId]">{{ takipKodu(r.shipmentId) }}</a></td>
           <td class="cell-truncate" [title]="r.neden">{{ r.neden }}</td>
-          <td>{{ statusLabels[r.status] }}</td>
+          <td>{{ 'return_status_' + r.status | translate }}</td>
           <td>{{ r.createdAt | tarih }}</td>
           <td class="actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
             <ng-container *ngIf="r.status === 'beklemede'">
-              <button class="btn btn--success btn--sm" (click)="durumGuncelle(r, 'onaylandi')" [disabled]="islemDevamEdiyor() === r.id">Onayla</button>
-              <button class="btn btn--danger btn--sm" (click)="durumGuncelle(r, 'reddedildi')" [disabled]="islemDevamEdiyor() === r.id">Reddet</button>
+              <button class="btn btn--success btn--sm" (click)="durumGuncelle(r, 'onaylandi')" [disabled]="islemDevamEdiyor() === r.id">{{ 'approve' | translate }}</button>
+              <button class="btn btn--danger btn--sm" (click)="durumGuncelle(r, 'reddedildi')" [disabled]="islemDevamEdiyor() === r.id">{{ 'reject' | translate }}</button>
             </ng-container>
             <button
               *ngIf="r.status === 'onaylandi'"
@@ -54,7 +60,7 @@
               (click)="durumGuncelle(r, 'tamamlandi')"
               [disabled]="islemDevamEdiyor() === r.id"
             >
-              Tamamla
+              {{ 'complete' | translate }}
             </button>
           </td>
         </tr>
@@ -62,16 +68,16 @@
     </table>
 
     <div class="pagination" *ngIf="sayfalanmis().length">
-      <span class="pagination__info">Toplam {{ siraliListe().length }} kayıt</span>
+      <span class="pagination__info">{{ 'total_records' | translate:{ count: siraliListe().length } }}</span>
       <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">‹ Önceki</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">{{ 'previous' | translate }}</button>
         <span>{{ gecerliSayfa() }} / {{ toplamSayfa() }}</span>
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">Sonraki ›</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">{{ 'next' | translate }}</button>
       </div>
     </div>
 
     <ng-template #bosState>
-      <app-empty-state title="İade talebi bulunmuyor"></app-empty-state>
+      <app-empty-state [title]="'empty_returns' | translate"></app-empty-state>
     </ng-template>
   </div>
 </div>

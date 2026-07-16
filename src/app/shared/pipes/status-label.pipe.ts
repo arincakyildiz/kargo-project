@@ -1,9 +1,17 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { SHIPMENT_STATUS_LABELS, ShipmentStatus } from '../../features/cargo-operations/models/shipment.model';
+import { ShipmentStatus } from '../../features/cargo-operations/models/shipment.model';
+import { LanguageService } from '../../core/services/language.service';
 
-@Pipe({ name: 'statusLabel', standalone: true })
+@Pipe({
+  name: 'statusLabel',
+  standalone: true,
+  pure: false
+})
 export class StatusLabelPipe implements PipeTransform {
+  constructor(private langService: LanguageService) {}
+
   transform(status: ShipmentStatus): string {
-    return SHIPMENT_STATUS_LABELS[status] ?? status;
+    const key = `status_${status.replace(/-/g, '_')}`;
+    return this.langService.translate(key);
   }
 }

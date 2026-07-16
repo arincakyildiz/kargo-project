@@ -12,6 +12,8 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { TURKIYE_ILLERI } from '../../data/turkiye-iller';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 import { ShipmentService } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
 
@@ -22,7 +24,7 @@ type SiralamaAnahtari = 'ad-asc' | 'il-asc' | 'createdAt-desc';
 @Component({
   selector: 'app-zones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, DebounceDirective, YetkiDirective],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, DebounceDirective, YetkiDirective, TranslatePipe],
   templateUrl: './zones.component.html',
   styleUrl: './zones.component.scss',
 })
@@ -95,7 +97,8 @@ export class ZonesComponent {
     private notification: NotificationService,
     private audit: AuditService,
     private currentUser: CurrentUserService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private langService: LanguageService
   ) {
     this.yukle();
   }
@@ -106,7 +109,7 @@ export class ZonesComponent {
     try {
       this.zones.set(await this.zoneService.tumunuGetir(DEMO_ERROR_RATE));
     } catch {
-      this.hataMesaji.set('Bölgeler yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_zones'));
     } finally {
       this.yukleniyor.set(false);
     }
@@ -175,10 +178,10 @@ export class ZonesComponent {
       const veri = this.form.getRawValue();
       if (this.duzenlenenId()) {
         await this.zoneService.guncelle(this.duzenlenenId()!, veri);
-        this.notification.success('Bölge güncellendi.');
+        this.notification.success(this.langService.translate('zone_updated'));
       } else {
         await this.zoneService.olustur({ ...veri, aktifMi: true });
-        this.notification.success('Bölge oluşturuldu.');
+        this.notification.success(this.langService.translate('zone_created'));
       }
       this.audit.kaydet({
         islemTipi: 'bolge-kaydet',
@@ -188,14 +191,14 @@ export class ZonesComponent {
       this.formAcik.set(false);
       await this.yukle();
     } catch {
-      this.notification.error('Bölge kaydedilirken bir hata oluştu.');
+      this.notification.error(this.langService.translate('error_saving_zone'));
     } finally {
       this.kaydediliyor.set(false);
     }
   }
 
   async aktiflikDegistir(zone: DeliveryZone): Promise<void> {
-    let mesaj = `"${zone.ad}" bölgesi ${zone.aktifMi ? 'pasife alınacak' : 'aktifleştirilecek'}. Onaylıyor musunuz?`;
+    let mesaj = this.langService.translate(zone.aktifMi ? 'deactivate_zone_confirm_message' : 'activate_zone_confirm_message', { name: zone.ad });
 
     // Pasife almadan önce aktif gönderi kontrolü
     if (zone.aktifMi) {
@@ -203,15 +206,15 @@ export class ZonesComponent {
         (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal'].includes(s.status)
       );
       if (aktifGonderiler.length > 0) {
-        mesaj = `"${zone.ad}" bölgesinde ${aktifGonderiler.length} aktif gönderi bulunuyor! Pasife alırsa bu gönderiler etkilenebilir. Devam etmek istediğinize emin misiniz?`;
+        mesaj = this.langService.translate('deactivate_zone_confirm_message_active', { name: zone.ad, count: aktifGonderiler.length });
       }
     }
 
     const sonuc = await this.dialog.confirm({
-      baslik: zone.aktifMi ? 'Bölgeyi Pasife Al' : 'Bölgeyi Aktifleştir',
+      baslik: this.langService.translate(zone.aktifMi ? 'deactivate_zone_confirm_title' : 'activate_zone_confirm_title'),
       mesaj,
       aciklamaGerekli: true,
-      onayMetni: 'Onayla',
+      onayMetni: this.langService.translate('confirm'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -223,10 +226,10 @@ export class ZonesComponent {
         aciklama: `${zone.ad} bölgesi ${!zone.aktifMi ? 'aktif' : 'pasif'} yapıldı. ${sonuc.aciklama}`,
         hedefId: zone.id,
       });
-      this.notification.success('Bölge durumu güncellendi.');
+      this.notification.success(this.langService.translate('zone_status_updated'));
       await this.yukle();
     } catch {
-      this.notification.error('Bölge durumu güncellenemedi.');
+      this.notification.error(this.langService.translate('zone_status_update_failed'));
     }
   }
 
@@ -236,21 +239,21 @@ export class ZonesComponent {
       (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal-edildi'].includes(s.status)
     );
     if (aktifGonderiler.length > 0) {
-      this.notification.error(`Bu bölgede ${aktifGonderiler.length} adet aktif gönderi bulunduğundan bölge silinemez!`);
+      this.notification.error(this.langService.translate('delete_zone_active_shipments', { count: aktifGonderiler.length }));
       return;
     }
 
     // 2. Check assigned couriers
     const kuryeler = this.courierService.liste().filter((k) => k.bolgeId === zone.id);
     if (kuryeler.length > 0) {
-      this.notification.error(`Bu bölgeye atanmış ${kuryeler.length} adet kurye bulunduğundan bölge silinemez!`);
+      this.notification.error(this.langService.translate('delete_zone_assigned_couriers', { count: kuryeler.length }));
       return;
     }
 
     const sonuc = await this.dialog.confirm({
-      baslik: 'Bölgeyi Sil',
-      mesaj: `"${zone.ad}" bölgesi kalıcı olarak silinecek. Onaylıyor musunuz?`,
-      onayMetni: 'Sil',
+      baslik: this.langService.translate('delete_zone_confirm_title'),
+      mesaj: this.langService.translate('delete_zone_confirm_message', { name: zone.ad }),
+      onayMetni: this.langService.translate('delete'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -261,10 +264,10 @@ export class ZonesComponent {
         rol: this.currentUser.rol(),
         aciklama: `Bölge silindi: ${zone.ad}`,
       });
-      this.notification.success('Bölge başarıyla silindi.');
+      this.notification.success(this.langService.translate('delete_zone_success'));
       await this.yukle();
     } catch {
-      this.notification.error('Bölge silinirken bir hata oluştu.');
+      this.notification.error(this.langService.translate('zone_delete_failed'));
     }
   }
 }

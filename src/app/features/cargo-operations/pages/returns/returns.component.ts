@@ -14,6 +14,8 @@ import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 const RETURN_STATUS_LABELS: Record<ReturnRequestStatus, string> = {
   beklemede: 'Beklemede',
@@ -28,7 +30,7 @@ type SiralamaAnahtari = 'createdAt-desc' | 'createdAt-asc';
 @Component({
   selector: 'app-returns',
   standalone: true,
-  imports: [CommonModule, RouterLink, TarihPipe, EmptyStateComponent, YetkiDirective, DebounceDirective],
+  imports: [CommonModule, RouterLink, TarihPipe, EmptyStateComponent, YetkiDirective, DebounceDirective, TranslatePipe],
   templateUrl: './returns.component.html',
   styleUrl: './returns.component.scss',
 })
@@ -108,7 +110,8 @@ export class ReturnsComponent {
     private notification: NotificationService,
     private audit: AuditService,
     private currentUser: CurrentUserService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private langService: LanguageService
   ) {
     this.yukle();
   }
@@ -121,7 +124,7 @@ export class ReturnsComponent {
       this.gonderiler.set(new Map(gonderiler.map((g) => [g.id, g])));
       this.returns.set(this.returnRequestService.liste());
     } catch {
-      this.hataMesaji.set('İade talepleri yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_returns'));
     } finally {
       this.yukleniyor.set(false);
     }
@@ -133,10 +136,10 @@ export class ReturnsComponent {
 
   async durumGuncelle(iade: ReturnRequest, yeniStatus: ReturnRequestStatus): Promise<void> {
     const sonuc = await this.dialog.confirm({
-      baslik: 'İade Talebi Durumu',
-      mesaj: `İade talebi "${this.statusLabels[yeniStatus]}" olarak işaretlenecek. Onaylıyor musunuz?`,
+      baslik: this.langService.translate('return_status_dialog_title'),
+      mesaj: this.langService.translate('return_status_dialog_message', { status: this.langService.translate('return_status_' + yeniStatus) }),
       aciklamaGerekli: true,
-      onayMetni: 'Onayla',
+      onayMetni: this.langService.translate('confirm'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -154,10 +157,10 @@ export class ReturnsComponent {
         eskiDeger: iade.status,
         yeniDeger: yeniStatus,
       });
-      this.notification.success('İade talebi güncellendi.');
+      this.notification.success(this.langService.translate('return_request_updated'));
       await this.yukle();
     } catch {
-      this.notification.error('İade talebi güncellenemedi.');
+      this.notification.error(this.langService.translate('return_request_update_failed'));
     } finally {
       this.islemDevamEdiyor.set(null);
     }

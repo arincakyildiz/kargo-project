@@ -11,11 +11,13 @@ import { CanComponentDeactivate } from '../../../../core/guards/unsaved-changes.
 import { telefonValidator, pozitifSayiValidator } from '../../../../shared/validators/telefon.validator';
 import { TelefonMaskDirective } from '../../../../shared/directives/telefon-mask.directive';
 import { NoWheelDirective } from '../../../../shared/directives/no-wheel.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-shipment-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TelefonMaskDirective, NoWheelDirective],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TelefonMaskDirective, NoWheelDirective, TranslatePipe],
   templateUrl: './shipment-form.component.html',
   styleUrl: './shipment-form.component.scss',
 })
@@ -49,7 +51,8 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
     private audit: AuditService,
     private currentUser: CurrentUserService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private langService: LanguageService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -62,7 +65,7 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
       const gonderi = await this.shipmentService.birGetir(this.gonderiId);
       this.yukleniyor.set(false);
       if (!gonderi) {
-        this.notification.error('Gönderi bulunamadı.');
+        this.notification.error(this.langService.translate('shipment_not_found'));
         this.router.navigate(['/gonderiler']);
         return;
       }
@@ -148,17 +151,17 @@ export class ShipmentFormComponent implements OnInit, CanComponentDeactivate {
 
       if (this.duzenlemeModu() && this.gonderiId) {
         await this.shipmentService.guncelle(this.gonderiId, kayitVerisi);
-        this.notification.success('Gönderi güncellendi.');
+        this.notification.success(this.langService.translate('shipment_updated'));
         this.kaydedildi.set(true);
         this.router.navigate(['/gonderiler', this.gonderiId]);
       } else {
         const yeni = await this.shipmentService.olustur(kayitVerisi);
-        this.notification.success(`Gönderi oluşturuldu: ${yeni.takipKodu}`);
+        this.notification.success(this.langService.translate('shipment_created_code', { code: yeni.takipKodu }));
         this.kaydedildi.set(true);
         this.router.navigate(['/gonderiler', yeni.id]);
       }
     } catch {
-      this.hataMesaji.set('Kayıt sırasında bir hata oluştu, lütfen tekrar deneyin.');
+      this.hataMesaji.set(this.langService.translate('error_saving_try_again'));
     } finally {
       this.kaydediliyor.set(false);
     }

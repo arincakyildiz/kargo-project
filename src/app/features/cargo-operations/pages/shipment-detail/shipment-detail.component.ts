@@ -14,11 +14,13 @@ import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { StatusBadgeDirective } from '../../../../shared/directives/status-badge.directive';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-shipment-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, YetkiDirective],
+  imports: [CommonModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, YetkiDirective, TranslatePipe],
   templateUrl: './shipment-detail.component.html',
   styleUrl: './shipment-detail.component.scss',
 })
@@ -97,7 +99,8 @@ export class ShipmentDetailComponent implements OnInit {
     private notification: NotificationService,
     private dialog: DialogService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private langService: LanguageService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -112,12 +115,12 @@ export class ShipmentDetailComponent implements OnInit {
     try {
       const g = await this.shipmentService.birGetir(this.gonderiId, DEMO_ERROR_RATE);
       if (!g) {
-        this.hataMesaji.set('Gönderi bulunamadı.');
+        this.hataMesaji.set(this.langService.translate('shipment_not_found'));
       } else {
         this.gonderi.set(g);
       }
     } catch {
-      this.hataMesaji.set('Gönderi yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_shipments'));
     } finally {
       this.yukleniyor.set(false);
     }
@@ -125,14 +128,14 @@ export class ShipmentDetailComponent implements OnInit {
 
   async kuryeAta(): Promise<void> {
     if (!this.secilenKurye()) {
-      this.notification.error('Lütfen bir kurye seçin.');
+      this.notification.error(this.langService.translate('select_courier_required'));
       return;
     }
     const kurye = this.uygunKuryeler().find((k) => k.id === this.secilenKurye());
     const sonuc = await this.dialog.confirm({
-      baslik: 'Kurye Ata',
-      mesaj: `Bu gönderi "${kurye?.adSoyad ?? ''}" kuryesine atanacak. Onaylıyor musunuz?`,
-      onayMetni: 'Ata',
+      baslik: this.langService.translate('assign_courier'),
+      mesaj: this.langService.translate('assign_courier_confirm_message', { name: kurye?.adSoyad ?? '' }),
+      onayMetni: this.langService.translate('assign'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -140,10 +143,10 @@ export class ShipmentDetailComponent implements OnInit {
     try {
       const g = await this.shipmentService.kuryeAta(this.gonderiId, this.secilenKurye());
       this.gonderi.set(g);
-      this.notification.success('Kurye ataması yapıldı.');
+      this.notification.success(this.langService.translate('assigned_success'));
       this.secilenKurye.set('');
     } catch (e) {
-      this.notification.error(e instanceof BusinessRuleError ? e.message : 'Kurye ataması başarısız oldu.');
+      this.notification.error(e instanceof BusinessRuleError ? e.message : this.langService.translate('courier_assignment_failed'));
     } finally {
       this.islemDevamEdiyor.set(false);
     }
@@ -151,15 +154,15 @@ export class ShipmentDetailComponent implements OnInit {
 
   async durumDegistir(yeniStatus: ShipmentStatus): Promise<void> {
     if (yeniStatus === 'teslim-edildi' && !this.kanit()) {
-      this.notification.error('Önce teslimat kanıtı ekleyin.');
+      this.notification.error(this.langService.translate('add_proof_first'));
       return;
     }
 
     const sonuc = await this.dialog.confirm({
-      baslik: 'Durum Değişikliği',
-      mesaj: `Gönderi durumu "${yeniStatus}" olarak güncellenecek. Onaylıyor musunuz?`,
+      baslik: this.langService.translate('status_change_title'),
+      mesaj: this.langService.translate('status_change_message', { status: this.langService.translate('status_' + yeniStatus.replace(/-/g, '_')) }),
       aciklamaGerekli: true,
-      onayMetni: 'Durumu Güncelle',
+      onayMetni: this.langService.translate('update_status'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -167,9 +170,9 @@ export class ShipmentDetailComponent implements OnInit {
     try {
       const g = await this.shipmentService.durumDegistir(this.gonderiId, yeniStatus, sonuc.aciklama ?? '');
       this.gonderi.set(g);
-      this.notification.success('Durum güncellendi.');
+      this.notification.success(this.langService.translate('status_updated'));
     } catch (e) {
-      this.notification.error(e instanceof BusinessRuleError ? e.message : 'Durum güncellenemedi.');
+      this.notification.error(e instanceof BusinessRuleError ? e.message : this.langService.translate('status_update_failed'));
     } finally {
       this.islemDevamEdiyor.set(false);
     }
@@ -177,7 +180,7 @@ export class ShipmentDetailComponent implements OnInit {
 
   async teslimatKanitiKaydet(): Promise<void> {
     if (!this.teslimAlan().trim()) {
-      this.notification.error('Teslim alan kişinin adı zorunludur.');
+      this.notification.error(this.langService.translate('proof_recipient_name_required'));
       return;
     }
     this.islemDevamEdiyor.set(true);
@@ -187,11 +190,11 @@ export class ShipmentDetailComponent implements OnInit {
         imzaVarMi: this.imzaVar(),
         not: this.teslimatNot() || undefined,
       });
-      this.notification.success('Teslimat kanıtı kaydedildi. Şimdi durumu "Teslim Edildi" yapabilirsiniz.');
+      this.notification.success(this.langService.translate('proof_saved_success'));
       this.teslimAlan.set('');
       this.teslimatNot.set('');
     } catch {
-      this.notification.error('Teslimat kanıtı kaydedilemedi.');
+      this.notification.error(this.langService.translate('proof_save_failed'));
     } finally {
       this.islemDevamEdiyor.set(false);
     }
@@ -199,10 +202,10 @@ export class ShipmentDetailComponent implements OnInit {
 
   async iadeTalebiAc(): Promise<void> {
     const sonuc = await this.dialog.confirm({
-      baslik: 'İade Talebi',
-      mesaj: 'Bu gönderi için iade talebi açılacak. Onaylıyor musunuz?',
+      baslik: this.langService.translate('return_request_title'),
+      mesaj: this.langService.translate('return_request_confirm_message'),
       aciklamaGerekli: true,
-      onayMetni: 'İade Talebi Aç',
+      onayMetni: this.langService.translate('open_return_request'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -210,9 +213,9 @@ export class ShipmentDetailComponent implements OnInit {
     try {
       await this.shipmentService.iadeTalebiOlustur(this.gonderiId, sonuc.aciklama ?? '');
       await this.yukle();
-      this.notification.success('İade talebi oluşturuldu.');
+      this.notification.success(this.langService.translate('return_request_created'));
     } catch (e) {
-      this.notification.error(e instanceof BusinessRuleError ? e.message : 'İade talebi oluşturulamadı.');
+      this.notification.error(e instanceof BusinessRuleError ? e.message : this.langService.translate('return_request_create_failed'));
     } finally {
       this.islemDevamEdiyor.set(false);
     }
@@ -220,10 +223,10 @@ export class ShipmentDetailComponent implements OnInit {
 
   async iptalEt(): Promise<void> {
     const sonuc = await this.dialog.confirm({
-      baslik: 'Gönderiyi İptal Et',
-      mesaj: 'İptal edilen gönderi tekrar aktifleştirilemez. Onaylıyor musunuz?',
+      baslik: this.langService.translate('cancel_shipment_title'),
+      mesaj: this.langService.translate('cancel_shipment_confirm_message'),
       aciklamaGerekli: true,
-      onayMetni: 'İptal Et',
+      onayMetni: this.langService.translate('cancel_shipment'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -231,9 +234,9 @@ export class ShipmentDetailComponent implements OnInit {
     try {
       const g = await this.shipmentService.iptalEt(this.gonderiId, sonuc.aciklama ?? '');
       this.gonderi.set(g);
-      this.notification.success('Gönderi iptal edildi.');
+      this.notification.success(this.langService.translate('shipment_canceled'));
     } catch (e) {
-      this.notification.error(e instanceof BusinessRuleError ? e.message : 'Gönderi iptal edilemedi.');
+      this.notification.error(e instanceof BusinessRuleError ? e.message : this.langService.translate('shipment_cancel_failed'));
     } finally {
       this.islemDevamEdiyor.set(false);
     }
@@ -246,16 +249,16 @@ export class ShipmentDetailComponent implements OnInit {
   async musteriNotuEkle(): Promise<void> {
     const not = this.musteriNotu().trim();
     if (!not) {
-      this.notification.error('Not alanı boş olamaz.');
+      this.notification.error(this.langService.translate('note_required'));
       return;
     }
     this.islemDevamEdiyor.set(true);
     try {
       await this.shipmentService.musteriNotuEkle(this.gonderiId, not);
-      this.notification.success('Notunuz kaydedildi.');
+      this.notification.success(this.langService.translate('note_saved'));
       this.musteriNotu.set('');
     } catch {
-      this.notification.error('Not kaydedilemedi.');
+      this.notification.error(this.langService.translate('note_save_failed'));
     } finally {
       this.islemDevamEdiyor.set(false);
     }

@@ -1,16 +1,16 @@
 <div class="shipment-form">
-  <h1>{{ duzenlemeModu() ? 'Gönderiyi Düzenle' : 'Yeni Gönderi' }}</h1>
+  <h1>{{ (duzenlemeModu() ? 'edit_shipment' : 'new_shipment') | translate }}</h1>
 
   <div class="panel" *ngIf="yukleniyor()">
-    <p>Yükleniyor...</p>
+    <p>{{ 'loading' | translate }}</p>
   </div>
 
   <form class="panel" [formGroup]="form" (ngSubmit)="kaydet()" *ngIf="!yukleniyor()">
     <div class="form-field">
       <div class="form-field__label-row">
-        <label for="adresId">Alıcı Adresi</label>
+        <label for="adresId">{{ 'recipient_address' | translate }}</label>
         <button type="button" class="link-btn" (click)="yeniAdresModunuDegistir()">
-          {{ yeniAdresModu() ? 'Kayıtlı adres seç' : '+ Yeni adres ekle' }}
+          {{ (yeniAdresModu() ? 'select_registered_address' : 'add_new_address') | translate }}
         </button>
       </div>
 
@@ -20,11 +20,11 @@
         *ngIf="!yeniAdresModu()"
         (change)="adresSecildi($any($event.target).value)"
       >
-        <option value="" disabled>Adres seçin</option>
+        <option value="" disabled>{{ 'select_address_placeholder' | translate }}</option>
         <option *ngFor="let a of adresler()" [value]="a.id">{{ a.aliciAdSoyad }} — {{ a.acikAdres }}</option>
       </select>
       <span class="form-field__error" *ngIf="!yeniAdresModu() && form.controls.adresId.invalid && form.controls.adresId.touched">
-        Adres seçimi zorunludur.
+        {{ 'address_required' | translate }}
       </span>
 
       <input
@@ -32,74 +32,74 @@
         formControlName="acikAdres"
         type="text"
         *ngIf="yeniAdresModu()"
-        placeholder="Mahalle, cadde/sokak, no"
+        [placeholder]="'open_address_placeholder' | translate"
         maxlength="150"
       />
       <span class="form-field__error" *ngIf="yeniAdresModu() && form.controls.acikAdres.errors?.['required'] && form.controls.acikAdres.touched">
-        Açık adres zorunludur.
+        {{ 'open_address_required' | translate }}
       </span>
       <span class="form-field__error" *ngIf="yeniAdresModu() && form.controls.acikAdres.errors?.['maxlength'] && form.controls.acikAdres.touched">
-        En fazla 150 karakter girilebilir.
+        {{ 'max_length_150' | translate }}
       </span>
     </div>
 
     <div class="form-field">
-      <label for="aliciAdSoyad">Alıcı Ad Soyad</label>
+      <label for="aliciAdSoyad">{{ 'recipient_name' | translate }}</label>
       <input id="aliciAdSoyad" formControlName="aliciAdSoyad" type="text" maxlength="50" />
       <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.errors?.['required'] && form.controls.aliciAdSoyad.touched">
-        Alıcı adı zorunludur.
+        {{ 'recipient_name_required' | translate }}
       </span>
       <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.errors?.['minlength'] && form.controls.aliciAdSoyad.touched">
-        En az 3 karakter girin.
+        {{ 'min_length_3' | translate }}
       </span>
       <span class="form-field__error" *ngIf="form.controls.aliciAdSoyad.errors?.['maxlength'] && form.controls.aliciAdSoyad.touched">
-        En fazla 50 karakter girilebilir.
+        {{ 'max_length_50' | translate }}
       </span>
     </div>
 
     <div class="form-field">
-      <label for="aliciTelefon">Alıcı Telefon</label>
+      <label for="aliciTelefon">{{ 'recipient_phone' | translate }}</label>
       <input id="aliciTelefon" formControlName="aliciTelefon" appTelefonMask type="text" placeholder="05XX XXX XX XX" maxlength="15" />
       <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['required'] && form.controls.aliciTelefon.touched">
-        Telefon numarası zorunludur.
+        {{ 'phone_required' | translate }}
       </span>
       <span class="form-field__error" *ngIf="form.controls.aliciTelefon.errors?.['telefonGecersiz'] && form.controls.aliciTelefon.touched">
-        Geçerli bir Türkiye telefon numarası girin (0 ile başlayan 11 hane).
+        {{ 'phone_invalid' | translate }}
       </span>
     </div>
 
     <div class="form-field">
-      <label for="bolgeId">Teslimat Bölgesi</label>
+      <label for="bolgeId">{{ 'delivery_zone' | translate }}</label>
       <select id="bolgeId" formControlName="bolgeId">
-        <option value="" disabled>Bölge seçin</option>
+        <option value="" disabled>{{ 'select_zone_placeholder' | translate }}</option>
         <option *ngFor="let b of bolgeler()" [value]="b.id">{{ b.ad }} ({{ b.il }})</option>
       </select>
       <span class="form-field__error" *ngIf="form.controls.bolgeId.invalid && form.controls.bolgeId.touched">
-        Bölge seçimi zorunludur.
+        {{ 'zone_required' | translate }}
       </span>
     </div>
 
     <div class="form-field">
-      <label for="agirlikKg">Ağırlık (kg)</label>
+      <label for="agirlikKg">{{ 'weight_kg' | translate }}</label>
       <input id="agirlikKg" formControlName="agirlikKg" appNoWheel type="number" step="0.1" min="0.1" max="500"
         (input)="$any($event.target).value > 500 && ($any($event.target).value = 500) && form.controls.agirlikKg.setValue(500)" />
       <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['required'] && form.controls.agirlikKg.touched">
-        Ağırlık zorunludur.
+        {{ 'weight_required' | translate }}
       </span>
       <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['pozitifDegil'] && form.controls.agirlikKg.touched">
-        Ağırlık pozitif bir sayı olmalıdır.
+        {{ 'weight_positive' | translate }}
       </span>
       <span class="form-field__error" *ngIf="form.controls.agirlikKg.errors?.['max'] && form.controls.agirlikKg.touched">
-        Maksimum ağırlık 500 kg olabilir.
+        {{ 'weight_max' | translate }}
       </span>
     </div>
 
     <div class="form-field">
-      <label for="aciklama">Açıklama (opsiyonel)</label>
+      <label for="aciklama">{{ 'description' | translate }}</label>
       <textarea id="aciklama" formControlName="aciklama" rows="3" maxlength="100"></textarea>
       <div class="char-counter-row">
         <span class="form-field__error" *ngIf="form.controls.aciklama.errors?.['maxlength']">
-          En fazla 100 karakter girilebilir.
+          {{ 'max_length_100' | translate }}
         </span>
         <small class="char-counter">
           {{ form.controls.aciklama.value.length }} / 100
@@ -110,9 +110,9 @@
     <p class="form-error" *ngIf="hataMesaji()">{{ hataMesaji() }}</p>
 
     <div class="form-actions">
-      <a routerLink="/gonderiler" class="btn btn--ghost">Vazgeç</a>
+      <a routerLink="/gonderiler" class="btn btn--ghost">{{ 'cancel' | translate }}</a>
       <button type="submit" class="btn btn--primary" [disabled]="kaydediliyor()">
-        {{ kaydediliyor() ? 'Kaydediliyor...' : 'Kaydet' }}
+        {{ (kaydediliyor() ? 'saving' : 'save') | translate }}
       </button>
     </div>
   </form>

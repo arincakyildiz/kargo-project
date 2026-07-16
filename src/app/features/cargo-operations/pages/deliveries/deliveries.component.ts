@@ -12,6 +12,8 @@ import { TarihPipe } from '../../../../shared/pipes/tarih.pipe';
 import { StatusBadgeDirective } from '../../../../shared/directives/status-badge.directive';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 const TESLIMAT_DURUMLARI: ShipmentStatus[] = ['dagitimda', 'teslim-edildi', 'teslim-edilemedi'];
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
@@ -21,7 +23,7 @@ type SiralamaAnahtari = 'updatedAt-desc' | 'updatedAt-asc' | 'takipKodu-asc' | '
 @Component({
   selector: 'app-deliveries',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, DebounceDirective, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, DebounceDirective, EmptyStateComponent, TranslatePipe],
   templateUrl: './deliveries.component.html',
   styleUrl: './deliveries.component.scss',
 })
@@ -72,7 +74,8 @@ export class DeliveriesComponent {
     private shipmentService: ShipmentService,
     public courierService: CourierService,
     public zoneService: ZoneService,
-    private deliveryProofService: DeliveryProofService
+    private deliveryProofService: DeliveryProofService,
+    private langService: LanguageService
   ) {
     this.yukle();
   }
@@ -84,7 +87,7 @@ export class DeliveriesComponent {
       await Promise.all([this.zoneService.tumunuGetir(), this.courierService.tumunuGetir()]);
       this.gonderiler.set(await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE));
     } catch {
-      this.hataMesaji.set('Teslimatlar yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_deliveries'));
     } finally {
       this.yukleniyor.set(false);
     }

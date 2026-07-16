@@ -14,6 +14,8 @@ import { StatusBadgeDirective } from '../../../../shared/directives/status-badge
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 30, 50, 80, 100];
 
@@ -31,6 +33,7 @@ type SiralamaAnahtari = 'createdAt-desc' | 'createdAt-asc' | 'takipKodu-asc' | '
     DebounceDirective,
     EmptyStateComponent,
     YetkiDirective,
+    TranslatePipe,
   ],
   templateUrl: './shipment-list.component.html',
   styleUrl: './shipment-list.component.scss',
@@ -90,7 +93,8 @@ export class ShipmentListComponent {
     public courierService: CourierService,
     public zoneService: ZoneService,
     private notification: NotificationService,
-    private currentUser: CurrentUserService
+    private currentUser: CurrentUserService,
+    private langService: LanguageService
   ) {
     this.yukle();
   }
@@ -102,7 +106,7 @@ export class ShipmentListComponent {
       const liste = await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE);
       this.gonderiler.set(liste);
     } catch {
-      this.hataMesaji.set('Gönderiler yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_shipments'));
     } finally {
       this.yukleniyor.set(false);
     }
@@ -136,7 +140,7 @@ export class ShipmentListComponent {
   csvDisariAktar(): void {
     const data = this.filtrelenmis();
     if (!data.length) {
-      this.notification.error('Dışarı aktarılacak kargo bulunamadı.');
+      this.notification.error(this.langService.translate('no_export_data'));
       return;
     }
 
@@ -160,7 +164,7 @@ export class ShipmentListComponent {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    this.notification.success('Kargo listesi CSV olarak indirildi.');
+    this.notification.success(this.langService.translate('csv_export_success'));
   }
 
   async csvTopluYukle(event: Event): Promise<void> {
@@ -177,7 +181,7 @@ export class ShipmentListComponent {
       try {
         const lines = text.split('\n').map((line) => line.trim()).filter((line) => line.length > 0);
         if (lines.length <= 1) {
-          this.notification.error('Yüklenen CSV dosyası boş veya geçersiz.');
+          this.notification.error(this.langService.translate('csv_invalid_file'));
           return;
         }
 
@@ -243,7 +247,7 @@ export class ShipmentListComponent {
           const yeniAdres = await this.zoneService.adresOlustur({
             aliciAdSoyad,
             telefon,
-            acikAdres: `${matchedZone.ad} Bölge Teslimatı (Toplu CSV)`,
+            acikAdres: this.langService.translate('bulk_csv_zone_delivery', { zone: matchedZone.ad }),
             bolgeId: matchedZone.id,
           });
 
@@ -262,14 +266,14 @@ export class ShipmentListComponent {
         await this.yukle();
 
         if (basariliAdet > 0) {
-          this.notification.success(`${basariliAdet} adet gönderi toplu olarak başarıyla yüklendi.`);
+          this.notification.success(this.langService.translate('csv_bulk_import_success', { count: basariliAdet }));
         }
         if (hataAdet > 0) {
-          this.notification.info(`${hataAdet} adet satır geçersiz veri nedeniyle yüklenemedi.`);
+          this.notification.info(this.langService.translate('csv_bulk_import_errors', { count: hataAdet }));
         }
 
       } catch (err) {
-        this.notification.error('CSV ayrıştırılırken beklenmeyen bir hata oluştu.');
+        this.notification.error(this.langService.translate('csv_parsing_error'));
       } finally {
         input.value = '';
       }

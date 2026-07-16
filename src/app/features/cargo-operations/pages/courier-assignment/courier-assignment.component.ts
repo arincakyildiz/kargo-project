@@ -18,6 +18,8 @@ import { telefonValidator, pozitifSayiValidator, tamSayiValidator } from '../../
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { TelefonMaskDirective } from '../../../../shared/directives/telefon-mask.directive';
 import { NoWheelDirective } from '../../../../shared/directives/no-wheel.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 
 type KuryeSiralamaAnahtari = 'adSoyad-asc' | 'doluluk-desc';
 type GonderiSiralamaAnahtari = 'takipKodu-asc' | 'createdAt-desc';
@@ -25,7 +27,7 @@ type GonderiSiralamaAnahtari = 'takipKodu-asc' | 'createdAt-desc';
 @Component({
   selector: 'app-courier-assignment',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective, DebounceDirective, TelefonMaskDirective, NoWheelDirective],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EmptyStateComponent, YetkiDirective, DebounceDirective, TelefonMaskDirective, NoWheelDirective, TranslatePipe],
   templateUrl: './courier-assignment.component.html',
   styleUrl: './courier-assignment.component.scss',
 })
@@ -118,7 +120,8 @@ export class CourierAssignmentComponent {
     private notification: NotificationService,
     private audit: AuditService,
     private currentUser: CurrentUserService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private langService: LanguageService
   ) {
     this.yukle();
   }
@@ -131,7 +134,7 @@ export class CourierAssignmentComponent {
       const liste = await this.shipmentService.tumunuGetir(DEMO_ERROR_RATE);
       this.bekleyenler.set(liste.filter((s) => s.status === 'olusturuldu'));
     } catch {
-      this.hataMesaji.set('Kurye atama verileri yüklenirken bir hata oluştu.');
+      this.hataMesaji.set(this.langService.translate('error_loading_courier_assignment'));
     } finally {
       this.yukleniyor.set(false);
     }
@@ -148,24 +151,24 @@ export class CourierAssignmentComponent {
   async ata(shipment: Shipment): Promise<void> {
     const kuryeId = this.secimler()[shipment.id];
     if (!kuryeId) {
-      this.notification.error('Lütfen kurye seçin.');
+      this.notification.error(this.langService.translate('select_courier_required'));
       return;
     }
     const kurye = this.courierService.aktifKuryeler().find((k) => k.id === kuryeId);
     const sonuc = await this.dialog.confirm({
-      baslik: 'Kurye Ata',
-      mesaj: `${shipment.takipKodu} gönderisi "${kurye?.adSoyad ?? kuryeId}" kuryesine atanacak. Onaylıyor musunuz?`,
-      onayMetni: 'Ata',
+      baslik: this.langService.translate('assign_courier'),
+      mesaj: this.langService.translate('assign_courier_shipment_confirm_message', { code: shipment.takipKodu, name: kurye?.adSoyad ?? kuryeId }),
+      onayMetni: this.langService.translate('assign'),
     });
     if (!sonuc.onaylandi) return;
 
     this.islemDevamEdiyor.set(shipment.id);
     try {
       await this.shipmentService.kuryeAta(shipment.id, kuryeId);
-      this.notification.success(`${shipment.takipKodu} için kurye atandı.`);
+      this.notification.success(this.langService.translate('courier_assigned_for_shipment', { code: shipment.takipKodu }));
       await this.yukle();
     } catch (e) {
-      this.notification.error(e instanceof BusinessRuleError ? e.message : 'Kurye ataması başarısız oldu.');
+      this.notification.error(e instanceof BusinessRuleError ? e.message : this.langService.translate('courier_assignment_failed'));
     } finally {
       this.islemDevamEdiyor.set(null);
     }
@@ -191,9 +194,9 @@ export class CourierAssignmentComponent {
   async kuryeFormunuKapat(): Promise<void> {
     if (this.kuryeForm.dirty) {
       const sonuc = await this.dialog.confirm({
-        baslik: 'Değişiklikler Kaydedilmedi',
-        mesaj: 'Formda kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?',
-        onayMetni: 'Çık',
+        baslik: this.langService.translate('unsaved_title'),
+        mesaj: this.langService.translate('unsaved_message'),
+        onayMetni: this.langService.translate('unsaved_exit'),
       });
       if (!sonuc.onaylandi) return;
     }
@@ -225,10 +228,10 @@ export class CourierAssignmentComponent {
       const veri = this.kuryeForm.getRawValue();
       if (this.duzenlenenKuryeId()) {
         await this.courierService.guncelle(this.duzenlenenKuryeId()!, veri);
-        this.notification.success('Kurye güncellendi.');
+        this.notification.success(this.langService.translate('courier_updated'));
       } else {
         await this.courierService.olustur({ ...veri, aktifMi: true });
-        this.notification.success('Kurye oluşturuldu.');
+        this.notification.success(this.langService.translate('courier_created'));
       }
       this.audit.kaydet({
         islemTipi: 'kurye-kaydet',
@@ -238,7 +241,7 @@ export class CourierAssignmentComponent {
       this.kuryeFormAcik.set(false);
       await this.yukle();
     } catch {
-      this.notification.error('Kurye kaydedilirken bir hata oluştu.');
+      this.notification.error(this.langService.translate('error_saving_courier'));
     } finally {
       this.kuryeKaydediliyor.set(false);
     }
@@ -246,10 +249,10 @@ export class CourierAssignmentComponent {
 
   async kuryeAktiflikDegistir(kurye: Courier): Promise<void> {
     const sonuc = await this.dialog.confirm({
-      baslik: kurye.aktifMi ? 'Kuryeyi Pasife Al' : 'Kuryeyi Aktifleştir',
-      mesaj: `"${kurye.adSoyad}" ${kurye.aktifMi ? 'pasife alınacak' : 'aktifleştirilecek'}. Onaylıyor musunuz?`,
+      baslik: this.langService.translate(kurye.aktifMi ? 'deactivate_courier_title' : 'activate_courier_title'),
+      mesaj: this.langService.translate(kurye.aktifMi ? 'deactivate_courier_confirm' : 'activate_courier_confirm', { name: kurye.adSoyad }),
       aciklamaGerekli: true,
-      onayMetni: 'Onayla',
+      onayMetni: this.langService.translate('confirm'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -261,10 +264,10 @@ export class CourierAssignmentComponent {
         aciklama: `${kurye.adSoyad} ${!kurye.aktifMi ? 'aktif' : 'pasif'} yapıldı. ${sonuc.aciklama}`,
         hedefId: kurye.id,
       });
-      this.notification.success('Kurye durumu güncellendi.');
+      this.notification.success(this.langService.translate('courier_status_updated'));
       await this.yukle();
     } catch {
-      this.notification.error('Kurye durumu güncellenemedi.');
+      this.notification.error(this.langService.translate('courier_status_update_failed'));
     }
   }
 
@@ -274,14 +277,14 @@ export class CourierAssignmentComponent {
       .filter((s) => s.kuryeId === kurye.id && ['kurye-atandi', 'dagitimda'].includes(s.status)).length;
     
     if (atanan > 0) {
-      this.notification.error(`Bu kuryenin ${atanan} adet aktif dağıtım/atama kaydı bulunduğundan silinemez!`);
+      this.notification.error(this.langService.translate('cannot_delete_courier_active_shipments', { count: atanan }));
       return;
     }
 
     const sonuc = await this.dialog.confirm({
-      baslik: 'Kuryeyi Sil',
-      mesaj: `"${kurye.adSoyad}" kuryesi kalıcı olarak silinecek. Onaylıyor musunuz?`,
-      onayMetni: 'Sil',
+      baslik: this.langService.translate('delete_courier_title'),
+      mesaj: this.langService.translate('delete_courier_confirm_message', { name: kurye.adSoyad }),
+      onayMetni: this.langService.translate('delete'),
     });
     if (!sonuc.onaylandi) return;
 
@@ -292,10 +295,10 @@ export class CourierAssignmentComponent {
         rol: this.currentUser.rol(),
         aciklama: `Kurye silindi: ${kurye.adSoyad}`,
       });
-      this.notification.success('Kurye başarıyla silindi.');
+      this.notification.success(this.langService.translate('courier_deleted_success'));
       await this.yukle();
     } catch {
-      this.notification.error('Kurye silinirken bir hata oluştu.');
+      this.notification.error(this.langService.translate('courier_delete_failed'));
     }
   }
 
