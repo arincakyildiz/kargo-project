@@ -789,7 +789,7 @@ export const TRANSLATIONS = {
     courier_assigned_for_shipment: 'Courier assigned for {code}.',
     courier_updated: 'Courier updated.',
     courier_created: 'Courier created.',
-    error_saving_courier: 'An error occurred while loading courier data.',
+    error_saving_courier: 'An error occurred while saving the courier.',
     deactivate_courier_title: 'Deactivate Courier',
     activate_courier_title: 'Activate Courier',
     deactivate_courier_confirm: '"{name}" will be deactivated. Do you confirm?',
