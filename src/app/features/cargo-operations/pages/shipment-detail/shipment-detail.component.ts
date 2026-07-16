@@ -67,6 +67,21 @@ export class ShipmentDetailComponent implements OnInit {
     () => this.gonderi()?.status === 'dagitimda' && !this.kanit()
   );
 
+  readonly aktifAdimIndex = computed(() => {
+    const g = this.gonderi();
+    if (!g) return 0;
+    switch (g.status) {
+      case 'olusturuldu': return 1;
+      case 'kurye-atandi': return 2;
+      case 'dagitimda': return 3;
+      case 'teslim-edilemedi': return 3;
+      case 'iade-talebi': return 3;
+      case 'teslim-edildi': return 4;
+      case 'iade-edildi': return 4;
+      default: return 0;
+    }
+  });
+
   readonly uygunKuryeler = computed(() => {
     const g = this.gonderi();
     if (!g) return [];

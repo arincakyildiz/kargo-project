@@ -27,6 +27,51 @@
       </div>
     </div>
 
+    <!-- Rota ve Gönderi Durumu Görsel İzleyici -->
+    <div class="panel status-tracker-panel" *ngIf="g.status !== 'iptal-edildi'">
+      <div class="tracker-steps">
+        <div class="tracker-step" [class.tracker-step--active]="aktifAdimIndex() >= 1">
+          <div class="tracker-step__circle">1</div>
+          <span class="tracker-step__label">Kayıt Alındı</span>
+        </div>
+        <div class="tracker-step__line" [class.tracker-step__line--active]="aktifAdimIndex() >= 2"></div>
+        
+        <div class="tracker-step" [class.tracker-step--active]="aktifAdimIndex() >= 2">
+          <div class="tracker-step__circle">2</div>
+          <span class="tracker-step__label">Kurye Atandı</span>
+        </div>
+        <div class="tracker-step__line" [class.tracker-step__line--active]="aktifAdimIndex() >= 3"></div>
+        
+        <div class="tracker-step" [class.tracker-step--active]="aktifAdimIndex() >= 3">
+          <div class="tracker-step__circle">
+            <span *ngIf="g.status === 'teslim-edilemedi'">⚠️</span>
+            <span *ngIf="g.status !== 'teslim-edilemedi'">3</span>
+          </div>
+          <span class="tracker-step__label" *ngIf="g.status === 'teslim-edilemedi'">Teslim Edilemedi</span>
+          <span class="tracker-step__label" *ngIf="g.status === 'iade-talebi'">İade Sürecinde</span>
+          <span class="tracker-step__label" *ngIf="g.status !== 'teslim-edilemedi' && g.status !== 'iade-talebi'">Dağıtımda</span>
+        </div>
+        <div class="tracker-step__line" [class.tracker-step__line--active]="aktifAdimIndex() >= 4"></div>
+        
+        <div class="tracker-step" [class.tracker-step--active]="aktifAdimIndex() >= 4" [class.tracker-step--success]="g.status === 'teslim-edildi'" [class.tracker-step--danger]="g.status === 'iade-edildi'">
+          <div class="tracker-step__circle">
+            <span *ngIf="g.status === 'iade-edildi'">↩️</span>
+            <span *ngIf="g.status !== 'iade-edildi'">4</span>
+          </div>
+          <span class="tracker-step__label" *ngIf="g.status === 'iade-edildi'">İade Edildi</span>
+          <span class="tracker-step__label" *ngIf="g.status !== 'iade-edildi'">Teslim Edildi</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- İptal Edilen Gönderiler için Büyük Banner -->
+    <div class="panel status-tracker-panel status-tracker-panel--canceled" *ngIf="g.status === 'iptal-edildi'">
+      <div class="canceled-banner">
+        <span>❌</span>
+        <h2>Bu gönderi iptal edilmiştir.</h2>
+      </div>
+    </div>
+
     <div class="detail-grid">
       <section class="panel">
         <h2>Gönderi Bilgileri</h2>
