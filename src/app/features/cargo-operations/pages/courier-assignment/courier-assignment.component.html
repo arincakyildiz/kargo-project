@@ -23,15 +23,12 @@
     </div>
     <div class="form-field">
       <label for="telefon">Telefon</label>
-      <input id="telefon" formControlName="telefon" type="text" placeholder="05XX XXX XX XX" maxlength="15" />
+      <input id="telefon" formControlName="telefon" type="text" placeholder="05XX XXX XX XX veya 05XXXXXXXXX" maxlength="15" />
       <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['required'] && kuryeForm.controls.telefon.touched">
         Telefon numarası zorunludur.
       </span>
       <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['telefonGecersiz'] && kuryeForm.controls.telefon.touched">
-        Telefon biçimi geçersiz (örn. 0532 111 22 33).
-      </span>
-      <span class="form-field__error" *ngIf="kuryeForm.controls.telefon.errors?.['maxlength'] && kuryeForm.controls.telefon.touched">
-        En fazla 15 karakter girilebilir.
+        Geçerli bir Türkiye telefon numarası girin (0 ile başlayan 11 hane).
       </span>
     </div>
     <div class="form-field">
@@ -46,7 +43,14 @@
     </div>
     <div class="form-field">
       <label for="gunlukKapasite">Günlük Kapasite</label>
-      <input id="gunlukKapasite" formControlName="gunlukKapasite" type="number" min="1" max="200" />
+      <input
+        id="gunlukKapasite"
+        formControlName="gunlukKapasite"
+        type="number"
+        min="1"
+        max="200"
+        (input)="$any($event.target).value > 200 && ($any($event.target).value = 200) && kuryeForm.controls.gunlukKapasite.setValue(200)"
+      />
       <span class="form-field__error" *ngIf="kuryeForm.controls.gunlukKapasite.errors?.['required'] && kuryeForm.controls.gunlukKapasite.touched">
         Kapasite zorunludur.
       </span>

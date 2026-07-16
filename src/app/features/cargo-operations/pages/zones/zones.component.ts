@@ -11,6 +11,7 @@ import { DialogService } from '../../../../shared/components/confirm-dialog/dial
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
+import { TURKIYE_ILLERI } from '../../data/turkiye-iller';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
@@ -36,6 +37,12 @@ export class ZonesComponent {
   readonly sayfa = signal(1);
   readonly sayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[1]); // Varsayılan 20
   readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
+
+  readonly turkiyeIlleri = TURKIYE_ILLERI;
+  readonly seciliIl = signal<string>('');
+  readonly secilenIlinIlceleri = computed(() =>
+    this.turkiyeIlleri.find(i => i.il === this.seciliIl())?.ilceler ?? []
+  );
 
   private readonly siralamaFonksiyonlari: Record<SiralamaAnahtari, (a: DeliveryZone, b: DeliveryZone) => number> = {
     'ad-asc': (a, b) => a.ad.localeCompare(b.ad),
@@ -74,8 +81,8 @@ export class ZonesComponent {
 
   readonly form = this.fb.nonNullable.group({
     ad: ['', [Validators.required, Validators.maxLength(50)]],
-    il: ['', [Validators.required, Validators.maxLength(30)]],
-    ilce: ['', [Validators.required, Validators.maxLength(30)]],
+    il: ['', Validators.required],
+    ilce: ['', Validators.required],
   });
 
   constructor(
@@ -128,14 +135,26 @@ export class ZonesComponent {
 
   yeniFormAc(): void {
     this.duzenlenenId.set(null);
+    this.seciliIl.set('');
     this.form.reset({ ad: '', il: '', ilce: '' });
     this.formAcik.set(true);
   }
 
   duzenleFormuAc(zone: DeliveryZone): void {
     this.duzenlenenId.set(zone.id);
+    this.seciliIl.set(zone.il);
     this.form.reset({ ad: zone.ad, il: zone.il, ilce: zone.ilce });
     this.formAcik.set(true);
+  }
+
+  ilDegisti(il: string): void {
+    this.seciliIl.set(il);
+    this.form.controls.il.setValue(il);
+    this.form.controls.ilce.setValue('');
+  }
+
+  ilceDegisti(ilce: string): void {
+    this.form.controls.ilce.setValue(ilce);
   }
 
   formuKapat(): void {

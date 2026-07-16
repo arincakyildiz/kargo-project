@@ -38,15 +38,19 @@
     </div>
     <div class="form-field">
       <label for="il">İl</label>
-      <input id="il" formControlName="il" type="text" maxlength="30" />
+      <select id="il" [value]="seciliIl()" (change)="ilDegisti($any($event.target).value)">
+        <option value="" disabled>İl seçin</option>
+        <option *ngFor="let item of turkiyeIlleri" [value]="item.il">{{ item.il }}</option>
+      </select>
       <span class="form-field__error" *ngIf="form.controls.il.errors?.['required'] && form.controls.il.touched">Zorunlu alan.</span>
-      <span class="form-field__error" *ngIf="form.controls.il.errors?.['maxlength'] && form.controls.il.touched">En fazla 30 karakter girilebilir.</span>
     </div>
     <div class="form-field">
       <label for="ilce">İlçe</label>
-      <input id="ilce" formControlName="ilce" type="text" maxlength="30" />
+      <select id="ilce" [value]="form.controls.ilce.value" (change)="ilceDegisti($any($event.target).value)" [disabled]="!seciliIl()">
+        <option value="" disabled>{{ seciliIl() ? 'İlçe seçin' : 'Önce il seçin' }}</option>
+        <option *ngFor="let ilce of secilenIlinIlceleri()" [value]="ilce">{{ ilce }}</option>
+      </select>
       <span class="form-field__error" *ngIf="form.controls.ilce.errors?.['required'] && form.controls.ilce.touched">Zorunlu alan.</span>
-      <span class="form-field__error" *ngIf="form.controls.ilce.errors?.['maxlength'] && form.controls.ilce.touched">En fazla 30 karakter girilebilir.</span>
     </div>
     <div class="form-actions">
       <button type="button" class="btn btn--ghost" (click)="formuKapat()">Vazgeç</button>
