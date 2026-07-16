@@ -134,6 +134,12 @@ export const TRANSLATIONS = {
     status_history: 'Durum Geçmişi',
     no_history: 'Henüz durum geçmişi yok.',
     timeline_connector: '·',
+    print_label: 'İrsaliye Yazdır',
+    shipping_label: 'Kargo Taşıma Belgesi / İrsaliye',
+    sender: 'Gönderici',
+    sender_info: 'Kargo Genel Merkezi (Merkez Şube)',
+    sign_recipient: 'Teslim Alan İmza',
+    sign_courier: 'Kurye İmza',
 
     // Tracker steps
     step_created: 'Kayıt Alındı',
@@ -560,6 +566,12 @@ export const TRANSLATIONS = {
     status_history: 'Status History',
     no_history: 'No status history yet.',
     timeline_connector: '·',
+    print_label: 'Print Waybill',
+    shipping_label: 'Shipping Waybill / Label',
+    sender: 'Sender',
+    sender_info: 'Cargo Headquarters (Main Branch)',
+    sign_recipient: 'Recipient Signature',
+    sign_courier: 'Courier Signature',
 
     // Tracker steps
     step_created: 'Received',

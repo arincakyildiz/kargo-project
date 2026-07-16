@@ -16,11 +16,12 @@ import { StatusBadgeDirective } from '../../../../shared/directives/status-badge
 import { YetkiDirective } from '../../../../shared/directives/yetki.directive';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { LanguageService } from '../../../../core/services/language.service';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-shipment-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, YetkiDirective, TranslatePipe],
+  imports: [CommonModule, RouterLink, StatusLabelPipe, TarihPipe, StatusBadgeDirective, YetkiDirective, TranslatePipe, IconComponent],
   templateUrl: './shipment-detail.component.html',
   styleUrl: './shipment-detail.component.scss',
 })
@@ -262,5 +263,9 @@ export class ShipmentDetailComponent implements OnInit {
     } finally {
       this.islemDevamEdiyor.set(false);
     }
+  }
+
+  yazdir(): void {
+    window.print();
   }
 }

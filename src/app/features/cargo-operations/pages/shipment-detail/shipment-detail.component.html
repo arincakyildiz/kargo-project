@@ -15,15 +15,21 @@
         <h1>{{ g.takipKodu }}</h1>
         <span [appStatusBadge]="g.status">{{ g.status | statusLabel }}</span>
       </div>
-      <div class="header-actions" *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
-        <button class="btn btn--ghost" (click)="duzenle()" [disabled]="g.status === 'iptal-edildi'">{{ 'edit' | translate }}</button>
-        <button
-          class="btn btn--danger"
-          (click)="iptalEt()"
-          [disabled]="islemDevamEdiyor() || !iptalEdilebilir()"
-        >
-          {{ 'cancel_shipment' | translate }}
+      <div class="header-actions">
+        <button class="btn btn--primary" (click)="yazdir()">
+          <app-icon name="yazdir" [size]="14"></app-icon>
+          {{ 'print_label' | translate }}
         </button>
+        <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
+          <button class="btn btn--ghost" (click)="duzenle()" [disabled]="g.status === 'iptal-edildi'">{{ 'edit' | translate }}</button>
+          <button
+            class="btn btn--danger"
+            (click)="iptalEt()"
+            [disabled]="islemDevamEdiyor() || !iptalEdilebilir()"
+          >
+            {{ 'cancel_shipment' | translate }}
+          </button>
+        </ng-container>
       </div>
     </div>
 
@@ -208,6 +214,80 @@
           <p class="muted">{{ 'no_history' | translate }}</p>
         </ng-template>
       </section>
+    </div>
+
+    <!-- Yazdırma için Gizli İrsaliye Kartı (Sadece print modunda görünür) -->
+    <div class="printable-label">
+      <div class="label-header">
+        <div class="label-header__brand">{{ 'brand_name' | translate }}</div>
+        <div class="label-header__title">{{ 'shipping_label' | translate }}</div>
+      </div>
+      
+      <div class="label-barcode-section">
+        <svg class="barcode-svg" viewBox="0 0 100 40" width="180" height="60">
+          <rect x="0" y="0" width="2" height="40" fill="black"/>
+          <rect x="3" y="0" width="1" height="40" fill="black"/>
+          <rect x="6" y="0" width="4" height="40" fill="black"/>
+          <rect x="12" y="0" width="2" height="40" fill="black"/>
+          <rect x="16" y="0" width="1" height="40" fill="black"/>
+          <rect x="18" y="0" width="3" height="40" fill="black"/>
+          <rect x="23" y="0" width="2" height="40" fill="black"/>
+          <rect x="27" y="0" width="4" height="40" fill="black"/>
+          <rect x="33" y="0" width="1" height="40" fill="black"/>
+          <rect x="36" y="0" width="2" height="40" fill="black"/>
+          <rect x="40" y="0" width="3" height="40" fill="black"/>
+          <rect x="45" y="0" width="1" height="40" fill="black"/>
+          <rect x="48" y="0" width="4" height="40" fill="black"/>
+          <rect x="54" y="0" width="2" height="40" fill="black"/>
+          <rect x="58" y="0" width="1" height="40" fill="black"/>
+          <rect x="61" y="0" width="3" height="40" fill="black"/>
+          <rect x="66" y="0" width="2" height="40" fill="black"/>
+          <rect x="70" y="0" width="4" height="40" fill="black"/>
+          <rect x="76" y="0" width="1" height="40" fill="black"/>
+          <rect x="79" y="0" width="2" height="40" fill="black"/>
+          <rect x="83" y="0" width="3" height="40" fill="black"/>
+          <rect x="88" y="0" width="1" height="40" fill="black"/>
+          <rect x="91" y="0" width="4" height="40" fill="black"/>
+          <rect x="97" y="0" width="2" height="40" fill="black"/>
+        </svg>
+        <div class="label-barcode-text">{{ g.takipKodu }}</div>
+      </div>
+      
+      <div class="label-details-grid">
+        <div class="label-detail-box label-detail-box--sender">
+          <strong>{{ 'sender' | translate }}:</strong>
+          <p>{{ 'sender_info' | translate }}</p>
+          <p>Tel: 0850 123 45 67</p>
+        </div>
+        
+        <div class="label-detail-box label-detail-box--recipient">
+          <strong>{{ 'recipient' | translate }}:</strong>
+          <p class="recipient-name">{{ g.aliciAdSoyad }}</p>
+          <p>{{ g.aliciTelefon }}</p>
+          <p class="recipient-address">{{ g.acikAdres }}</p>
+          <p><strong>{{ 'zone' | translate }}:</strong> {{ zoneService.bolgeAdi(g.bolgeId) }}</p>
+        </div>
+      </div>
+      
+      <div class="label-footer-grid">
+        <div class="label-footer-item">
+          <span><strong>{{ 'weight_kg' | translate }}:</strong> {{ g.agirlikKg }} kg</span>
+        </div>
+        <div class="label-footer-item">
+          <span><strong>{{ 'created_at' | translate }}:</strong> {{ g.createdAt | tarih }}</span>
+        </div>
+      </div>
+
+      <div class="label-signatures-grid">
+        <div class="label-signature-box">
+          <span>{{ 'sign_courier' | translate }}</span>
+          <div class="signature-line"></div>
+        </div>
+        <div class="label-signature-box">
+          <span>{{ 'sign_recipient' | translate }}</span>
+          <div class="signature-line"></div>
+        </div>
+      </div>
     </div>
   </ng-container>
 </div>
