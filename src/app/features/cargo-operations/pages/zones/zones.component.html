@@ -91,9 +91,9 @@
     <div class="pagination" *ngIf="sayfalanmis().length">
       <span class="pagination__info">Toplam {{ filtrelenmis().length }} kayıt</span>
       <div class="pagination__controls" *ngIf="toplamSayfa() > 1">
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() - 1)" [disabled]="sayfa() === 1">‹ Önceki</button>
-        <span>{{ sayfa() }} / {{ toplamSayfa() }}</span>
-        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(sayfa() + 1)" [disabled]="sayfa() === toplamSayfa()">Sonraki ›</button>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() - 1)" [disabled]="gecerliSayfa() === 1">‹ Önceki</button>
+        <span>{{ gecerliSayfa() }} / {{ toplamSayfa() }}</span>
+        <button class="btn btn--ghost btn--sm" (click)="sayfayaGit(gecerliSayfa() + 1)" [disabled]="gecerliSayfa() === toplamSayfa()">Sonraki ›</button>
       </div>
     </div>
 

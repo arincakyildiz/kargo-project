@@ -69,8 +69,11 @@ export class ReturnsComponent {
 
   readonly toplamSayfa = computed(() => Math.max(1, Math.ceil(this.siraliListe().length / this.sayfaBoyu())));
 
+  /** Aktif sayfayı her zaman geçerli aralıkta tutar; veri küçülünce boş sayfada kalmayı önler. */
+  readonly gecerliSayfa = computed(() => Math.min(this.sayfa(), this.toplamSayfa()));
+
   readonly sayfalanmis = computed(() => {
-    const baslangic = (this.sayfa() - 1) * this.sayfaBoyu();
+    const baslangic = (this.gecerliSayfa() - 1) * this.sayfaBoyu();
     return this.siraliListe().slice(baslangic, baslangic + this.sayfaBoyu());
   });
 
