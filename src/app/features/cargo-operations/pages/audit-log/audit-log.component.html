@@ -12,7 +12,7 @@
     />
     <select (change)="tipFiltresiDegisti($any($event.target).value)">
       <option value="tumu">{{ 'all_action_types' | translate }}</option>
-      <option *ngFor="let tip of islemTipleri()" [value]="tip">{{ 'action_' + tip.replace(/-/g, '_') | translate }}</option>
+      <option *ngFor="let tip of islemTipleri()" [value]="tip">{{ islemTipiCeviriAnahtari(tip) | translate }}</option>
     </select>
     <select (change)="siralamaDegisti($any($event.target).value)">
       <option value="islemZamani-desc">{{ 'newest' | translate }}</option>
@@ -40,7 +40,7 @@
         <tr *ngFor="let e of sayfalanmis()" class="audit-log__row" (click)="detayAc(e)">
           <td>{{ e.islemZamani | tarih }}</td>
           <td>{{ e.rol | translate }}</td>
-          <td>{{ 'action_' + e.islemTipi.replace(/-/g, '_') | translate }}</td>
+          <td>{{ islemTipiCeviriAnahtari(e.islemTipi) | translate }}</td>
           <td class="cell-truncate" [title]="e.aciklama">{{ e.aciklama }}</td>
           <td>
             <ng-container *ngIf="e.eskiDeger || e.yeniDeger">{{ e.eskiDeger || '—' }} → {{ e.yeniDeger || '—' }}</ng-container>
@@ -80,7 +80,7 @@
       <dl>
         <dt>{{ 'time' | translate }}</dt><dd>{{ kayit.islemZamani | tarih }}</dd>
         <dt>{{ 'role_header' | translate }}</dt><dd>{{ kayit.rol | translate }}</dd>
-        <dt>{{ 'action_type' | translate }}</dt><dd>{{ 'action_' + kayit.islemTipi.replace(/-/g, '_') | translate }}</dd>
+        <dt>{{ 'action_type' | translate }}</dt><dd>{{ islemTipiCeviriAnahtari(kayit.islemTipi) | translate }}</dd>
         <dt>{{ 'description_label' | translate }}</dt><dd class="audit-detail-card__aciklama">{{ kayit.aciklama }}</dd>
         <ng-container *appYetki="['operasyon-uzmani', 'kurye-sorumlusu']">
           <dt *ngIf="kayit.eskiDeger || kayit.yeniDeger">{{ 'old_value' | translate }}</dt><dd *ngIf="kayit.eskiDeger || kayit.yeniDeger">{{ kayit.eskiDeger || '—' }}</dd>

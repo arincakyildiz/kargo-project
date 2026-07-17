@@ -203,7 +203,7 @@ export class ZonesComponent {
     // Pasife almadan önce aktif gönderi kontrolü
     if (zone.aktifMi) {
       const aktifGonderiler = this.shipmentService.liste().filter(
-        (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal'].includes(s.status)
+        (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal-edildi'].includes(s.status)
       );
       if (aktifGonderiler.length > 0) {
         mesaj = this.langService.translate('deactivate_zone_confirm_message_active', { name: zone.ad, count: aktifGonderiler.length });

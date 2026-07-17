@@ -13,10 +13,4 @@ export class NoWheelDirective {
   onWheel(event: WheelEvent): void {
     event.preventDefault();
   }
-
-  @HostListener('focus')
-  onFocus(event: FocusEvent): void {
-    // Odakta iken wheel olayını da engelle
-    (event.target as HTMLElement).addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
-  }
 }

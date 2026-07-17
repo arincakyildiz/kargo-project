@@ -7,7 +7,6 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { AuditLogEntry } from '../../../../core/models/base-model';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import { LanguageService } from '../../../../core/services/language.service';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
@@ -86,6 +85,11 @@ export class AuditLogComponent {
   sayfayaGit(yeniSayfa: number): void {
     if (yeniSayfa < 1 || yeniSayfa > this.toplamSayfa()) return;
     this.sayfa.set(yeniSayfa);
+  }
+
+  /** 'kurye-atama' -> 'action_kurye_atama'. Regex, Angular şablon ifadesinde çalışmadığı için burada. */
+  islemTipiCeviriAnahtari(islemTipi: string): string {
+    return 'action_' + islemTipi.replace(/-/g, '_');
   }
 
   detayAc(entry: AuditLogEntry): void {

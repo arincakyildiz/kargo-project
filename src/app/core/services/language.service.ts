@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { StorageService } from './storage.service';
 
 const LANG_KEY = 'staj2_language';
