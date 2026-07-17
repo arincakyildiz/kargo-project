@@ -912,11 +912,19 @@ export class LanguageService {
     this.storage.read<'tr' | 'en'>(LANG_KEY, 'tr')
   );
 
-  constructor(private storage: StorageService) {}
+  constructor(private storage: StorageService) {
+    // <html lang> aktif dile eşitlensin: CSS text-transform ve ekran okuyucular doğru dili kullanır.
+    this.htmlLangGuncelle(this.currentLang());
+  }
 
   setLanguage(lang: 'tr' | 'en'): void {
     this.currentLang.set(lang);
     this.storage.write(LANG_KEY, lang);
+    this.htmlLangGuncelle(lang);
+  }
+
+  private htmlLangGuncelle(lang: 'tr' | 'en'): void {
+    document.documentElement.lang = lang;
   }
 
   translate(key: string, params?: Record<string, string | number>): string {
