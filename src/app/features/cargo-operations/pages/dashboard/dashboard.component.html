@@ -204,7 +204,7 @@
           <div class="mini-list__row" *ngFor="let a of sonAuditLog()">
             <div class="mini-list__main">
               <span class="mini-list__title">{{ a.aciklama }}</span>
-              <span class="mini-list__sub">{{ a.islemZamani | tarih }} · {{ a.rol }}</span>
+              <span class="mini-list__sub">{{ a.islemZamani | tarih }} · {{ a.rol | translate }}</span>
             </div>
           </div>
         </div>

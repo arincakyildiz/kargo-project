@@ -292,6 +292,24 @@ export const TRANSLATIONS = {
     demo_data_loaded: 'Örnek veri yüklendi.',
     all_data_deleted: 'Tüm veriler silindi.',
 
+    // Audit Log Actions
+    action_kurye_kaydet: 'Kurye Kaydet / Güncelle',
+    action_kurye_durum: 'Kurye Aktiflik Değişimi',
+    action_kurye_sil: 'Kurye Silme',
+    action_iade_durum: 'İade Talebi Güncelleme',
+    action_adres_olustur: 'Adres Tanımlama',
+    action_bolge_kaydet: 'Bölge Kaydet / Güncelle',
+    action_bolge_durum: 'Bölge Aktiflik Değişimi',
+    action_bolge_sil: 'Bölge Silme',
+    action_musteri_notu: 'Müşteri Notu Ekleme',
+    action_ornek_veri_yukle: 'Örnek Veri Yükleme',
+    action_veri_sil: 'Sistem Sıfırlama',
+    action_gonderi_olustur: 'Gönderi Oluşturma',
+    action_gonderi_guncelle: 'Gönderi Bilgisi Güncelleme',
+    action_kurye_atama: 'Kurye Atama',
+    action_durum_degisikligi: 'Gönderi Durum Güncellemesi',
+    action_teslimat_kaniti: 'Teslimat Kanıtı Ekleme',
+
     // Additional keys for Dashboard
     no_filtered_shipments_dashboard_desc: 'Farklı bir bölge veya tarih aralığı deneyin.',
     no_shipments_yet: 'Henüz gönderi yok.',
@@ -723,6 +741,24 @@ export const TRANSLATIONS = {
     delete_all_confirm_message: 'This action cannot be undone. All shipments, couriers, zones, addresses, and audit logs will be permanently deleted.',
     demo_data_loaded: 'Sample data loaded successfully.',
     all_data_deleted: 'All data successfully deleted.',
+
+    // Audit Log Actions
+    action_kurye_kaydet: 'Create / Update Courier',
+    action_kurye_durum: 'Toggle Courier Status',
+    action_kurye_sil: 'Delete Courier',
+    action_iade_durum: 'Update Return Request',
+    action_adres_olustur: 'Define Address',
+    action_bolge_kaydet: 'Create / Update Zone',
+    action_bolge_durum: 'Toggle Zone Status',
+    action_bolge_sil: 'Delete Zone',
+    action_musteri_notu: 'Add Customer Note',
+    action_ornek_veri_yukle: 'Load Demo Data',
+    action_veri_sil: 'Reset System Data',
+    action_gonderi_olustur: 'Create Shipment',
+    action_gonderi_guncelle: 'Update Shipment Details',
+    action_kurye_atama: 'Assign Courier',
+    action_durum_degisikligi: 'Update Shipment Status',
+    action_teslimat_kaniti: 'Save Delivery Proof',
 
     // Additional keys for Dashboard
     no_filtered_shipments_dashboard_desc: 'Try a different zone or date range.',

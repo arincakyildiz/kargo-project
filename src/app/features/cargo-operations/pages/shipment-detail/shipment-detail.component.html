@@ -206,7 +206,7 @@
               [style.background]="statusRengi(h.yeniStatus)"
             ></span>
             <span class="timeline__status">{{ h.yeniStatus | statusLabel }}</span>
-            <span class="timeline__meta">{{ h.islemZamani | tarih }} · {{ h.islemYapanRol }}</span>
+            <span class="timeline__meta">{{ h.islemZamani | tarih }} · {{ h.islemYapanRol | translate }}</span>
             <p class="timeline__aciklama">{{ h.aciklama }}</p>
           </li>
         </ol>
