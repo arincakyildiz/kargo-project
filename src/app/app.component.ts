@@ -167,7 +167,7 @@ export class AppComponent {
   hataSimuleEt(): void {
     this.veriMenusuAcik.set(false);
     demoHataTetikle();
-    this.notification.info('Sonraki sayfa yüklemesinde hata simüle edilecek. Bir sayfayı yenileyin veya açın.');
+    this.notification.info(this.langService.translate('simulate_error_toast'));
   }
 
   mobilMenuDegistir(event: MouseEvent): void {
