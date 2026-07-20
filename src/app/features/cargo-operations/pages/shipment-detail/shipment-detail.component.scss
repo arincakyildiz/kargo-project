@@ -206,7 +206,9 @@ dd { margin: 0; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
     color: #000 !important;
   }
   
-  .shipment-detail,
+  // Not: .shipment-detail konteynerinin kendisi gizlenmez; içindeki .printable-label
+  // görünür kalmalı. Bir üst eleman display:none olursa altındaki her şey (display
+  // değeri ne olursa olsun) render dışı kalır — bu yüzden boş sayfa çıkardı.
   .sidebar,
   .topbar,
   .notification-overlay,
