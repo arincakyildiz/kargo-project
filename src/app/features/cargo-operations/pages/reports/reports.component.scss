@@ -13,6 +13,21 @@
 
 @media print {
   .reports__print-btn { display: none; }
+
+  // Kartların/satırların sayfa sonunda ortadan kesilip bir sonraki sayfaya taşmasını önler.
+  .panel,
+  .kpi-card,
+  .courier-perf-card,
+  table.data-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  // Başlığın bölümden kopup sayfa sonunda yalnız kalmasını önler.
+  .panel h2 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
 }
 
 .courier-perf-grid {
