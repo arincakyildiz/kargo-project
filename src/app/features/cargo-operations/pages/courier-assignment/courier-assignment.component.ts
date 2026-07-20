@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ShipmentService, BusinessRuleError } from '../../services/shipment.service';
 import { CourierService } from '../../services/courier.service';
@@ -54,7 +54,10 @@ export class CourierAssignmentComponent {
     adSoyad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
     telefon: ['', [Validators.required, telefonValidator(), Validators.maxLength(15)]],
     bolgeId: ['', Validators.required],
-    gunlukKapasite: [10, [Validators.required, pozitifSayiValidator(), tamSayiValidator(), Validators.max(200)]],
+    // Boş bırakılınca "zorunlu" hatasının doğru tetiklenmesi için null'a izin veren FormControl.
+    gunlukKapasite: new FormControl<number | null>(10, {
+      validators: [Validators.required, pozitifSayiValidator(), tamSayiValidator(), Validators.max(200)],
+    }),
   });
 
   private readonly kuryeSiralamaFonksiyonlari: Record<
@@ -214,7 +217,7 @@ export class CourierAssignmentComponent {
       input.value = num.toString();
       this.kuryeForm.controls.gunlukKapasite.setValue(num);
     } else {
-      this.kuryeForm.controls.gunlukKapasite.setValue(null as any);
+      this.kuryeForm.controls.gunlukKapasite.setValue(null);
     }
   }
 
@@ -225,7 +228,9 @@ export class CourierAssignmentComponent {
     }
     this.kuryeKaydediliyor.set(true);
     try {
-      const veri = this.kuryeForm.getRawValue();
+      const formVeri = this.kuryeForm.getRawValue();
+      // this.kuryeForm.invalid kontrolünden geçildiği için gunlukKapasite burada asla null değildir.
+      const veri = { ...formVeri, gunlukKapasite: formVeri.gunlukKapasite ?? 0 };
       if (this.duzenlenenKuryeId()) {
         await this.courierService.guncelle(this.duzenlenenKuryeId()!, veri);
         this.notification.success(this.langService.translate('courier_updated'));
@@ -272,12 +277,9 @@ export class CourierAssignmentComponent {
   }
 
   async kuryeSil(kurye: Courier): Promise<void> {
-    const atanan = this.shipmentService
-      .liste()
-      .filter((s) => s.kuryeId === kurye.id && ['kurye-atandi', 'dagitimda'].includes(s.status)).length;
-    
-    if (atanan > 0) {
-      this.notification.error(this.langService.translate('cannot_delete_courier_active_shipments', { count: atanan }));
+    const kontrol = this.shipmentService.kuryeSilinebilirMi(kurye.id);
+    if (kontrol.aktifGonderiSayisi > 0) {
+      this.notification.error(this.langService.translate('cannot_delete_courier_active_shipments', { count: kontrol.aktifGonderiSayisi }));
       return;
     }
 

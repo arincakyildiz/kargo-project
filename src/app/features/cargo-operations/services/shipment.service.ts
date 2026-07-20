@@ -290,4 +290,31 @@ export class ShipmentService {
       });
     }, { ms: 250 });
   }
+
+  /**
+   * Bir bölge silinmeden önce kontrol edilir: bölgeye bağlı henüz sonuçlanmamış
+   * gönderi veya o bölgeye atanmış kurye varsa silme engellenmelidir.
+   */
+  bolgeSilinebilirMi(bolgeId: string): { silinebilir: boolean; aktifGonderiSayisi: number; atanmisKuryeSayisi: number } {
+    const aktifGonderiSayisi = this.shipments().filter(
+      (s) => s.bolgeId === bolgeId && !['teslim-edildi', 'iptal-edildi'].includes(s.status)
+    ).length;
+    const atanmisKuryeSayisi = this.courierService.liste().filter((k) => k.bolgeId === bolgeId).length;
+    return {
+      silinebilir: aktifGonderiSayisi === 0 && atanmisKuryeSayisi === 0,
+      aktifGonderiSayisi,
+      atanmisKuryeSayisi,
+    };
+  }
+
+  /**
+   * Bir kurye silinmeden önce kontrol edilir: kuryeye atanmış, henüz teslim
+   * edilmemiş gönderi varsa silme engellenmelidir.
+   */
+  kuryeSilinebilirMi(kuryeId: string): { silinebilir: boolean; aktifGonderiSayisi: number } {
+    const aktifGonderiSayisi = this.shipments().filter(
+      (s) => s.kuryeId === kuryeId && ['kurye-atandi', 'dagitimda'].includes(s.status)
+    ).length;
+    return { silinebilir: aktifGonderiSayisi === 0, aktifGonderiSayisi };
+  }
 }

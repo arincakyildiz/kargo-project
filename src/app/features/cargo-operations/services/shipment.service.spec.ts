@@ -174,4 +174,70 @@ describe('ShipmentService', () => {
       shipmentService.musteriNotuEkle('olmayan-id', 'not')
     ).toBeRejected();
   });
+
+  it('bolgeSilinebilirMi: aktif gönderisi olan bölge silinemez', async () => {
+    const zone = zoneService.aktifBolgeler()[0];
+    await shipmentService.olustur({
+      aliciAdSoyad: 'A', aliciTelefon: '0532 111 22 33', adresId: 'adr-1', bolgeId: zone.id, agirlikKg: 1,
+    });
+
+    const kontrol = shipmentService.bolgeSilinebilirMi(zone.id);
+    expect(kontrol.silinebilir).toBeFalse();
+    expect(kontrol.aktifGonderiSayisi).toBe(1);
+  });
+
+  it('bolgeSilinebilirMi: teslim edilmiş/iptal edilmiş gönderiler engel oluşturmaz', async () => {
+    const zone = zoneService.aktifBolgeler()[0];
+    const gonderi = await shipmentService.olustur({
+      aliciAdSoyad: 'A', aliciTelefon: '0532 111 22 33', adresId: 'adr-1', bolgeId: zone.id, agirlikKg: 1,
+    });
+    await shipmentService.iptalEt(gonderi.id, 'test iptali');
+
+    const kontrol = shipmentService.bolgeSilinebilirMi(zone.id);
+    expect(kontrol.silinebilir).toBeTrue();
+    expect(kontrol.aktifGonderiSayisi).toBe(0);
+  });
+
+  it('bolgeSilinebilirMi: bölgeye atanmış kurye varsa silinemez', async () => {
+    const zone = zoneService.aktifBolgeler()[0];
+    await courierService.olustur({
+      adSoyad: 'Bölge Kuryesi', telefon: '0532 555 55 55', bolgeId: zone.id, gunlukKapasite: 5, aktifMi: true,
+    });
+
+    const kontrol = shipmentService.bolgeSilinebilirMi(zone.id);
+    expect(kontrol.silinebilir).toBeFalse();
+    expect(kontrol.atanmisKuryeSayisi).toBe(1);
+  });
+
+  it('bolgeSilinebilirMi: hiçbir bağlantısı olmayan bölge silinebilir', () => {
+    const zone = zoneService.aktifBolgeler()[1];
+    const kontrol = shipmentService.bolgeSilinebilirMi(zone.id);
+    expect(kontrol.silinebilir).toBeTrue();
+  });
+
+  it('kuryeSilinebilirMi: aktif atanmış gönderisi olan kurye silinemez', async () => {
+    const zone = zoneService.aktifBolgeler()[0];
+    const kurye = await courierService.olustur({
+      adSoyad: 'Meşgul Kurye', telefon: '0532 666 66 66', bolgeId: zone.id, gunlukKapasite: 5, aktifMi: true,
+    });
+    const gonderi = await shipmentService.olustur({
+      aliciAdSoyad: 'A', aliciTelefon: '0532 111 22 33', adresId: 'adr-1', bolgeId: zone.id, agirlikKg: 1,
+    });
+    await shipmentService.kuryeAta(gonderi.id, kurye.id);
+
+    const kontrol = shipmentService.kuryeSilinebilirMi(kurye.id);
+    expect(kontrol.silinebilir).toBeFalse();
+    expect(kontrol.aktifGonderiSayisi).toBe(1);
+  });
+
+  it('kuryeSilinebilirMi: hiç gönderisi olmayan kurye silinebilir', async () => {
+    const zone = zoneService.aktifBolgeler()[0];
+    const kurye = await courierService.olustur({
+      adSoyad: 'Boşta Kurye', telefon: '0532 777 77 77', bolgeId: zone.id, gunlukKapasite: 5, aktifMi: true,
+    });
+
+    const kontrol = shipmentService.kuryeSilinebilirMi(kurye.id);
+    expect(kontrol.silinebilir).toBeTrue();
+    expect(kontrol.aktifGonderiSayisi).toBe(0);
+  });
 });

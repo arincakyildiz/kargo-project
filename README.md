@@ -36,8 +36,10 @@ Bu proje, bir kargo şirketinin operasyonel süreçlerini yöneten ileri seviye 
 | Teslimat Kanıtı | Kanıt kaydı olmadan teslim edildi durumu engellidir |
 | İade Yönetimi | İade talebi oluşturma, durum takibi |
 | Raporlama | KPI'lar, durum dağılımı, kurye performansı |
-| Bölge Yönetimi | 81 il / gerçek ilçe verisiyle bölge tanımlama |
+| Bölge Yönetimi | 81 il / gerçek ilçe verisiyle bölge tanımlama, silme (bağlantı kontrolü ile) |
 | Denetim Kaydı | Her kritik işlem audit log'a düşer |
+| Çoklu Dil (i18n) | Tüm arayüz metinleri TR/EN arasında anlık değişir |
+| İrsaliye Yazdırma | Gönderi detayından barkod içeren yazdırılabilir irsaliye |
 
 ---
 
@@ -55,6 +57,7 @@ Bu proje, bir kargo şirketinin operasyonel süreçlerini yöneten ileri seviye 
 | Mock API | `mockRequest()` — gecikme (ms) + hata oranı (errorRate) parametreli |
 | Test | Jasmine + Karma + ChromeHeadless |
 | Stil | SCSS + CSS custom properties (dark/light tema desteği) |
+| i18n | `LanguageService` + `translate` pipe — TR/EN, `<html lang>` dile göre güncellenir |
 
 ---
 
@@ -98,14 +101,17 @@ ng test --watch=false --browsers=ChromeHeadless
 
 | Test Dosyası | Kapsam |
 |---|---|
-| `shipment.service.spec.ts` | Gönderi oluşturma, durum geçişleri, iş kuralı ihlalleri, audit log |
-| `courier.service.spec.ts` | Kurye CRUD, bölge uyumu, kapasite kontrolü |
+| `shipment.service.spec.ts` | Gönderi oluşturma, durum geçişleri, iş kuralı ihlalleri, audit log, bölge/kurye silinebilirlik kontrolü |
+| `courier.service.spec.ts` | Kurye CRUD, aktif/pasif filtreleme, silme |
+| `zone.service.spec.ts` | Bölge CRUD, aktif/pasif filtreleme, silme |
 | `telefon.validator.spec.ts` | Boşluklu/boşluksuz format, geçersiz girişler |
+| `status-label.pipe.spec.ts`, `tarih.pipe.spec.ts` | Pipe çıktı doğrulaması |
+| `storage.service.spec.ts`, `app.component.spec.ts` | localStorage erişimi, kök bileşen |
 
 **Son test çıktısı:**
 ```
-TOTAL: 27 SUCCESS
-Chrome Headless — Executed 27 of 27 SUCCESS
+TOTAL: 37 SUCCESS
+Chrome Headless — Executed 37 of 37 SUCCESS
 ```
 
 ---
@@ -140,7 +146,8 @@ Backend/login akışı olmadığı için üst bardaki **Aktif Rol** seçicisiyle
 
 ### 2. Kurye Atama
 
-- **Kurye CRUD:** Oluştur, düzenle, aktif/pasif et — form dirty uyarısı (kaydedilmemiş değişiklik)
+- **Kurye CRUD:** Oluştur, düzenle, aktif/pasif et, sil — form dirty uyarısı (kaydedilmemiş değişiklik)
+- **Silme Kontrolü:** Kuryeye atanmış aktif (kurye-atandı/dağıtımda) gönderi varsa silme engellenir
 - **Kapasite Göstergesi:** Doluluk oranı renk kodlu: 🟢 <%80 · 🟡 %80-99 · 🔴 ≥%100 ⚠️ Dolu
 - **Bölge Bazlı Atama:** Kurye, yalnızca kendi bölgesindeki gönderilere atanabilir
 - **Kapasite Aşımı:** Kurye günlük kapasitesini aştığında atama iş kuralı hatası verir
@@ -186,13 +193,20 @@ olusturuldu → kurye-atandi → dagitimda → teslim-edildi
 
 - **Gerçek il/ilçe verisi:** Türkiye'nin 81 ili ve tüm ilçeleri dropdown olarak sunulur — serbest metin girilemez
 - Bölge pasife alınmadan önce o bölgedeki **aktif gönderi sayısı** uyarıda gösterilir
-- Listeleme, oluşturma, düzenleme, aktif/pasif etme
+- **Silme Kontrolü:** Bölgede aktif gönderi veya atanmış kurye varsa silme engellenir
+- Listeleme, oluşturma, düzenleme, aktif/pasif etme, silme
 
 ### 8. Denetim Kaydı (Audit Log)
 
-- Tüm kritik işlemler otomatik kaydedilir: gönderi oluşturma, durum geçişi, atama, teslimat kanıtı, iade, iptal, bölge değişikliği
+- Tüm kritik işlemler otomatik kaydedilir: gönderi oluşturma, durum geçişi, atama, teslimat kanıtı, iade, iptal, bölge/kurye değişikliği ve silme
 - Her kayıtta: zaman damgası, işlem tipi, işlemi yapan rol, açıklama, hedef ID
-- Filtreleme ve listeleme ekranı
+- Filtreleme, sıralama, sayfalama ve detay modalı ile listeleme ekranı
+
+### 9. Çoklu Dil Desteği (i18n)
+
+- Üst bardaki dil seçiciyle (**TR / EN**) tüm arayüz metinleri anında değişir
+- `LanguageService` merkezi sözlük + `translate` pipe ile çalışır; eksik anahtar sessizce Türkçe'ye, o da yoksa ham anahtara düşer (asla çökmez)
+- Aktif dile göre `<html lang>` güncellenir — büyük harf dönüşümleri (`text-transform: uppercase`) doğru locale kuralını kullanır
 
 ---
 
@@ -209,6 +223,8 @@ olusturuldu → kurye-atandi → dagitimda → teslim-edildi
 | Açıklama zorunluluğu | Durum geçişi diyalogunda açıklama alanı boş bırakılamaz |
 | Kurye kapasite max | Günlük kapasite 1-200 arası; 200 üstü anlık sıfırlanır |
 | Ağırlık max | Gönderi ağırlığı 0.1-500 kg; 500 üstü anlık sıfırlanır |
+| Kurye silme kısıtı | Aktif atanmış (kurye-atandı/dağıtımda) gönderisi olan kurye silinemez (`ShipmentService.kuryeSilinebilirMi`) |
+| Bölge silme kısıtı | Aktif gönderisi veya atanmış kuryesi olan bölge silinemez (`ShipmentService.bolgeSilinebilirMi`) |
 
 ---
 
@@ -222,7 +238,8 @@ src/app/
 │   │   ├── mock-api.ts               # mockRequest() — gecikme + hata simülasyonu
 │   │   ├── audit.service.ts          # Audit log kayıt servisi
 │   │   ├── notification.service.ts   # Toast bildirimleri
-│   │   └── current-user.service.ts  # Aktif rol yönetimi
+│   │   ├── current-user.service.ts  # Aktif rol yönetimi
+│   │   └── language.service.ts      # TR/EN sözlük + aktif dil sinyali
 │   ├── guards/
 │   │   ├── role.guard.ts             # CanActivate — rota erişim kontrolü
 │   │   └── unsaved-changes.guard.ts # CanDeactivate — kaydedilmemiş form uyarısı
@@ -241,7 +258,8 @@ src/app/
 │   │   ├── no-wheel.directive.ts     # Scroll ile sayı değişimini engeller
 │   │   └── status-badge.directive.ts # Durum rozeti renklendirme
 │   ├── pipes/
-│   │   ├── status-label.pipe.ts      # Durum kodu → Türkçe etiket
+│   │   ├── status-label.pipe.ts      # Durum kodu → aktif dile göre etiket
+│   │   ├── translate.pipe.ts         # i18n: {{ 'key' | translate }}
 │   │   └── tarih.pipe.ts             # Tarih biçimlendirme
 │   └── validators/
 │       └── telefon.validator.ts      # telefonValidator + pozitifSayiValidator
@@ -320,4 +338,4 @@ src/app/
 | Demo video | Uygulamanın temel akışlarını gösteren ekran kaydı teslim paketine ayrıca eklenmelidir |
 | Gerçek dosya yükleme | Teslimat kanıtında imza / fotoğraf metin alanıyla simüle edildi; gerçek `<input type="file">` eklenmedi |
 | E2E test | Yalnızca unit testler mevcuttur; Cypress / Playwright ile E2E kapsam yoktur |
-| Sayfalama (iade/teslimat) | İade ve teslimat listelerinde sayfalama implementasyonu henüz eklenmedi |
+| Audit log açıklamaları | Sistem tarafından üretilen serbest metin açıklamalar (`aciklama` alanı) kaydedildiği dilde (Türkçe) kalır; i18n yalnızca sabit arayüz metinlerini kapsar |

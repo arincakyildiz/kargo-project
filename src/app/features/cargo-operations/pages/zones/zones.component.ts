@@ -15,7 +15,6 @@ import { TURKIYE_ILLERI } from '../../data/turkiye-iller';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ShipmentService } from '../../services/shipment.service';
-import { CourierService } from '../../services/courier.service';
 
 const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
 
@@ -93,7 +92,6 @@ export class ZonesComponent {
     private fb: FormBuilder,
     private zoneService: ZoneService,
     private shipmentService: ShipmentService,
-    private courierService: CourierService,
     private notification: NotificationService,
     private audit: AuditService,
     private currentUser: CurrentUserService,
@@ -202,11 +200,9 @@ export class ZonesComponent {
 
     // Pasife almadan önce aktif gönderi kontrolü
     if (zone.aktifMi) {
-      const aktifGonderiler = this.shipmentService.liste().filter(
-        (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal-edildi'].includes(s.status)
-      );
-      if (aktifGonderiler.length > 0) {
-        mesaj = this.langService.translate('deactivate_zone_confirm_message_active', { name: zone.ad, count: aktifGonderiler.length });
+      const kontrol = this.shipmentService.bolgeSilinebilirMi(zone.id);
+      if (kontrol.aktifGonderiSayisi > 0) {
+        mesaj = this.langService.translate('deactivate_zone_confirm_message_active', { name: zone.ad, count: kontrol.aktifGonderiSayisi });
       }
     }
 
@@ -234,19 +230,13 @@ export class ZonesComponent {
   }
 
   async sil(zone: DeliveryZone): Promise<void> {
-    // 1. Check active shipments
-    const aktifGonderiler = this.shipmentService.liste().filter(
-      (s) => s.bolgeId === zone.id && !['teslim-edildi', 'iptal-edildi'].includes(s.status)
-    );
-    if (aktifGonderiler.length > 0) {
-      this.notification.error(this.langService.translate('delete_zone_active_shipments', { count: aktifGonderiler.length }));
+    const kontrol = this.shipmentService.bolgeSilinebilirMi(zone.id);
+    if (kontrol.aktifGonderiSayisi > 0) {
+      this.notification.error(this.langService.translate('delete_zone_active_shipments', { count: kontrol.aktifGonderiSayisi }));
       return;
     }
-
-    // 2. Check assigned couriers
-    const kuryeler = this.courierService.liste().filter((k) => k.bolgeId === zone.id);
-    if (kuryeler.length > 0) {
-      this.notification.error(this.langService.translate('delete_zone_assigned_couriers', { count: kuryeler.length }));
+    if (kontrol.atanmisKuryeSayisi > 0) {
+      this.notification.error(this.langService.translate('delete_zone_assigned_couriers', { count: kontrol.atanmisKuryeSayisi }));
       return;
     }
 

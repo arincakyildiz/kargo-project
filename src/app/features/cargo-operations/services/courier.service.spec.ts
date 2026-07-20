@@ -48,4 +48,14 @@ describe('CourierService', () => {
     await courierService.guncelle(kurye.id, { aktifMi: true });
     expect(courierService.aktifKuryeler().find((k) => k.id === kurye.id)).toBeTruthy();
   });
+
+  it('sil() kuryeyi listeden kaldırır', async () => {
+    const kurye = await courierService.olustur({
+      adSoyad: 'Silinecek Kurye', telefon: '0532 444 44 44', bolgeId: 'zon-1', gunlukKapasite: 10, aktifMi: true,
+    });
+    expect(courierService.liste().find((k) => k.id === kurye.id)).toBeTruthy();
+
+    await courierService.sil(kurye.id);
+    expect(courierService.liste().find((k) => k.id === kurye.id)).toBeFalsy();
+  });
 });
