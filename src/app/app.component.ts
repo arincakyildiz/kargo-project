@@ -107,7 +107,6 @@ export class AppComponent {
     const sonuc = await this.dialog.confirm({
       baslik: this.langService.translate('delete_all_confirm_title'),
       mesaj: this.langService.translate('delete_all_confirm_message'),
-      aciklamaGerekli: true,
       onayMetni: this.langService.translate('delete'),
     });
     if (!sonuc.onaylandi) return;
