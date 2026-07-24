@@ -24,6 +24,8 @@ import { LanguageService } from '../../../../core/services/language.service';
 type KuryeSiralamaAnahtari = 'adSoyad-asc' | 'doluluk-desc';
 type GonderiSiralamaAnahtari = 'takipKodu-asc' | 'createdAt-desc';
 
+const SAYFA_BOYU_SECENEKLERI = [10, 20, 50, 100];
+
 @Component({
   selector: 'app-courier-assignment',
   standalone: true,
@@ -46,9 +48,16 @@ export class CourierAssignmentComponent {
   readonly kuryeBolgeFiltre = signal<string>('tumu');
   readonly kuryeStatusFiltre = signal<string>('tumu'); // 'tumu' | 'aktif' | 'pasif'
   readonly kuryeSiralama = signal<KuryeSiralamaAnahtari>('adSoyad-asc');
+  readonly kuryeSayfa = signal(1);
+  readonly kuryeSayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[0]);
+
   readonly gonderiArama = signal('');
   readonly gonderiBolgeFiltre = signal<string>('tumu');
   readonly gonderiSiralama = signal<GonderiSiralamaAnahtari>('createdAt-desc');
+  readonly gonderiSayfa = signal(1);
+  readonly gonderiSayfaBoyu = signal(SAYFA_BOYU_SECENEKLERI[0]);
+
+  readonly sayfaBoyuSecenekleri = SAYFA_BOYU_SECENEKLERI;
 
   readonly kuryeForm = this.fb.nonNullable.group({
     adSoyad: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
@@ -102,6 +111,13 @@ export class CourierAssignmentComponent {
       .sort(this.kuryeSiralamaFonksiyonlari[this.kuryeSiralama()]);
   });
 
+  readonly kuryeToplamSayfa = computed(() => Math.max(1, Math.ceil(this.kuryeKapasiteOzeti().length / this.kuryeSayfaBoyu())));
+  readonly kuryeGecerliSayfa = computed(() => Math.min(this.kuryeSayfa(), this.kuryeToplamSayfa()));
+  readonly kuryeSayfalanmis = computed(() => {
+    const baslangic = (this.kuryeGecerliSayfa() - 1) * this.kuryeSayfaBoyu();
+    return this.kuryeKapasiteOzeti().slice(baslangic, baslangic + this.kuryeSayfaBoyu());
+  });
+
   readonly filtrelenmisBekleyenler = computed(() => {
     const aramaMetni = this.gonderiArama().trim().toLowerCase();
     const bolgeFiltre = this.gonderiBolgeFiltre();
@@ -113,6 +129,13 @@ export class CourierAssignmentComponent {
         return true;
       })
       .sort(this.gonderiSiralamaFonksiyonlari[this.gonderiSiralama()]);
+  });
+
+  readonly gonderiToplamSayfa = computed(() => Math.max(1, Math.ceil(this.filtrelenmisBekleyenler().length / this.gonderiSayfaBoyu())));
+  readonly gonderiGecerliSayfa = computed(() => Math.min(this.gonderiSayfa(), this.gonderiToplamSayfa()));
+  readonly gonderiSayfalanmis = computed(() => {
+    const baslangic = (this.gonderiGecerliSayfa() - 1) * this.gonderiSayfaBoyu();
+    return this.filtrelenmisBekleyenler().slice(baslangic, baslangic + this.gonderiSayfaBoyu());
   });
 
   constructor(
@@ -306,29 +329,56 @@ export class CourierAssignmentComponent {
 
   kuryeAramaDegisti(deger: string): void {
     this.kuryeArama.set(deger);
+    this.kuryeSayfa.set(1);
   }
 
   kuryeBolgeFiltresiDegisti(bolgeId: string): void {
     this.kuryeBolgeFiltre.set(bolgeId);
+    this.kuryeSayfa.set(1);
   }
 
   kuryeStatusFiltresiDegisti(status: string): void {
     this.kuryeStatusFiltre.set(status);
+    this.kuryeSayfa.set(1);
   }
 
   kuryeSiralamaDegisti(deger: string): void {
     this.kuryeSiralama.set(deger as KuryeSiralamaAnahtari);
+    this.kuryeSayfa.set(1);
+  }
+
+  kuryeSayfaBoyuDegisti(deger: string): void {
+    this.kuryeSayfaBoyu.set(Number(deger));
+    this.kuryeSayfa.set(1);
+  }
+
+  kuryeSayfayaGit(yeniSayfa: number): void {
+    if (yeniSayfa < 1 || yeniSayfa > this.kuryeToplamSayfa()) return;
+    this.kuryeSayfa.set(yeniSayfa);
   }
 
   gonderiAramaDegisti(deger: string): void {
     this.gonderiArama.set(deger);
+    this.gonderiSayfa.set(1);
   }
 
   gonderiBolgeFiltresiDegisti(bolgeId: string): void {
     this.gonderiBolgeFiltre.set(bolgeId);
+    this.gonderiSayfa.set(1);
   }
 
   gonderiSiralamaDegisti(deger: string): void {
     this.gonderiSiralama.set(deger as GonderiSiralamaAnahtari);
+    this.gonderiSayfa.set(1);
+  }
+
+  gonderiSayfaBoyuDegisti(deger: string): void {
+    this.gonderiSayfaBoyu.set(Number(deger));
+    this.gonderiSayfa.set(1);
+  }
+
+  gonderiSayfayaGit(yeniSayfa: number): void {
+    if (yeniSayfa < 1 || yeniSayfa > this.gonderiToplamSayfa()) return;
+    this.gonderiSayfa.set(yeniSayfa);
   }
 }

@@ -100,9 +100,12 @@
         <option value="adSoyad-asc">{{ 'sort_name' | translate }}</option>
         <option value="doluluk-desc">{{ 'sort_fullness' | translate }}</option>
       </select>
+      <select [value]="kuryeSayfaBoyu()" (change)="kuryeSayfaBoyuDegisti($any($event.target).value)">
+        <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ 'page_size' | translate:{ size: boyut } }}</option>
+      </select>
     </div>
 
-    <table class="data-table" *ngIf="kuryeKapasiteOzeti().length; else kuryeYok">
+    <table class="data-table" *ngIf="kuryeSayfalanmis().length; else kuryeYok">
       <thead>
         <tr>
           <th>{{ 'courier' | translate }}</th>
@@ -115,7 +118,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let o of kuryeKapasiteOzeti()">
+        <tr *ngFor="let o of kuryeSayfalanmis()">
           <td>{{ o.kurye.adSoyad }}</td>
           <td>{{ zoneService.bolgeAdi(o.kurye.bolgeId) }}</td>
           <td class="cell-nowrap">{{ o.kurye.telefon }}</td>
@@ -146,6 +149,16 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="pagination" *ngIf="kuryeSayfalanmis().length">
+      <span class="pagination__info">{{ 'total_records' | translate:{ count: kuryeKapasiteOzeti().length } }}</span>
+      <div class="pagination__controls" *ngIf="kuryeToplamSayfa() > 1">
+        <button class="btn btn--ghost btn--sm" (click)="kuryeSayfayaGit(kuryeGecerliSayfa() - 1)" [disabled]="kuryeGecerliSayfa() === 1">{{ 'previous' | translate }}</button>
+        <span>{{ kuryeGecerliSayfa() }} / {{ kuryeToplamSayfa() }}</span>
+        <button class="btn btn--ghost btn--sm" (click)="kuryeSayfayaGit(kuryeGecerliSayfa() + 1)" [disabled]="kuryeGecerliSayfa() === kuryeToplamSayfa()">{{ 'next' | translate }}</button>
+      </div>
+    </div>
+
     <ng-template #kuryeYok>
       <app-empty-state [title]="'no_results' | translate" [description]="'no_couriers_matching' | translate"></app-empty-state>
     </ng-template>
@@ -169,9 +182,12 @@
         <option value="createdAt-desc">{{ 'newest' | translate }}</option>
         <option value="takipKodu-asc">{{ 'sort_tracking_code' | translate }}</option>
       </select>
+      <select [value]="gonderiSayfaBoyu()" (change)="gonderiSayfaBoyuDegisti($any($event.target).value)">
+        <option *ngFor="let boyut of sayfaBoyuSecenekleri" [value]="boyut">{{ 'page_size' | translate:{ size: boyut } }}</option>
+      </select>
     </div>
 
-    <table class="data-table" *ngIf="filtrelenmisBekleyenler().length; else bosState">
+    <table class="data-table" *ngIf="gonderiSayfalanmis().length; else bosState">
       <thead>
         <tr>
           <th>{{ 'tracking_code' | translate }}</th>
@@ -182,7 +198,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let s of filtrelenmisBekleyenler()">
+        <tr *ngFor="let s of gonderiSayfalanmis()">
           <td>{{ s.takipKodu }}</td>
           <td>{{ s.aliciAdSoyad }}</td>
           <td>{{ zoneService.bolgeAdi(s.bolgeId) }}</td>
@@ -200,6 +216,16 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="pagination" *ngIf="gonderiSayfalanmis().length">
+      <span class="pagination__info">{{ 'total_records' | translate:{ count: filtrelenmisBekleyenler().length } }}</span>
+      <div class="pagination__controls" *ngIf="gonderiToplamSayfa() > 1">
+        <button class="btn btn--ghost btn--sm" (click)="gonderiSayfayaGit(gonderiGecerliSayfa() - 1)" [disabled]="gonderiGecerliSayfa() === 1">{{ 'previous' | translate }}</button>
+        <span>{{ gonderiGecerliSayfa() }} / {{ gonderiToplamSayfa() }}</span>
+        <button class="btn btn--ghost btn--sm" (click)="gonderiSayfayaGit(gonderiGecerliSayfa() + 1)" [disabled]="gonderiGecerliSayfa() === gonderiToplamSayfa()">{{ 'next' | translate }}</button>
+      </div>
+    </div>
+
     <ng-template #bosState>
       <app-empty-state [title]="'no_results' | translate" [description]="'no_pending_assignments_matching' | translate"></app-empty-state>
     </ng-template>
